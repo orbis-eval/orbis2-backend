@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, VARCHAR, Sequence
 from sqlalchemy.orm import relationship
 
-from src.database.orbis.entities.corpus_has_document_relation import corpus_has_document_table
-from src.database.orbis.entities.document_dao import DocumentDao
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.entities.corpus_has_document_relation import corpus_has_document_table
+from orbis2.database.orbis.entities.document_dao import DocumentDao
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class CorpusDao(OrbisBase):

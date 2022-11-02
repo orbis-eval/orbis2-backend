@@ -1,8 +1,8 @@
 import logging.config
 from pathlib import Path
 
-from src.config.app_config import AppConfig
-from src.database.orbis.orbis_db import OrbisDb
+from orbis2.config import AppConfig
+from orbis2.database.orbis.orbis_db import OrbisDb
 
 
 LOGGING_DIR = Path(__file__).parents[0] / 'log'

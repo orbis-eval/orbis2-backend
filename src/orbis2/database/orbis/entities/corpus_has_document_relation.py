@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Table, ForeignKey
 
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 corpus_has_document_table = Table(
     'corpus_has_document_table',

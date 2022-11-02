@@ -2,7 +2,7 @@ import logging
 from sqlalchemy import exc
 from sqlalchemy_utils import database_exists, create_database
 
-from src.database.session import get_session
+from orbis2.database.session import get_session
 
 
 class SqlDb:

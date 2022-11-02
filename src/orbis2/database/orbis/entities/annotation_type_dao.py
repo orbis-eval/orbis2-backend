@@ -1,6 +1,6 @@
 from sqlalchemy import Column, BigInteger, Sequence, Text
 
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class AnnotationTypeDao(OrbisBase):
