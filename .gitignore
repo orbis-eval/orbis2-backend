@@ -1,0 +1,13 @@
+# virtual environemnt
+venv
+
+# python basics
+__pycache__/
+.idea/
+.pytest_cache/
+
+# project specifics
+log/
+logs/
+resources/*
+wandb/*
