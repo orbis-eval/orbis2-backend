@@ -2,9 +2,6 @@ import logging.config
 from pathlib import Path
 
 from src.orbis2.config.app_config import AppConfig
-from src.orbis2.database.orbis.entities.annotation_dao import AnnotationDao
-from src.orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
-from src.orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
 from src.orbis2.database.orbis.orbis_db import OrbisDb
 
 

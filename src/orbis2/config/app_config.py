@@ -67,4 +67,4 @@ class AppConfig:
         """
         Returns: Absolute path to the logger.ini file for the logging configuration.
         """
-        return f'{Path(__file__).parents[2]}/config/logger.ini'
+        return f'{Path(__file__).parents[3]}/config/logger.ini'
