@@ -40,3 +40,21 @@ class OrbisDb(SqlDb):
             return results
         logging.debug('There are no annotation entries in orbis database.')
         return None
+
+    def add_annotation(self, annotation: AnnotationDao) -> bool:
+        """
+        Add annotation to orbis database.
+
+        Args:
+            annotation:
+
+        Returns: True if it worked, false otherwise.
+        """
+        try:
+            self.session.add(annotation)
+            self.commit()
+            return True
+        except Exception as e:
+            logging.warning(f'During adding the annotation {annotation} '
+                            f'the following exception occurred: {e.__str__()}')
+            return False
