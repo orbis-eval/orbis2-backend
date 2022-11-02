@@ -1,6 +1,6 @@
 from sqlalchemy import Sequence, BigInteger, Column, VARCHAR, Text
 
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class RunDao(OrbisBase):

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Sequence, BigInteger, Text, Index
 from sqlalchemy.sql import func
 
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class DocumentDao(OrbisBase):

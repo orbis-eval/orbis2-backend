@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Text, ForeignKey, BigInteger
 from sqlalchemy.orm import relationship
 
-from src.database.orbis.entities.annotation_dao import AnnotationDao
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class MetadataDao(OrbisBase):

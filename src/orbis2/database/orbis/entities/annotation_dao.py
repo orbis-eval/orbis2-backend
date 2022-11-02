@@ -1,9 +1,9 @@
 from sqlalchemy import Column, Integer, Sequence, BigInteger, Text, ForeignKey, ARRAY
 from sqlalchemy.orm import relationship
 
-from src.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
-from src.database.orbis.entities.annotator_dao import AnnotatorDao
-from src.database.orbis.orbis_base import OrbisBase
+from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
+from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
+from orbis2.database.orbis.orbis_base import OrbisBase
 
 
 class AnnotationDao(OrbisBase):

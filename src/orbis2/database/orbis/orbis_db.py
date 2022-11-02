@@ -1,11 +1,11 @@
 import logging
 from typing import Union, List
 
-from src.config.app_config import AppConfig
-from src.database.orbis.entities.annotation_dao import AnnotationDao
-from src.database.orbis.entities.corpus_dao import CorpusDao
-from src.database.orbis.orbis_base import OrbisBase
-from src.database.sql_db import SqlDb
+from orbis2.config.app_config import AppConfig
+from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao
+from orbis2.database.orbis.orbis_base import OrbisBase
+from orbis2.database.sql_db import SqlDb
 
 
 class OrbisDb(SqlDb):
