@@ -30,7 +30,7 @@ CREATE TABLE annotation_type(
 CREATE TABLE annotation(
     annotation_id BIGINT PRIMARY KEY,
     key TEXT,  -- URL/URI to entity, may be NULL
-    annotation_type INT REFERENCES annotation_type(type_id) NOT NULL,
+    annotation_type_id INT REFERENCES annotation_type(type_id) NOT NULL,
     annotator_id INT REFERENCES annotator(annotator_id) NOT NULL,
     surface_forms TEXT[] NOT NULL,
     start_indices INT[] NOT NULL,
