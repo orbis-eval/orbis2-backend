@@ -32,7 +32,6 @@ class Scorer:
         predicted_annotations.sort()
         current_pred_idx = 0
         for true in true_annotations:
-            matched = False
             # add all annotations that are aligned for the current 'true'
             # annotation to the list of false positives (fp)
             while current_pred_idx < len(predicted_annotations):
@@ -46,27 +45,15 @@ class Scorer:
             while current_pred_idx < len(predicted_annotations) and  \
                     overlap(true, predicted_annotations[current_pred_idx]):
                 pred = predicted_annotations[current_pred_idx]
+                current_pred_idx += 1
                 if self.scoring_operator(
                         self.surface_matcher.score_annotation(true, pred),
                         self.entity_scorer.score_annotation(true, pred)) > 0:
-                    tp.append(pred)
-                    matched = True
+                    tp.append((pred, true))
+                    # TODO: continue with true_annotations / break & continue?
                 else:
-                    # TODO: handle multiple overlaps (!)
-                    fp.append((pred, true))
-                current_pred_idx += 1
+                    fp.append(pred)
 
-            if not matched:
-                fn.append(true)
+            fn.append(true)
 
         return tp, fp, fn
-
-    def score(self, true_annotations: List, predicted_annotations: List) -> \
-            List:
-        surface_score = self.surface_matcher(true_annotations,
-                                             predicted_annotations)
-        entity_score = self.entity_scorer(true_annotations,
-                                          predicted_annotations)
-        # compute the overall score
-        return [self.scoring_operator(s, e) for s, e in zip(surface_score,
-                                                       entity_score)]
