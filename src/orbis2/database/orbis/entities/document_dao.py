@@ -2,8 +2,8 @@ from sqlalchemy import Column, Sequence, BigInteger, Text, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
-from orbis2.database.orbis.entities.document_has_annotation_relation import document_has_annotation_table
+from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
+# from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.database.orbis.orbis_base import OrbisBase
 
 
@@ -12,7 +12,8 @@ class DocumentDao(OrbisBase):
 
     document_id = Column(BigInteger, Sequence('document_id_seq'), primary_key=True)
     content = Column(Text, nullable=False)
-    annotations = relationship(AnnotationDao, secondary=document_has_annotation_table, backref='documents')
+    runs = relationship(RunHasDocumentDao, back_populates='document')
+    data = relationship('MetadataDao', secondary='document_has_metadata', back_populates='documents')
 
     __table_args__ = (
         # ',' after Index(), is necessary, since the value of table_args must be a tuple, dictionary, or None
