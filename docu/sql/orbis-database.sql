@@ -70,14 +70,14 @@ CREATE TABLE annotator_has_role(
     PRIMARY KEY(annotator_id, role_id)
 );
 
-CREATE TABLE has_annotation_metadata(
+CREATE TABLE annotation_has_metadata(
     annotation_id BIGINT REFERENCES annotation(annotation_id),
     metadata_id BIGINT REFERENCES metadata(metadata_id),
     PRIMARY KEY(annotation_id, metadata_id)
 );
 
 -- allows to add metadata such as "contains table" to a document
-CREATE TABLE has_document_metadata(
+CREATE TABLE document_has_metadata(
     document_id BIGINT REFERENCES document(document_id),
     metadata_id BIGINT REFERENCES metadata(metadata_id),
     PRIMARY KEY(document_id, metadata_id)
