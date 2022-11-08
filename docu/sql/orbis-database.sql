@@ -45,7 +45,8 @@ CREATE TABLE metadata(
 );
 
 CREATE TABLE role(
-    role_id INT PRIMARY KEY
+    role_id INT PRIMARY KEY,
+    name TEXT NOT NULL
 );
 
 -- Relations
