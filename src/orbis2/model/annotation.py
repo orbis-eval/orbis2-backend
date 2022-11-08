@@ -15,3 +15,9 @@ class Annotation:
 
     def __hash__(self):
         return self.start + 1048576 * self.end
+
+    def __str__(self):
+        return f'Annotation({self.start}, {self.end})'
+
+    def __repr__(self):
+        return self.__str__()

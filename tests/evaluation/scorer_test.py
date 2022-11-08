@@ -7,8 +7,7 @@ PREDICTED = [Annotation(1, 5),
              Annotation(7, 14),
              Annotation(8, 14),
              Annotation(12, 14),
-             Annotation(22, 24)
-             ]
+             Annotation(22, 24)]
 
 TRUE = [Annotation(12, 14),
         Annotation(16, 18),
@@ -25,12 +24,14 @@ def score_annotation(true_annotations: List[Annotation],
     """
     result = ScorerResult(tp=set(), fn=set(), fp=set())
 
-    pred_annotations = list(sorted(pred_annotations))
     for true in sorted(true_annotations):
         # process head, i.e. detected annotations prior to the next true
         # annotation
+        print("TTT", true)
         while pred_annotations and pred_annotations[0].end <= true.start:
-            result.fn.add(pred_annotations.pop(0))
+            p = pred_annotations.pop(0)
+            result.fn.add(p)
+            print("POP", p)
 
         # process overlap
         for pred in pred_annotations:
@@ -40,7 +41,8 @@ def score_annotation(true_annotations: List[Annotation],
                 result.tp.add((pred, true))
                 pred_annotations.remove(pred)
                 break
-    print(result.fp, result.fp.union(pred_annotations))
+
+    print(result.fp, result.fp.union(pred_annotations), pred_annotations)
     result.fp = result.fp.union(pred_annotations)
     result.fn = set(true_annotations).difference((tp[1] for tp in result.tp))
     return result
@@ -54,7 +56,8 @@ def overlap_scorer(true, pred):
 
 
 def test_scorer():
-    result: ScorerResult = score_annotation(TRUE, PREDICTED,
+    result: ScorerResult = score_annotation(true_annotations=TRUE,
+                                            pred_annotations=PREDICTED,
                                             scorer=exact_scorer)
     assert result.fp == {Annotation(1, 5),
                          Annotation(7, 14),
