@@ -1,9 +1,11 @@
 from typing import List
 from operator import mul
+from collections import namedtuple
 
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlap
 
+ScorerResult = namedtuple('ScorerResult', 'tp, fn, fp')
 
 class Scorer:
 
@@ -35,6 +37,10 @@ class Scorer:
         #  2. determine sets of matching annotations => improved match cand.
         #  3. remove duplicates, ensuring that we maximize matches
         #  4. move all other annotations either into the fp or fn category (!)
+
+
+
+
 
         for true in true_annotations:
             # add all annotations located before for the current 'true'
