@@ -13,7 +13,7 @@ def test_equality():
 def test_in():
     a1 = Annotation(3, 8)
     a2 = Annotation(7, 9)
-    l = [Annotation(3, 8), Annotation(3, 8)]
-    assert a1 in l
-    assert a2 not in l
-    assert l.count(a1) == 2
+    annotation_list = [Annotation(3, 8), Annotation(3, 8)]
+    assert a1 in annotation_list
+    assert a2 not in annotation_list
+    assert annotation_list.count(a1) == 2
