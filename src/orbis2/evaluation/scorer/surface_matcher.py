@@ -1,6 +1,15 @@
-from typing import List
+from dataclasses import dataclass
+from typing import List, Set
 
 from orbis2.evaluation.scorer.annotation_util import overlap
+from orbis2.model.annotation import Annotation
+
+
+@dataclass
+class ScorerResult:
+    tp: Set[Annotation]
+    fp: Set[Annotation]
+    fn: Set[Annotation]
 
 class AbstractSurfaceMatcher:
 
@@ -24,8 +33,6 @@ class OverlappingMatcher(AbstractSurfaceMatcher):
 
     def score_annotation(self, true, predicted):
         return 1 if overlap(true, predicted) else 0
-
-
 
 #
 # Unittests

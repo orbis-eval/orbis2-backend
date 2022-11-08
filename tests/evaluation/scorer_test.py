@@ -40,6 +40,7 @@ def score_annotation(true_annotations: List[Annotation],
                 result.tp.add((pred, true))
                 pred_annotations.remove(pred)
                 break
+    print(result.fp, result.fp.union(pred_annotations))
     result.fp = result.fp.union(pred_annotations)
     result.fn = set(true_annotations).difference((tp[1] for tp in result.tp))
     return result
