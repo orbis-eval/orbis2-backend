@@ -10,7 +10,8 @@ class RunHasDocumentDao(OrbisBase):
     __tablename__ = 'run_has_document'
 
     run_id = Column(ForeignKey(RunDao.run_id), primary_key=True)
+    run = relationship(RunDao, back_populates='run_has_documents')
     document_id = Column(ForeignKey(DocumentDao.document_id), primary_key=True)
-    document = relationship(DocumentDao)
-    document_has_annotations = relationship('DocumentHasAnnotationDao')
+    document = relationship(DocumentDao, back_populates='run_has_documents')
+    document_has_annotations = relationship('DocumentHasAnnotationDao', back_populates='run_has_document')
     done = Column(Boolean)
