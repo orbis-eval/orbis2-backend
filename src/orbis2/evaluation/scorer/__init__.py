@@ -1,11 +1,8 @@
 from typing import List
 from operator import mul
-from collections import namedtuple
 
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlap
-
-ScorerResult = namedtuple('ScorerResult', 'tp, fn, fp')
 
 class Scorer:
 
