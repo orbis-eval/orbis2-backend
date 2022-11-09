@@ -1,9 +1,20 @@
-from typing import List
+from collections import namedtuple
+from dataclasses import dataclass
+from typing import List, Set
 from operator import mul
 
-from orbis2.evaluation.scorer.annotation_surface_matcher import ScorerResult
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlap
+
+AnnotationScore = namedtuple('Score', 'score_surface score_entity pred true')
+
+
+@dataclass
+class ScorerResult:
+    tp: Set[Annotation]
+    fp: Set[Annotation]
+    fn: Set[Annotation]
+
 
 class Scorer:
 
@@ -48,5 +59,6 @@ class Scorer:
                     break
 
         result.fp = result.fp.union(pred_annotations)
-        result.fn = set(true_annotations).difference((tp[1] for tp in result.tp))
+        result.fn = set(true_annotations).difference(
+            (tp[1] for tp in result.tp))
         return result
