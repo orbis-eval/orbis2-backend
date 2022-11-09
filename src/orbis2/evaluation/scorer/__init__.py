@@ -1,7 +1,7 @@
 from typing import List
 from operator import mul
 
-from orbis2.evaluation.scorer.surface_matcher import ScorerResult
+from orbis2.evaluation.scorer.annotation_surface_matcher import ScorerResult
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlap
 
@@ -29,6 +29,7 @@ class Scorer:
             pred_annotations: list of predicted annotations
         """
         result = ScorerResult(tp=set(), fn=set(), fp=set())
+        pred_annotations = list(sorted(pred_annotations))
 
         for true in sorted(true_annotations):
             # process head, i.e. detected annotations prior to the next true
