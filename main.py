@@ -21,11 +21,11 @@ logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_
 
 if __name__ == '__main__':
     metadata = MetadataDao(
-                    metadata_id=1111111, key='key1', value='value1'
-                )
+        metadata_id=1111111, key='key1', value='value1'
+    )
     annotation_type = AnnotationTypeDao(
-                    type_id=11111, name='type11111'
-                )
+        type_id=11111, name='type11111'
+    )
     run = RunDao(run_id=1, name='run1', description='run1', run_has_documents=[
         RunHasDocumentDao(document=DocumentDao(
             document_id=11, content='Text, das ist ein Beispiel', meta_data=[metadata]
@@ -43,8 +43,12 @@ if __name__ == '__main__':
         annotation_type
     ]))
 
-    print(OrbisDb().create_database())
-    print(OrbisDb().add_run(run))
-    print(OrbisDb().get_runs())
-    print(OrbisDb().get_documents())
-    print(OrbisDb().get_annotations())
+    orbis_db = OrbisDb()
+    print(orbis_db.add_run(run))
+    if orbis_db.create_database():
+        print(orbis_db.add_run(run))
+        print(orbis_db.get_runs())
+        print(orbis_db.get_documents())
+        print(orbis_db.get_annotations())
+    else:
+        print(False)

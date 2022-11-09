@@ -13,6 +13,7 @@ class DocumentDao(OrbisBase):
     document_id = Column(BigInteger, Sequence('document_id_seq'), primary_key=True)
     content = Column(Text, nullable=False)
     meta_data = relationship(MetadataDao, secondary=document_has_metadata_table, back_populates='documents')
+    run_has_documents = relationship('RunHasDocumentDao', back_populates='document')
 
     __table_args__ = (
         # ',' after Index(), is necessary, since the value of table_args must be a tuple, dictionary, or None

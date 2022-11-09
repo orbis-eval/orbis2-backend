@@ -1,6 +1,8 @@
 import logging
 from typing import Union, List
 
+from sqlalchemy.exc import SQLAlchemyError
+
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
@@ -18,18 +20,6 @@ class OrbisDb(SqlDb):
 
         """
         super().__init__(AppConfig.get_orbis_db_url(), OrbisBase)
-
-    # def get_corpora(self) -> Union[List[CorpusDao], None]:
-    #     """
-    #     Get all corpora from database
-    #
-    #     Returns: A list of corpus objects or None if no corpus exists in the database
-    #     """
-    #     results = self.session.query(CorpusDao).all()
-    #     if len(results) > 0:
-    #         return results
-    #     logging.debug('There are no corpus entries in orbis database.')
-    #     return None
 
     def get_runs(self) -> Union[List[RunDao], None]:
         """
@@ -78,9 +68,8 @@ class OrbisDb(SqlDb):
         """
         try:
             self.session.add(annotation)
-            self.commit()
-            return True
-        except Exception as e:
+            return self.commit()
+        except SQLAlchemyError as e:
             logging.warning(f'During adding the annotation {annotation} '
                             f'the following exception occurred: {e.__str__()}')
             return False
@@ -96,9 +85,8 @@ class OrbisDb(SqlDb):
         """
         try:
             self.session.add(run)
-            self.commit()
-            return True
-        except Exception as e:
+            return self.commit()
+        except SQLAlchemyError as e:
             logging.warning(f'During adding the run {run} '
                             f'the following exception occurred: {e.__str__()}')
             return False
@@ -114,9 +102,8 @@ class OrbisDb(SqlDb):
         """
         try:
             self.session.add(document_has_annotation)
-            self.commit()
-            return True
-        except Exception as e:
+            return self.commit()
+        except SQLAlchemyError as e:
             logging.warning(f'During adding the document_has_annotation {document_has_annotation} '
                             f'the following exception occurred: {e.__str__()}')
             return False
