@@ -1,6 +1,7 @@
 from typing import List
 from operator import mul
 
+from orbis2.evaluation.scorer.surface_matcher import ScorerResult
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlap
 
@@ -16,59 +17,35 @@ class Scorer:
             scoring_operator: Function used for combining the results from the
                 surface_matcher and entity_scorer.
         """
-        self.surface_matcher = surface_matcher
-        self.entity_scorer = entity_scorer
-        self.scoring_operator = scoring_operator
+        self.scorer = lambda true, pred: scoring_operator(surface_matcher(
+            true, pred), entity_scorer(true, pred))
 
     def score_annotation_list(self, true_annotations: List[Annotation],
-                              predicted_annotations: List[Annotation]) -> List:
-        tp = []
-        fp = []
-        fn = []
-        true_annotations.sort()
-        predicted_annotations.sort()
-        current_pred_idx = 0
+                              pred_annotations: List[Annotation]) \
+            -> ScorerResult:
+        """
+        Args:
+            true_annotations: list of gold standard annotations
+            pred_annotations: list of predicted annotations
+        """
+        result = ScorerResult(tp=set(), fn=set(), fp=set())
 
-        # redo logic:
-        #  1. create sets of overlapping annotations => match candidates
-        #  2. determine sets of matching annotations => improved match cand.
-        #  3. remove duplicates, ensuring that we maximize matches
-        #  4. move all other annotations either into the fp or fn category (!)
+        for true in sorted(true_annotations):
+            # process head, i.e. detected annotations prior to the next true
+            # annotation
+            while pred_annotations and pred_annotations[0].end <= true.start:
+                p = pred_annotations.pop(0)
+                result.fp.add(p)
 
-
-
-
-
-        for true in true_annotations:
-            # add all annotations located before for the current 'true'
-            # annotation to the list of false positives (fp)
-            while current_pred_idx < len(predicted_annotations):
-                if not predicted_annotations[current_pred_idx].end < \
-                       true.start:
+            # process overlap
+            for pred in pred_annotations:
+                if pred.start >= true.end:
                     break
-                else:
-                    fp.append(predicted_annotations[current_pred_idx])
-                    current_pred_idx += 1
-
-            # assign all overlapping annotations to either tp or fp
-            # warning -> this might be too simplistic, since the overlap
-            # might be a working match with a later true annotation
-            # --
-            # alternative: create sets of
-            while current_pred_idx < len(predicted_annotations) and  \
-                    overlap(true, predicted_annotations[current_pred_idx]):
-                pred = predicted_annotations[current_pred_idx]
-                current_pred_idx += 1
-                if self.scoring_operator(
-                        self.surface_matcher.score_annotation(true, pred),
-                        self.entity_scorer.score_annotation(true, pred)) > 0:
-                    tp.append((pred, true))
-                    true = None
+                if self.scorer(true, pred):
+                    result.tp.add((pred, true))
+                    pred_annotations.remove(pred)
                     break
-                else:
-                    fp.append(pred)
 
-            if true:
-                fn.append(true)
-
-        return tp, fp, fn
+        result.fp = result.fp.union(pred_annotations)
+        result.fn = set(true_annotations).difference((tp[1] for tp in result.tp))
+        return result
