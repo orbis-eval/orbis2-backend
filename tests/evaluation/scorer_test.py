@@ -1,7 +1,7 @@
 from operator import mul
 
 from orbis2.model.annotation import Annotation
-from orbis2.evaluation.scorer import overlap, Scorer, ScorerResult
+from orbis2.evaluation.scorer import overlaps, Scorer, ScorerResult
 
 PREDICTED = [Annotation(1, 5),
              Annotation(7, 14),
@@ -19,7 +19,7 @@ def exact_annotation_scorer(true, pred):
 
 
 def overlap_annotation_scorer(true, pred):
-    return overlap(true, pred)
+    return overlaps(true, pred)
 
 
 def test_exact_scorer():

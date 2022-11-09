@@ -4,7 +4,7 @@ from typing import List, Set
 from operator import mul
 
 from orbis2.model.annotation import Annotation
-from orbis2.evaluation.scorer.annotation_util import overlap
+from orbis2.evaluation.scorer.annotation_util import overlaps
 
 AnnotationScore = namedtuple('Score', 'score_surface score_entity pred true')
 
@@ -49,7 +49,7 @@ class Scorer:
                 p = pred_annotations.pop(0)
                 result.fp.add(p)
 
-            # process overlap
+            # compute best match for overlap
             for pred in pred_annotations:
                 if pred.start >= true.end:
                     break

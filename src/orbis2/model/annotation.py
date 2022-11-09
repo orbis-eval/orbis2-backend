@@ -1,4 +1,7 @@
 class Annotation:
+    """
+    Mock Annotation class used within the unittests.
+    """
 
     def __init__(self, start, end):
         self.start = start

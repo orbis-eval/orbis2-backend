@@ -1,4 +1,4 @@
-from orbis2.evaluation.scorer import overlap
+from orbis2.evaluation.scorer import overlaps
 from orbis2.model.annotation import Annotation
 
 
@@ -14,15 +14,15 @@ def test_overlap():
     left = Annotation(5, 11)
     right = Annotation(19, 22)
 
-    assert overlap(true, perfect)
-    assert overlap(true, larger)
-    assert overlap(true, left)
-    assert overlap(true, right)
-    assert overlap(larger, true)
-    assert overlap(left, true)
-    assert overlap(right, true)
+    assert overlaps(true, perfect)
+    assert overlaps(true, larger)
+    assert overlaps(true, left)
+    assert overlaps(true, right)
+    assert overlaps(larger, true)
+    assert overlaps(left, true)
+    assert overlaps(right, true)
 
-    assert not overlap(true, none)
-    assert not overlap(true, none2)
-    assert not overlap(none, true)
-    assert not overlap(none2, true)
+    assert not overlaps(true, none)
+    assert not overlaps(true, none2)
+    assert not overlaps(none, true)
+    assert not overlaps(none2, true)
