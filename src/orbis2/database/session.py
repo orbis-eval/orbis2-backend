@@ -16,6 +16,6 @@ def get_session(connection_string: str, new: bool = False) -> Session:
     if new:
         sessions_makers.pop(connection_string)
     if connection_string not in sessions_makers:
-        engine = create_engine(connection_string, echo=True)
+        engine = create_engine(connection_string)
         sessions_makers[connection_string] = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return sessions_makers[connection_string]()
