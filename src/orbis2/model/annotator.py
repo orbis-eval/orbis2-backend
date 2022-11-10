@@ -18,3 +18,6 @@ class Annotator:
         annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles))
         annotator.annotator_id = annotator_dao.annotator_id
         return annotator
+
+    def to_dao(self) -> AnnotatorDao:
+        return AnnotatorDao(annotator_id=self.annotator_id, name=self.name, roles=Role.to_role_daos(self.roles))

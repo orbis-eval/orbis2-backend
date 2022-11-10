@@ -20,7 +20,11 @@ class Metadata:
 
     @classmethod
     def from_metadata_daos(cls, metadata_daos: [MetadataDao]) -> ['Metadata']:
-        metadata = []
-        for metadata_dao in metadata_daos:
-            metadata.append(Metadata.from_metadata_dao(metadata_dao))
-        return metadata
+        return [Metadata.from_metadata_dao(metadata_dao) for metadata_dao in metadata_daos]
+
+    def to_dao(self) -> MetadataDao:
+        return MetadataDao(metadata_id=self.metadata_id, key=self.key, value=self.value)
+
+    @staticmethod
+    def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:
+        return [metadata.to_dao() for metadata in metadata]

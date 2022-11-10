@@ -1,3 +1,4 @@
+from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.model.annotation import Annotation
@@ -51,10 +52,22 @@ class Run:
 
     @classmethod
     def from_run_daos(cls, run_daos: [RunDao]) -> ['Run']:
-        runs = []
-        for run_dao in run_daos:
-            runs.append(Run.from_run_dao(run_dao))
-        return runs
+        return [Run.from_run_dao(run_dao) for run_dao in run_daos]
 
-    def to_run_dao(self) -> RunDao:
-        pass
+    def to_dao(self) -> RunDao:
+        run_has_document_daos = []
+        for document, annotations in self.document_annotations.items():
+            document_has_annotation_daos = []
+            for annotation in annotations:
+                document_has_annotation_daos.append(DocumentHasAnnotationDao(annotation=annotation.to_dao()))
+            run_has_document_daos.append(RunHasDocumentDao(document=document.to_dao(),
+                                                           document_has_annotations=document_has_annotation_daos,
+                                                           done=document.done))
+
+        return RunDao(run_id=self.run_id, name=self.name, description=self.description,
+                      run_has_documents=run_has_document_daos, corpus=self.corpus.to_dao(),
+                      parents=Run.to_run_daos(self.parents))
+
+    @staticmethod
+    def to_run_daos(runs: ['Run']) -> [RunDao]:
+        return [run.to_dao() for run in runs]

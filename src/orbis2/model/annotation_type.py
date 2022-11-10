@@ -19,7 +19,12 @@ class AnnotationType:
 
     @classmethod
     def from_annotation_type_daos(cls, annotation_type_daos: [AnnotationTypeDao]) -> ['AnnotationType']:
-        annotation_types = []
-        for annotation_type_dao in annotation_type_daos:
-            annotation_types.append(AnnotationType.from_annotation_type_dao(annotation_type_dao))
-        return annotation_types
+        return [AnnotationType.from_annotation_type_dao(annotation_type_dao)
+                for annotation_type_dao in annotation_type_daos]
+
+    def to_dao(self) -> AnnotationTypeDao:
+        return AnnotationTypeDao(type_id=self.type_id, name=self.name)
+
+    @staticmethod
+    def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:
+        return [annotation_type.to_dao() for annotation_type in annotation_types]

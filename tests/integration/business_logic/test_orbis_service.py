@@ -5,6 +5,7 @@ from orbis2.model.annotator import Annotator
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
+from orbis2.model.role import Role
 from orbis2.model.run import Run
 
 
@@ -68,6 +69,61 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert metadata.metadata_id == 1111111
     assert metadata.value == 'value1'
     assert metadata.key == 'key1'
+
+
+# noinspection PyPep8Naming
+def test_add_runs_emptyDbExistsAndRunIsCorrectlyInitialized_returnTrue(clear_test_data_orbis):
+    assert OrbisService().add_runs([Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                                           AnnotationType('annotation-tpye2')]),
+                                    {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+                                    [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                                                Annotator('Andreas', [Role('admin')]),
+                                                metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])]}
+                                        )])
+
+
+# noinspection PyPep8Naming
+def test_add_runs_emptyDbExistsAndRunWithMultipleAnnotationsIsCorrectlyInitialized_returnTrue(
+        clear_test_data_orbis):
+    assert OrbisService().add_runs([Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                                           AnnotationType('annotation-type2')]),
+                                    {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+                                    [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                                                Annotator('Andreas', [Role('admin')]),
+                                                metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
+                                     Annotation('', 'Beispiel', 18, 26, AnnotationType('annotation-type2'),
+                                                Annotator('Andreas', [Role('admin')]),
+                                                metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
+                                     ]}
+                                        )])
+
+
+# noinspection PyPep8Naming
+def test_add_runs_emptyDbExistsAndRunWithMultipleDocumentAnnotationsIsCorrectlyInitialized_returnTrue(
+        clear_test_data_orbis):
+    # TODO, anf 10.11.2022: values (metadata, annotation_types) should only be inserted once
+    assert OrbisService().add_runs([Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                                           AnnotationType('annotation-type2')]),
+                                    {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+                                    [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                                                Annotator('Andreas', [Role('admin')]),
+                                                metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
+                                     Annotation('', 'Beispiel', 18, 26, AnnotationType('annotation-type2'),
+                                                Annotator('Andreas', [Role('admin')]),
+                                                metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
+                                     ],
+                                     Document('Text2, das ist ein neues Beispiel2',
+                                              metadata=[Metadata('key1', 'value1')]):
+                                         [Annotation('', 'Text2', 0, 5, AnnotationType('annotation-type1'),
+                                                     Annotator('Andreas', [Role('admin')]),
+                                                     metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
+                                          Annotation('', 'Beispiel2', 25, 34, AnnotationType('annotation-type2'),
+                                                     Annotator('Andreas', [Role('admin')]),
+                                                     metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
+                                          ]
+                                     }
+                                        )])
+
 
 # TODO, anf 10.11.2022: add test for two runs where one has a parent and check whether the parent got the correct child
 #  entry

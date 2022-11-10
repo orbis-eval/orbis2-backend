@@ -14,7 +14,7 @@ class Annotation:
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str], start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int], annotation_type: AnnotationType, annotator: Annotator,
-                 run_id, document_id, metadata: [Metadata] = None, timestamp: datetime = None):
+                 run_id: int = None, document_id: int = None, metadata: [Metadata] = None, timestamp: datetime = None):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
         if isinstance(end_indices, int):
@@ -44,6 +44,12 @@ class Annotation:
                          Metadata.from_metadata_daos(annotation_dao.meta_data), timestamp)
         annotation.annotation_id = annotation_dao.annotation_id
         return annotation
+
+    def to_dao(self) -> AnnotationDao:
+        return AnnotationDao(annotation_id=self.annotation_id, key=self.key, surface_forms=list(self.surface_forms),
+                             start_indices=list(self.start_indices), end_indices=list(self.end_indices),
+                             annotation_type=self.annotation_type.to_dao(), annotator=self.annotator.to_dao(),
+                             meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def __eq__(self, other):
         return self.start == other.start and self.end == other.end

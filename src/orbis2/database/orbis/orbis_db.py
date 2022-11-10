@@ -68,7 +68,7 @@ class OrbisDb(SqlDb):
         Returns: True if it worked, false otherwise.
         """
         try:
-            self.session.add(runs)
+            self.session.add_all(runs)
             return self.commit()
         except SQLAlchemyError as e:
             logging.warning(f'During adding runs {runs} '

@@ -18,3 +18,8 @@ class Corpus:
         corpus = cls(corpus_dao.name, AnnotationType.from_annotation_type_daos(corpus_dao.supported_annotation_types))
         corpus.corpus_id = corpus_dao.corpus_id
         return corpus
+
+    def to_dao(self) -> CorpusDao:
+        return CorpusDao(corpus_id=self.corpus_id, name=self.name,
+                         supported_annotation_types=AnnotationType.to_annotation_type_daos(
+                             self.supported_annotation_types))
