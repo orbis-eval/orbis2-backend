@@ -19,17 +19,17 @@ class ScorerResult:
 
 class Scorer:
 
-    def __init__(self, surface_matcher, entity_scorer, scoring_operator=mul):
+    def __init__(self, surface_scorer, entity_scorer, scoring_operator=mul):
         """
         Args:
-            surface_matcher: SurfaceMatcher used for scoring the entities'
+            surface_scorer: SurfaceMatcher used for scoring the entities'
                 surface forms.
             entity_scorer: EntityScorer used for scoring the entity type,
                 URL, etc.
             scoring_operator: Function used for combining the results from the
                 surface_matcher and entity_scorer.
         """
-        self.scorer = lambda true, pred: scoring_operator(surface_matcher(
+        self._scorer = lambda true, pred: scoring_operator(surface_scorer(
             true, pred), entity_scorer(true, pred))
 
     def score_annotation_list(self, true_annotations: List[Annotation],
@@ -51,12 +51,11 @@ class Scorer:
                 result.fp.add(p)
 
             # compute best match for overlap
-            matches = [AnnotationMatch(score=self.scorer(true, pred),
+            matches = [AnnotationMatch(score=self._scorer(true, pred),
                                        true=true, pred=pred)
                        for pred in takewhile(lambda x: x.start < true.end,
                                              pred_annotations)]
             if matches and (match := max(matches)).score > 0:
-                print(matches, "\n>>>", match)
                 result.tp.add(match)
                 pred_annotations.remove(match.pred)
 

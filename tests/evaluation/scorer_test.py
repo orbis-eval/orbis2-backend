@@ -1,7 +1,7 @@
 from operator import mul
 from typing import List, Set
 
-from orbis2.evaluation.scorer.annotation_surface_matcher import exact_match, \
+from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
     overlapping_match
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer import overlaps, Scorer, ScorerResult, \
@@ -43,7 +43,7 @@ def test_exact_scorer():
 
 def test_overlap_scorer():
     """
-    Overlapping scorer: the first match wins, even if it is not the best one.
+    Overlapping _scorer: the first match wins, even if it is not the best one.
     """
     scorer = Scorer(surface_matcher=overlapping_match,
                     entity_scorer=lambda x, y: True,

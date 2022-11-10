@@ -37,7 +37,7 @@ def contains(true: Annotation, predicted: Annotation) -> bool:
 def len_overlap(true: Annotation, predicted: Annotation) -> int:
     """
     Return:
-         The lenght of the overlap between the two annotations.
+         The length of the overlap between true and predicted.
     """
     return sum((max(0, min(t_end, p_end) - max(t_start, p_start))
                 for (t_start, t_end), (p_start, p_end) in product(

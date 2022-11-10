@@ -1,4 +1,4 @@
-from orbis2.evaluation.scorer.annotation_surface_matcher import exact_match, \
+from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
     overlapping_match, contained_match
 from orbis2.model.annotation import Annotation
 
