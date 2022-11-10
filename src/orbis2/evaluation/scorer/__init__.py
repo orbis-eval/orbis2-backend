@@ -1,18 +1,19 @@
 from collections import namedtuple
 from dataclasses import dataclass
+from itertools import takewhile
 from typing import List, Set
 from operator import mul
 
 from orbis2.model.annotation import Annotation
 from orbis2.evaluation.scorer.annotation_util import overlaps
 
-AnnotationScore = namedtuple('Score', 'score_surface score_entity pred true')
+AnnotationMatch = namedtuple('AnnotationMatch', 'score true pred')
 
 
 @dataclass
 class ScorerResult:
     tp: Set[Annotation]
-    fp: Set[Annotation]
+    fp: Set[AnnotationMatch]
     fn: Set[Annotation]
 
 
@@ -50,13 +51,14 @@ class Scorer:
                 result.fp.add(p)
 
             # compute best match for overlap
-            for pred in pred_annotations:
-                if pred.start >= true.end:
-                    break
-                if self.scorer(true, pred):
-                    result.tp.add((pred, true))
-                    pred_annotations.remove(pred)
-                    break
+            matches = [AnnotationMatch(score=self.scorer(true, pred),
+                                       true=true, pred=pred)
+                       for pred in takewhile(lambda x: x.start < true.end,
+                                             pred_annotations)]
+            if matches and (match := max(matches)).score > 0:
+                print(matches, "\n>>>", match)
+                result.tp.add(match)
+                pred_annotations.remove(match.pred)
 
         result.fp = result.fp.union(pred_annotations)
         result.fn = set(true_annotations).difference(
