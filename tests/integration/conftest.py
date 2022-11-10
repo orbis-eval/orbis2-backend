@@ -1,5 +1,5 @@
-import logging.config
-from pathlib import Path
+import os
+import pytest as pytest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
@@ -11,15 +11,23 @@ from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.database.orbis.entities.role_dao import RoleDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
-from src.orbis2.config.app_config import AppConfig
-from src.orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.database.orbis.orbis_db import OrbisDb
 
 
-LOGGING_DIR = Path(__file__).parents[0] / 'log'
-LOGGING_DIR.mkdir(exist_ok=True)
-logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_loggers=False)
+@pytest.fixture(scope='session', autouse=True)
+def create_database():
+    os.environ['ORBIS_DB_NAME'] = 'orbis_test'
 
-if __name__ == '__main__':
+    assert OrbisDb().create_database(True)
+
+
+@pytest.fixture()
+def clear_test_data_orbis():
+    assert OrbisDb().clear_tables()
+
+
+@pytest.fixture()
+def insert_test_data_orbis(clear_test_data_orbis):
     metadata = MetadataDao(
         metadata_id=1111111, key='key1', value='value1'
     )
@@ -43,12 +51,4 @@ if __name__ == '__main__':
         annotation_type
     ]))
 
-    orbis_db = OrbisDb()
-    print(orbis_db.add_run(run))
-    if orbis_db.create_database(True):
-        print(orbis_db.add_run(run))
-        print(orbis_db.get_runs())
-        print(orbis_db.get_documents())
-        print(orbis_db.get_annotations())
-    else:
-        print(False)
+    assert OrbisDb().add_run(run)

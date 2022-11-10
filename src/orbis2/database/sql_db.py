@@ -61,7 +61,7 @@ class SqlDb:
             logging.error(f'During committing the following exception occurred: {e.__str__()}')
             return False
 
-    def create_database(self) -> bool:
+    def create_database(self, enforce: bool = False) -> bool:
         """
         Create recommender db scheme if not already existing and create/clear recommender tables.
 
@@ -70,7 +70,12 @@ class SqlDb:
         try:
             if not database_exists(self.session.get_bind().url):
                 create_database(self.session.get_bind().url)
-            self.clear_tables()
+            elif enforce:
+                self.clear_tables()
+            else:
+                logging.warning('Database already exists, if you want to reinitialize it, set enforce = True '
+                                '(ATTENTION: data will be lost)')
+                return False
             return database_exists(self.session.get_bind().url)
         except SQLAlchemyError as e:
             logging.error(f'During database creation the following exception occurred: {e.__str__()}')
