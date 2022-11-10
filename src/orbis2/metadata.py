@@ -1,0 +1,6 @@
+__author__ = 'Andreas Fraefel'
+__author_email__ = 'andreas.fraefel@fhgr.ch'
+__copyright__ = '2022 Andreas Fraefel'
+__license__ = 'Apache-2.0'
+__version__ = '0.0.1'
+__status__ = 'Prototype'

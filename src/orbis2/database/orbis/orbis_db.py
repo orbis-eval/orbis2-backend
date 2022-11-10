@@ -2,6 +2,7 @@ import logging
 from typing import Union, List
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import lazyload
 
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -27,7 +28,7 @@ class OrbisDb(SqlDb):
 
         Returns: A list of run objects or None if no run exists in the database
         """
-        results = self.session.query(RunDao).all()
+        results = self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).all()
         if len(results) > 0:
             return results
         logging.debug('There are no run entries in orbis database.')
@@ -57,20 +58,20 @@ class OrbisDb(SqlDb):
         logging.debug('There are no annotation entries in orbis database.')
         return None
 
-    def add_annotation(self, annotation: AnnotationDao) -> bool:
+    def add_runs(self, runs: [RunDao]) -> bool:
         """
-        Add annotation to orbis database.
+        Add run to orbis database.
 
         Args:
-            annotation:
+            runs:
 
         Returns: True if it worked, false otherwise.
         """
         try:
-            self.session.add(annotation)
+            self.session.add(runs)
             return self.commit()
         except SQLAlchemyError as e:
-            logging.warning(f'During adding the annotation {annotation} '
+            logging.warning(f'During adding runs {runs} '
                             f'the following exception occurred: {e.__str__()}')
             return False
 
@@ -91,19 +92,19 @@ class OrbisDb(SqlDb):
                             f'the following exception occurred: {e.__str__()}')
             return False
 
-    def add_document_has_annotation(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
+    def add_annotation(self, annotation: AnnotationDao) -> bool:
         """
-        Add document_has_annotation to orbis database.
+        Add annotation to orbis database.
 
         Args:
-            document_has_annotation:
+            annotation:
 
         Returns: True if it worked, false otherwise.
         """
         try:
-            self.session.add(document_has_annotation)
+            self.session.add(annotation)
             return self.commit()
         except SQLAlchemyError as e:
-            logging.warning(f'During adding the document_has_annotation {document_has_annotation} '
+            logging.warning(f'During adding the annotation {annotation} '
                             f'the following exception occurred: {e.__str__()}')
             return False

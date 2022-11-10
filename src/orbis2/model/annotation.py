@@ -1,4 +1,10 @@
-from typing import Tuple, Union
+import datetime
+from typing import Union, Tuple
+
+from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
+from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.annotator import Annotator
+from orbis2.model.metadata import Metadata
 
 
 class Annotation:
@@ -6,17 +12,38 @@ class Annotation:
     Mock Annotation class used within the unittests.
     """
 
-    def __init__(self, start: Union[Tuple[int, ...], int],
-                 end: Union[Tuple[int, ...], int],
-                 surface_form=''):
-        if isinstance(start, int):
-            start = (start,)
-        if isinstance(end, int):
-            end = (end,)
+    def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str], start_indices: Union[Tuple[int, ...], int],
+                 end_indices: Union[Tuple[int, ...], int], annotation_type: AnnotationType, annotator: Annotator,
+                 run_id, document_id, metadata: [Metadata] = None, timestamp: datetime = None):
+        if isinstance(start_indices, int):
+            start_indices = (start_indices, )
+        if isinstance(end_indices, int):
+            end_indices = (end_indices, )
+        if isinstance(surface_forms, str):
+            surface_forms = (surface_forms, )
 
-        self.start = start
-        self.end = end
-        self.surface_form = surface_form
+        self.annotation_id = None
+        self.key = key
+        self.surface_forms = surface_forms
+        self.start_indices = start_indices
+        self.end_indices = end_indices
+        self.annotation_type = annotation_type
+        self.annotator = annotator
+        self.run_id = run_id
+        self.document_id = document_id
+        self.metadata = metadata if metadata else []
+        self.timestamp = timestamp
+
+    @classmethod
+    def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int, document_id: int,
+                            timestamp: datetime) -> 'Annotation':
+        annotation = cls(annotation_dao.key, annotation_dao.surface_forms, annotation_dao.start_indices,
+                         annotation_dao.end_indices,
+                         AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),
+                         Annotator.from_annotator_dao(annotation_dao.annotator), run_id, document_id,
+                         Metadata.from_metadata_daos(annotation_dao.meta_data), timestamp)
+        annotation.annotation_id = annotation_dao.annotation_id
+        return annotation
 
     def __eq__(self, other):
         return self.start == other.start and self.end == other.end
