@@ -18,6 +18,11 @@ class OrbisService:
                 runs.append(Run.from_run_dao(run_dao))
         return runs
 
+    def add_run(self, run: Run) -> bool:
+        if run:
+            return self.orbis_db.add_run(run.to_dao())
+        return False
+
     def add_runs(self, runs: [Run]) -> bool:
         if runs:
             return self.orbis_db.add_runs(Run.to_run_daos(runs))
