@@ -3,15 +3,22 @@ from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
 from orbis2.model.annotation import Annotation
 
 
-def test_perfect_match():
+# noinspection PyPep8Naming
+def test_exact_match_twoEqualAnnotations_returnOne():
     a1 = Annotation(1, 12)
     a2 = Annotation(1, 12)
-    half_left = Annotation(3, 7)
     assert exact_match(a1, a2) == 1.
+
+
+# noinspection PyPep8Naming
+def test_exact_match_twoDifferentAnnotations_returnZero():
+    a1 = Annotation(1, 12)
+    half_left = Annotation(3, 7)
     assert exact_match(a1, half_left) == 0.
 
 
-def test_overlap_match():
+# noinspection PyPep8Naming
+def test_overlap_match_twoAnnotations_returnDegreeOfOverlap():
     """
                 0123456789012345
     a1        :      xxxx
@@ -40,7 +47,8 @@ def test_overlap_match():
     assert overlapping_match(larger3, a1) == 0.4
 
 
-def test_contained_match():
+# noinspection PyPep8Naming
+def test_contained_match_twoAnnotations_returnDegreeOfContainment():
     a1 = Annotation(5, 9)
     a2 = Annotation(5, 9)
     non_contained1 = Annotation(4, 9)

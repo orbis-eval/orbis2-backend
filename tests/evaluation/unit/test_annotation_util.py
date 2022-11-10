@@ -3,14 +3,13 @@ from orbis2.evaluation.scorer.annotation_util import len_overlap
 from orbis2.model.annotation import Annotation
 
 
-def test_overlap():
+# noinspection PyPep8Naming
+def test_overlap_twoOverlappingAnnotations_returnsTrue():
     """
     Test computation of overlapping annotations.
     """
     true = Annotation(10, 20)
     perfect = Annotation(10, 20)
-    none = Annotation(5, 9)
-    none2 = Annotation(21, 25)
     larger = Annotation(9, 21)
     left = Annotation(5, 11)
     right = Annotation(19, 22)
@@ -23,11 +22,29 @@ def test_overlap():
     assert overlaps(left, true)
     assert overlaps(right, true)
 
+
+# noinspection PyPep8Naming
+def test_overlap_twoNoneOverlappingAnnotations_returnsFalse():
+    """
+    Test computation of overlapping annotations.
+    """
+    true = Annotation(10, 20)
+    none = Annotation(5, 9)
+    none2 = Annotation(21, 25)
+
     assert not overlaps(true, none)
     assert not overlaps(true, none2)
     assert not overlaps(none, true)
     assert not overlaps(none2, true)
 
 
-def test_len_overlap():
+# noinspection PyPep8Naming
+def test_len_overlap_twoAnnotations_returnLenOfOverlap():
+    """
+    01234567890123
+     **  *****
+       ***   ***
+    """
     assert len_overlap(Annotation(1, 5), Annotation(3, 5)) == 2
+    assert len_overlap(Annotation(start=(1, 5), end=(3, 10)),
+                       Annotation(start=(3, 9), end=(6, 12))) == 1 + 1

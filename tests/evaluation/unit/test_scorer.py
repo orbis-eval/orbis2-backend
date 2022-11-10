@@ -4,8 +4,7 @@ from typing import List, Set
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
     overlapping_match
 from orbis2.model.annotation import Annotation
-from orbis2.evaluation.scorer import overlaps, Scorer, ScorerResult, \
-    AnnotationMatch
+from orbis2.evaluation.scorer import Scorer, AnnotationMatch
 
 PREDICTED = [Annotation(1, 5),
              Annotation(7, 14),
@@ -26,7 +25,8 @@ def _g(matches: List[AnnotationMatch]) -> Set[Annotation]:
     return set((match.true for match in matches))
 
 
-def test_exact_scorer():
+# noinspection PyPep8Naming
+def test_score_annotation_list_exactMatchScorer_returnsScorerResult():
     scorer = Scorer(surface_scorer=exact_match,
                     entity_scorer=lambda x, y: True,
                     scoring_operator=mul)
@@ -41,7 +41,8 @@ def test_exact_scorer():
     assert result.fn == {Annotation(16, 18)}
 
 
-def test_overlap_scorer():
+# noinspection PyPep8Naming
+def test_score_annotation_list_overlappingMatchScorer_returnsScorerResult():
     """
     Overlapping _scorer: the first match wins, even if it is not the best one.
     """
