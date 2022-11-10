@@ -7,7 +7,8 @@ class Annotation:
     """
 
     def __init__(self, start: Union[Tuple[int, ...], int],
-                 end: Union[Tuple[int, ...], int]):
+                 end: Union[Tuple[int, ...], int],
+                 surface_form=''):
         if isinstance(start, int):
             start = (start,)
         if isinstance(end, int):
@@ -15,6 +16,7 @@ class Annotation:
 
         self.start = start
         self.end = end
+        self.surface_form = surface_form
 
     def __eq__(self, other):
         return self.start == other.start and self.end == other.end

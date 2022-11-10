@@ -12,8 +12,8 @@ AnnotationMatch = namedtuple('AnnotationMatch', 'score true pred')
 
 @dataclass
 class ScorerResult:
-    tp: Set[Annotation]
-    fp: Set[AnnotationMatch]
+    tp: Set[AnnotationMatch]
+    fp: Set[Annotation]
     fn: Set[Annotation]
 
 

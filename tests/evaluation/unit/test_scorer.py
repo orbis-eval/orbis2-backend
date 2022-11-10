@@ -27,7 +27,7 @@ def _g(matches: List[AnnotationMatch]) -> Set[Annotation]:
 
 
 def test_exact_scorer():
-    scorer = Scorer(surface_matcher=exact_match,
+    scorer = Scorer(surface_scorer=exact_match,
                     entity_scorer=lambda x, y: True,
                     scoring_operator=mul)
     result = scorer.score_annotation_list(true_annotations=TRUE,
@@ -45,7 +45,7 @@ def test_overlap_scorer():
     """
     Overlapping _scorer: the first match wins, even if it is not the best one.
     """
-    scorer = Scorer(surface_matcher=overlapping_match,
+    scorer = Scorer(surface_scorer=overlapping_match,
                     entity_scorer=lambda x, y: True,
                     scoring_operator=mul)
     result = scorer.score_annotation_list(true_annotations=TRUE,

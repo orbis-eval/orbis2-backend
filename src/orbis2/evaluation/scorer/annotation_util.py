@@ -45,7 +45,7 @@ def len_overlap(true: Annotation, predicted: Annotation) -> int:
                     zip(predicted.start, predicted.end))))
 
 
-def _overlap_percentage(true: Annotation, predicted: Annotation) -> float:
+def overlap_percentage(true: Annotation, predicted: Annotation) -> float:
     """
     Return:
         The percentage of overlap between true and predicted
