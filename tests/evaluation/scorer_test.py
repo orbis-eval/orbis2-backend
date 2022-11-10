@@ -17,12 +17,14 @@ TRUE = [Annotation(12, 14),
         Annotation(16, 18),
         Annotation(22, 24)]
 
+
 def _g(matches: List[AnnotationMatch]) -> Set[Annotation]:
     """
     Convert a list of AnnotationMatches to the annotation set required for
     comparison.
     """
     return set((match.true for match in matches))
+
 
 def test_exact_scorer():
     scorer = Scorer(surface_matcher=exact_match,

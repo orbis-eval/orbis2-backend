@@ -10,6 +10,7 @@ def test_perfect_match():
     assert exact_match(a1, a2) == 1.
     assert exact_match(a1, half_left) == 0.
 
+
 def test_overlap_match():
     """
                 0123456789012345

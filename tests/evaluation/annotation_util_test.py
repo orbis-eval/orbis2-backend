@@ -1,4 +1,5 @@
 from orbis2.evaluation.scorer import overlaps
+from orbis2.evaluation.scorer.annotation_util import len_overlap
 from orbis2.model.annotation import Annotation
 
 
@@ -26,3 +27,7 @@ def test_overlap():
     assert not overlaps(true, none2)
     assert not overlaps(none, true)
     assert not overlaps(none2, true)
+
+
+def test_len_overlap():
+    assert len_overlap(Annotation(1, 5), Annotation(3, 5)) == 2
