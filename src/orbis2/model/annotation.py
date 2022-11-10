@@ -12,9 +12,12 @@ class Annotation:
     Mock Annotation class used within the unittests.
     """
 
-    def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str], start_indices: Union[Tuple[int, ...], int],
-                 end_indices: Union[Tuple[int, ...], int], annotation_type: AnnotationType, annotator: Annotator,
-                 run_id: int = None, document_id: int = None, metadata: [Metadata] = None, timestamp: datetime = None):
+    def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
+                 start_indices: Union[Tuple[int, ...], int],
+                 end_indices: Union[Tuple[int, ...], int],
+                 annotation_type: AnnotationType, annotator: Annotator,
+                 run_id: int = None, document_id: int = None,
+                 metadata: [Metadata] = None, timestamp: datetime = None):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
         if isinstance(end_indices, int):
@@ -34,6 +37,7 @@ class Annotation:
         self.metadata = metadata if metadata else []
         self.timestamp = timestamp
 
+
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int, document_id: int,
                             timestamp: datetime) -> 'Annotation':
@@ -52,24 +56,41 @@ class Annotation:
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def __eq__(self, other):
-        return self.start == other.start and self.end == other.end
+        return self.start_indices == other.start_indices and \
+               self.end_indices == other.end_indices
 
     def __len__(self):
-        return sum((end - start for start, end in zip(self.start, self.end)))
+        return sum((end - start for start, end in zip(
+            self.start_indices, self.end_indices)))
 
     def __gt__(self, other):
-        return self.start[0] >= other.start[0] or \
-               (self.start[0] == other.start[0] and
-                self.end[-1] >= other.end[-1])
+        return self.start_indices[0] >= other.start_indices[0] or \
+               (self.start_indices[0] == other.start_indices[0] and
+                self.end_indices[-1] >= other.end_indices[-1])
 
     def __lt__(self, other):
         return not self.__gt__(other)
 
     def __hash__(self):
-        return hash((self.start, self.end))
+        return hash((self.start_indices, self.end_indices))
 
     def __str__(self):
-        return f'Annotation({self.start}, {self.end})'
+        return f'Annotation({self.start_indices}, {self.end_indices})'
 
     def __repr__(self):
         return self.__str__()
+
+
+def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
+                        end_indices: Union[Tuple[int, ...], int],
+                        surface_forms: Union[Tuple[str, ...], str] = None):
+    """
+    Return:
+         A mock Annotation to be used in unittests.
+    """
+    return Annotation(key="mock",
+                      surface_forms=surface_forms,
+                      start_indices=start_indices,
+                      end_indices=end_indices,
+                      annotation_type=None,
+                      annotator=None)

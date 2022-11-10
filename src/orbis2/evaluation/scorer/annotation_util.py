@@ -14,8 +14,8 @@ def overlaps(true, predicted):
     """
     return any((p_end >= t_start and p_start <= t_end
                 for (t_start, t_end), (p_start, p_end) in product(
-                        zip(true.start, true.end),
-                        zip(predicted.start, predicted.end))))
+                        zip(true.start_indices, true.end_indices),
+                        zip(predicted.start_indices, predicted.end_indices))))
 
 
 def contains(true: Annotation, predicted: Annotation) -> bool:
@@ -27,9 +27,10 @@ def contains(true: Annotation, predicted: Annotation) -> bool:
         For a multi-surface Annotation it is sufficient, if all parts of the
         Annotation are within one (or multiple) true spans.
     """
-    for p_start, p_end in zip(predicted.start, predicted.end):
+    for p_start, p_end in zip(predicted.start_indices, predicted.end_indices):
         if not any((t_start <= p_start and t_end >= p_end
-                    for t_start, t_end in zip(true.start, true.end))):
+                    for t_start, t_end in zip(true.start_indices,
+                                              true.end_indices))):
             return False
     return True
 
@@ -41,8 +42,8 @@ def len_overlap(true: Annotation, predicted: Annotation) -> int:
     """
     return sum((max(0, min(t_end, p_end) - max(t_start, p_start))
                 for (t_start, t_end), (p_start, p_end) in product(
-                    zip(true.start, true.end),
-                    zip(predicted.start, predicted.end))))
+                    zip(true.start_indices, true.end_indices),
+                    zip(predicted.start_indices, predicted.end_indices))))
 
 
 def overlap_percentage(true: Annotation, predicted: Annotation) -> float:

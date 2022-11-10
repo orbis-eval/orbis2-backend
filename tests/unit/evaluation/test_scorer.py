@@ -3,7 +3,7 @@ from typing import List, Set
 
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
     overlapping_match
-from orbis2.model.annotation import Annotation
+from orbis2.model.annotation import get_mock_annotation as Annotation
 from orbis2.evaluation.scorer import Scorer, AnnotationMatch
 
 PREDICTED = [Annotation(1, 5),

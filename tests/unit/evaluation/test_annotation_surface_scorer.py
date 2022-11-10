@@ -1,6 +1,6 @@
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match, \
     overlapping_match, contained_match
-from orbis2.model.annotation import Annotation
+from orbis2.model.annotation import get_mock_annotation as Annotation
 
 
 # noinspection PyPep8Naming

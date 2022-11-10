@@ -46,14 +46,14 @@ class Scorer:
         for true in sorted(true_annotations):
             # process head, i.e. detected annotations prior to the next true
             # annotation
-            while pred_annotations and pred_annotations[0].end <= true.start:
+            while pred_annotations and pred_annotations[0].end_indices <= true.start_indices:
                 p = pred_annotations.pop(0)
                 result.fp.add(p)
 
             # compute best match for overlap
             matches = [AnnotationMatch(score=self._scorer(true, pred),
                                        true=true, pred=pred)
-                       for pred in takewhile(lambda x: x.start < true.end,
+                       for pred in takewhile(lambda x: x.start_indices < true.end_indices,
                                              pred_annotations)]
             if matches and (match := max(matches)).score > 0:
                 result.tp.add(match)
