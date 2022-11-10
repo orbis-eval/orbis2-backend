@@ -50,9 +50,12 @@ class Annotation:
         return annotation
 
     def to_dao(self) -> AnnotationDao:
-        return AnnotationDao(annotation_id=self.annotation_id, key=self.key, surface_forms=list(self.surface_forms),
-                             start_indices=list(self.start_indices), end_indices=list(self.end_indices),
-                             annotation_type=self.annotation_type.to_dao(), annotator=self.annotator.to_dao(),
+        return AnnotationDao(annotation_id=self.annotation_id, key=self.key,
+                             surface_forms=list(self.surface_forms),
+                             start_indices=list(self.start_indices),
+                             end_indices=list(self.end_indices),
+                             annotation_type=self.annotation_type.to_dao(),
+                             annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def __eq__(self, other):
@@ -75,7 +78,7 @@ class Annotation:
         return hash((self.start_indices, self.end_indices))
 
     def __str__(self):
-        return f'Annotation({self.start_indices}, {self.end_indices})'
+        return f'Annotation({self.surface_forms}{self.start_indices}, {self.end_indices})'
 
     def __repr__(self):
         return self.__str__()
