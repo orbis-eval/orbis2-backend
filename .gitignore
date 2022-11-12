@@ -14,3 +14,6 @@ log/
 logs/
 resources/*
 wandb/*
+
+# env config
+env.sh

@@ -5,6 +5,9 @@ from glob import glob
 from pathlib import Path
 
 from orbis2.corpus_import.format.careercoach import CareerCoachFormat
+from orbis2.database.orbis.entities.run_dao import RunDao
+from orbis2.database.orbis.orbis_db import OrbisDb
+
 
 IMPORT_FORMATS = (CareerCoachFormat,)
 
@@ -19,8 +22,14 @@ def import_documents(document_list: List[str], run_name: str):
     else:
         raise ValueError("Unsupported corpus format.")
 
-    document_content = import_format.get_document_content(document_list)
-    annotations = import_format.get_document_annotations(document_list)
+    run_documents = CareerCoachFormat.get_run_documents(document_list)
+
+    # create run for serialization in the database
+    run = RunDao(name=run_name, description=run_description,
+            run_has_documents=run_documents)
+    db = OrbisDb()
+    db.add_run(run)
+
 
 
 if __name__ == '__main__':
