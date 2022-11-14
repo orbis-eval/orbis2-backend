@@ -49,6 +49,5 @@ if __name__ == '__main__':
         print(orbis_db.add_run(run))
         print(orbis_db.get_runs())
         print(orbis_db.get_documents())
-        print(orbis_db.get_annotations())
     else:
         print(False)

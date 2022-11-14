@@ -34,7 +34,6 @@ def import_documents(document_list: List[str], run_name: str,
     db.add_run(run)
 
 
-
 if __name__ == '__main__':
     from argparse import ArgumentParser
 

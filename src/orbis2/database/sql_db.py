@@ -25,8 +25,11 @@ class SqlDb:
 
         """
         self.url = url
-        self._session = get_session(self.url)
         self.base = base
+        try:
+            self._session = get_session(self.url)
+        except SQLAlchemyError as e:
+            logging.error(f'Session could not be initialized, exception: {e.__str__()}')
 
     @property
     def session(self):

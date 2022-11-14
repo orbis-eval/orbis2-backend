@@ -37,7 +37,6 @@ class Annotation:
         self.metadata = metadata if metadata else []
         self.timestamp = timestamp
 
-
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int, document_id: int,
                             timestamp: datetime) -> 'Annotation':
