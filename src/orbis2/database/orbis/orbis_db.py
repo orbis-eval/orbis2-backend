@@ -7,7 +7,6 @@ from sqlalchemy.orm import lazyload
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
-from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
