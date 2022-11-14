@@ -66,6 +66,7 @@ def get_documents_of_corpus(corpus_name=None):
           (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
         documents = list(runs[0].document_annotations.keys())
         response = Response(status_code=200,
+                            # TODO, anf 14.11.2022: correctly transform documents into expected response format
                             content={'corpora': documents},
                             message=f'Found {len(documents)} documents in corpus {corpus_name}.')
     else:
