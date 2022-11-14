@@ -12,7 +12,8 @@ from orbis2.database.orbis.orbis_db import OrbisDb
 IMPORT_FORMATS = (CareerCoachFormat,)
 
 
-def import_documents(document_list: List[str], run_name: str):
+def import_documents(document_list: List[str], run_name: str,
+                     run_description: str):
     """
     Import the given list of documents into the Orbis database.
     """
@@ -38,10 +39,14 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('corpus_directory')
     parser.add_argument('run_name')
+    parser.add_argument('--run-description',
+                        help='Description of the given run.')
     args = parser.parse_args()
+    if not args.run_description:
+        args.run_description = args.run_name
 
     document_list = [p.open().read()
                      for p in map(Path, glob(args.corpus_directory + "/*"))
                      if p.is_file()]
     print(f'Importing {len(document_list)} documents.')
-    import_documents(document_list, args.run_name)
+    import_documents(document_list, args.run_name, args.run_description)

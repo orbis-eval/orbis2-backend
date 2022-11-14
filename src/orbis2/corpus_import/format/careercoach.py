@@ -5,11 +5,18 @@ from typing import List, Dict
 from orbis2.corpus_import.format import CorpusFormat
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
-from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
+from orbis2.database.orbis.entities.annotation_type_dao import \
+    AnnotationTypeDao
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
-from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
+from orbis2.database.orbis.entities.document_has_annotation_dao import \
+    DocumentHasAnnotationDao
+from orbis2.database.orbis.entities.role_dao import RoleDao
+from orbis2.database.orbis.entities.run_has_document_dao import \
+    RunHasDocumentDao
 
+IMPORT_ANNOTATOR_ROLE = RoleDao(name='CareerCoachFormat Importer')
+ANNOTATOR = AnnotatorDao(name='AnnotatorName', roles=[IMPORT_ANNOTATOR_ROLE])
 
 
 class CareerCoachFormat(CorpusFormat):
@@ -38,27 +45,26 @@ class CareerCoachFormat(CorpusFormat):
         except:
             return False
 
-    def get_run_documents(self, document_list: List[str]) -> List[RunHasDocumentDao]:
+    @staticmethod
+    def get_run_documents(document_list: List[str]) -> List[RunHasDocumentDao]:
         """
         TODO: add document['url'] to dao and loop
         """
-        annotator = AnnotatorDao(name='AnnotatorName')
         return [RunHasDocumentDao(
             document=DocumentDao(content=doc['text']),
             document_has_annotations=[DocumentHasAnnotationDao(
-                AnnotationDao(
-                    key=annotation[key],
-                    annotation_type=AnnotationTypeDao(annotation['type']),
-                    annotator=annotator,
+                annotation=AnnotationDao(
+                    key=annotation['key'],
+                    annotation_type=AnnotationTypeDao(name=annotation['type']),
+                    annotator=ANNOTATOR,
                     surface_forms=[annotation['surface_form']],
                     start_indices=[annotation['start']],
                     end_indices=[annotation['end']]
-                )
-            for annotation in chain(*doc['gold_standard_annotation'].values()))],
-                done=True # to be determined
-        )
-        for doc in map(json.loads, document_list)]
-
+                ))
+                for annotation in
+                chain(*doc['gold_standard_annotation'].values())],
+            done=True)  # to be determined
+            for doc in map(json.loads, document_list)]
 
     @staticmethod
     def get_document_content(document_list: List[str]) -> List[str]:
