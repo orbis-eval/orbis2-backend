@@ -5,6 +5,7 @@ from glob import glob
 from pathlib import Path
 
 from orbis2.corpus_import.format.careercoach import CareerCoachFormat
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.orbis_db import OrbisDb
 
@@ -27,8 +28,9 @@ def import_documents(document_list: List[str], run_name: str,
 
     # create run for serialization in the database
     run = RunDao(name=run_name, description=run_description,
-            run_has_documents=run_documents)
+            run_has_documents=run_documents, corpus=CorpusDao(name=run_name))
     db = OrbisDb()
+    db.create_database(True)
     db.add_run(run)
 
 
