@@ -1,3 +1,5 @@
+from xxhash import xxh3_64_intdigest
+
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 
 
@@ -8,7 +10,7 @@ class AnnotationType:
         CONSTRUCTOR
 
         """
-        self.type_id = None
+        self.type_id = xxh3_64_intdigest(name)
         self.name = name
 
     @classmethod
