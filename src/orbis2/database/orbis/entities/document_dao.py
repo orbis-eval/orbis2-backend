@@ -12,7 +12,7 @@ class DocumentDao(OrbisBase):
 
     document_id = Column(BigInteger, Sequence('document_id_seq'), primary_key=True)
     content = Column(Text, nullable=False)
-    key = Column(Text)
+    key = Column(Text, default='')
     meta_data = relationship(MetadataDao, secondary=document_has_metadata_table, back_populates='documents')
     run_has_documents = relationship('RunHasDocumentDao', back_populates='document')
 

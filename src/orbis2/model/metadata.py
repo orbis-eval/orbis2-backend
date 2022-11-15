@@ -1,3 +1,5 @@
+from xxhash import xxh32_intdigest
+
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 
 
@@ -8,14 +10,18 @@ class Metadata:
         CONSTRUCTOR
 
         """
-        self.metadata_id = None
         self.key = key
         self.value = value
+        self.metadata_id = self.__hash__()
+
+    def __hash__(self):
+        return xxh32_intdigest(self.key + self.value)
 
     @classmethod
     def from_metadata_dao(cls, metadata_dao: MetadataDao) -> 'Metadata':
         metadata = cls(metadata_dao.key, metadata_dao.value)
-        metadata.metadata_id = metadata_dao.metadata_id
+        if metadata_dao.metadata_id:
+            metadata.metadata_id = metadata_dao.metadata_id
         return metadata
 
     @classmethod

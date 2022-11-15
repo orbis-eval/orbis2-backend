@@ -1,3 +1,5 @@
+from xxhash import xxh32_intdigest
+
 from orbis2.database.orbis.entities.role_dao import RoleDao
 
 
@@ -8,13 +10,17 @@ class Role:
         CONSTRUCTOR
 
         """
-        self.role_id = None
         self.name = name
+        self.role_id = self.__hash__()
+
+    def __hash__(self):
+        return xxh32_intdigest(self.name)
 
     @classmethod
     def from_role_dao(cls, role_dao: RoleDao) -> 'Role':
         role = cls(role_dao.name)
-        role.role_id = role_dao.role_id
+        if role_dao:
+            role.role_id = role_dao.role_id
         return role
 
     @classmethod

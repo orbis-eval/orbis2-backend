@@ -1,3 +1,5 @@
+from xxhash import xxh32_intdigest
+
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
@@ -17,13 +19,16 @@ class Run:
         """
         # TODO, anf 09.11.2022: you don't want to give the caller a chance to set the run_id manually,
         #  since it's automatically set by the db, do you?
-        self.run_id = None
         self.name = name
         self.description = description
         self.corpus = corpus
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
         self.children = children if children else []
+        self.run_id = self.__hash__()
+
+    def __hash__(self):
+        return xxh32_intdigest(self.name)
 
     @classmethod
     def from_run_dao(cls, run_dao: RunDao) -> 'Run':
@@ -47,7 +52,8 @@ class Run:
                                                                           document_annotation_dao.timestamp))
         run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
                   Run.from_run_daos(run_dao.parents), Run.from_run_daos(run_dao.children))
-        run.run_id = run_dao.run_id
+        if run_dao.run_id:
+            run.run_id = run_dao.run_id
         return run
 
     @classmethod

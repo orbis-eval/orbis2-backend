@@ -1,3 +1,5 @@
+from xxhash import xxh32_intdigest
+
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.model.annotation import Annotation
 from orbis2.model.metadata import Metadata
@@ -11,18 +13,22 @@ class Document:
         CONSTRUCTOR
 
         """
-        self.document_id = None
         self.content = content
         self.key = key
         self.run_id = run_id
         self.metadata = metadata if metadata else []
         self.done = done
+        self.document_id = self.__hash__()
+
+    def __hash__(self):
+        return xxh32_intdigest(self.content + self.key)
 
     @classmethod
     def from_document_dao(cls, document_dao: DocumentDao, run_id: int, done: bool) -> 'Document':
         document = cls(document_dao.content, document_dao.key, run_id,
                        Metadata.from_metadata_daos(document_dao.meta_data), done)
-        document.document_id = document_dao.document_id
+        if document_dao.document_id:
+            document.document_id = document_dao.document_id
         return document
 
     def to_dao(self) -> DocumentDao:

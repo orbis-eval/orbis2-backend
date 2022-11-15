@@ -10,7 +10,7 @@ class RunDao(OrbisBase):
     __tablename__ = 'run'
 
     run_id = Column(BigInteger, Sequence('run_id_seq'), primary_key=True)
-    name = Column(VARCHAR(40), nullable=False)
+    name = Column(VARCHAR(40), nullable=False, unique=True)
     description = Column(Text)
     run_has_documents = relationship('RunHasDocumentDao', back_populates='run')
     corpus_id = Column(ForeignKey(CorpusDao.corpus_id), nullable=False)

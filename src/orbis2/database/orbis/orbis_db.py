@@ -1,10 +1,11 @@
 import logging
-from typing import Union, List
+from typing import Union, List, Callable
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import lazyload
 
 from orbis2.config.app_config import AppConfig
+from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.run_dao import RunDao
@@ -34,8 +35,8 @@ class OrbisDb(SqlDb):
             logging.debug('There are no run entries in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning('During all runs request '
-                            f'the following exception occurred: {e.__str__()}')
+            logging.warning('All runs request failed')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
     def get_run_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
@@ -54,8 +55,8 @@ class OrbisDb(SqlDb):
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning(f'During run by corpus id request with corpus id: {corpus_id} '
-                            f'the following exception occurred: {e.__str__()}')
+            logging.warning(f'Run by corpus id request with corpus id: {corpus_id} failed.')
+            logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
@@ -66,8 +67,8 @@ class OrbisDb(SqlDb):
             logging.debug(f'{len(results)} (!= 1) Corpora found in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning(f'During corpus id request with corpus name: {corpus_name} '
-                            f'the following exception occurred: {e.__str__()}')
+            logging.warning(f'Corpus id request with corpus name: {corpus_name} failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
     def get_documents(self) -> Union[List[DocumentDao], None]:
@@ -83,26 +84,20 @@ class OrbisDb(SqlDb):
             logging.debug('There are no document entries in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning('During all documents request '
-                            f'the following exception occurred: {e.__str__()}')
+            logging.warning('All documents request failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def add_runs(self, runs: [RunDao]) -> bool:
-        """
-        Add run to orbis database.
-
-        Args:
-            runs:
-
-        Returns: True if it worked, false otherwise.
-        """
+    def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
         try:
-            self.session.add_all(runs)
-            return self.commit()
+            results = self.session.query(AnnotationTypeDao).all()
+            if len(results) > 0:
+                return results
+            logging.debug('There are no annotation type entries in orbis database.')
+            return None
         except SQLAlchemyError as e:
-            logging.warning(f'During adding runs {runs} '
-                            f'the following exception occurred: {e.__str__()}')
-            return False
+            logging.warning('All annotation type request failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
 
     def add_run(self, run: RunDao) -> bool:
         """
@@ -113,10 +108,26 @@ class OrbisDb(SqlDb):
 
         Returns: True if it worked, false otherwise.
         """
+        return self.try_catch(lambda: self.session.merge(run), f'Adding the run {run} failed.') and self.commit()
+
+    def add_annotation_type(self, annotation_type: AnnotationTypeDao) -> bool:
+        """
+        Add annotation_type to orbis database.
+
+        Args:
+            annotation_type:
+
+        Returns: True if it worked, false otherwise.
+        """
+        return self.try_catch(lambda: self.session.merge(annotation_type),
+                              f'Adding annotation type {annotation_type} failed.') and self.commit()
+
+    @staticmethod
+    def try_catch(method_to_call: Callable[[], bool], error_message) -> bool:
         try:
-            self.session.add(run)
-            return self.commit()
+            return method_to_call()
         except SQLAlchemyError as e:
-            logging.warning(f'During adding the run {run} '
-                            f'the following exception occurred: {e.__str__()}')
+            logging.warning(error_message)
+            logging.debug(f'The following exception occurred: {e.__str__()}')
             return False
+
