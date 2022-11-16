@@ -12,7 +12,7 @@ class AnnotationDao(OrbisBase):
     __tablename__ = 'annotation'
 
     annotation_id = Column(BigInteger, Sequence('annotation_id_seq'), primary_key=True)
-    key = Column(Text)
+    key = Column(Text, default='')
     surface_forms = Column(ARRAY(Text), nullable=False)
     start_indices = Column(ARRAY(Integer), nullable=False)
     end_indices = Column(ARRAY(Integer), nullable=False)
