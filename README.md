@@ -46,3 +46,15 @@ Import CareerCoach 2022 entity annotations filtered with the page segements
     ../education-extraction/corpus/goldDocuments/ \  
     careercoach2022-entities.v0 
 ```
+
+## Evaluation
+
+Compare two runs using with two different metrics:
+
+```bash
+./scripts/orbis-eval.py careercoach2022-entities.v1 careercoach2022-entities.v0 --metrics el_oF1
+Results for metric 'el_pF1': Entity Linking: Precision, Recall and F1; perfect matching.
+    F1Result(mP=1.0, mR=0.5850606179116151, mF1=0.7382186035035776, MP=0.9636363636363636, MR=0.566183898888596, MF1=0.6802433858599718)
+Results for metric 'er_oF1': Entity Classification: Precision, Recall and F1; overlapping matching.
+    F1Result(mP=1.0, mR=0.5850606179116151, mF1=0.7382186035035776, MP=0.9636363636363636, MR=0.566183898888596, MF1=0.6802433858599718)
+```
