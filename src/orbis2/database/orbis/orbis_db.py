@@ -39,6 +39,20 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def get_run(self, run_id: int) -> Union[RunDao, None]:
+        """
+        Get run from database by its id
+
+        Returns: A single run object or None if zero or multiple runs exists in the database
+        """
+        results = self.try_catch(lambda: self.session.query(RunDao).where(RunDao.run_id == run_id)
+                                 .options(lazyload(RunDao.run_has_documents)).all(),
+                                 f'Run request with run id: {run_id} failed')
+        if len(results) == 1:
+            return results[0]
+        logging.debug(f'{len(results)} (!= 1) runs found in orbis database.')
+        return None
+
     def get_run_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
         """
         Get all runs with a given corpus_id from database
@@ -59,12 +73,33 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
+    def get_corpora(self) -> Union[List[CorpusDao], None]:
+        """
+        Get all corpora from database
+
+        Returns: A list of corpus objects or None if no according corpus exists in the database
+        """
+        results = self.try_catch(lambda: self.session.query(CorpusDao).options(lazyload(CorpusDao.runs)).all(),
+                                 'All corpora request failed')
+        if len(results) > 0:
+            return results
+        logging.debug('There are no corpus entries in orbis database.')
+        return None
+
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
+        """
+        Get the id of a corpus given by its name.
+
+        Args:
+            corpus_name:
+
+        Returns: The id if one entry exists, None if zero or more entries exist
+        """
         try:
             results = self.session.query(CorpusDao.corpus_id).where(CorpusDao.name == corpus_name).all()
             if len(results) == 1:
                 return results[0].corpus_id
-            logging.debug(f'{len(results)} (!= 1) Corpora found in orbis database.')
+            logging.debug(f'{len(results)} (!= 1) corpora found in orbis database.')
             return None
         except SQLAlchemyError as e:
             logging.warning(f'Corpus id request with corpus name: {corpus_name} failed.')
@@ -89,6 +124,11 @@ class OrbisDb(SqlDb):
             return None
 
     def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
+        """
+        Get all annotation types from database
+
+        Returns: A list of annotation type objects or None if no annotation type exists in the database
+        """
         try:
             results = self.session.query(AnnotationTypeDao).all()
             if len(results) > 0:
@@ -106,7 +146,7 @@ class OrbisDb(SqlDb):
         Args:
             run:
 
-        Returns: True if it worked, false otherwise.
+        Returns: True if it worked, false otherwise
         """
         return self.try_catch(lambda: self.session.merge(run), f'Adding the run {run} failed.') and self.commit()
 
@@ -117,13 +157,22 @@ class OrbisDb(SqlDb):
         Args:
             annotation_type:
 
-        Returns: True if it worked, false otherwise.
+        Returns: True if it worked, false otherwise
         """
         return self.try_catch(lambda: self.session.merge(annotation_type),
                               f'Adding annotation type {annotation_type} failed.') and self.commit()
 
     @staticmethod
-    def try_catch(method_to_call: Callable[[], bool], error_message) -> bool:
+    def try_catch(method_to_call: Callable[[], any], error_message) -> any:
+        """
+        Surround a callable with a try catch block. Log the error_message as warning in case an exception is cached.
+
+        Args:
+            method_to_call:
+            error_message:
+
+        Returns: False if an exception is thrown, otherwise the result of the callable is returned
+        """
         try:
             return method_to_call()
         except SQLAlchemyError as e:

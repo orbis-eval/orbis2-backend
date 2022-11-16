@@ -3,6 +3,7 @@ from typing import Union
 
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
 
@@ -21,9 +22,19 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
+    def get_run(self, run_id: int) -> Union[Run, None]:
+        if run := self.orbis_db.get_run(run_id):
+            return Run.from_run_dao(run)
+        return None
+
     def get_runs_by_corpus_id(self, corpus_id: int) -> [Run]:
         if runs := self.orbis_db.get_run_by_corpus_id(corpus_id):
             return Run.from_run_daos(runs)
+        return []
+
+    def get_corpora(self) -> [Corpus]:
+        if corpora := self.orbis_db.get_corpora():
+            return Corpus.from_corpus_daos(corpora)
         return []
 
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:

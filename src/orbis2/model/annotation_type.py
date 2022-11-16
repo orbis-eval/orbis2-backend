@@ -17,7 +17,7 @@ class AnnotationType:
 
     def __eq__(self, other):
         if isinstance(other, AnnotationType):
-            return self.name == other.name
+            return self.__hash__() == other.__hash__()
         return False
 
     @classmethod
@@ -29,7 +29,7 @@ class AnnotationType:
 
     @classmethod
     def from_annotation_type_daos(cls, annotation_type_daos: [AnnotationTypeDao]) -> ['AnnotationType']:
-        return [AnnotationType.from_annotation_type_dao(annotation_type_dao)
+        return [cls.from_annotation_type_dao(annotation_type_dao)
                 for annotation_type_dao in annotation_type_daos]
 
     def to_dao(self) -> AnnotationTypeDao:

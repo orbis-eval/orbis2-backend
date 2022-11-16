@@ -24,6 +24,10 @@ class Corpus:
             corpus.corpus_id = corpus_dao.corpus_id
         return corpus
 
+    @classmethod
+    def from_corpus_daos(cls, corpus_daos: [CorpusDao]) -> ['Corpus']:
+        return [cls.from_corpus_dao(corpus_dao) for corpus_dao in corpus_daos]
+
     def to_dao(self) -> CorpusDao:
         return CorpusDao(corpus_id=self.corpus_id, name=self.name,
                          supported_annotation_types=AnnotationType.to_annotation_type_daos(

@@ -25,7 +25,7 @@ class Role:
 
     @classmethod
     def from_role_daos(cls, role_daos: [RoleDao]) -> ['Role']:
-        return [Role.from_role_dao(role_dao) for role_dao in role_daos]
+        return [cls.from_role_dao(role_dao) for role_dao in role_daos]
 
     def to_dao(self) -> RoleDao:
         return RoleDao(role_id=self.role_id, name=self.name)

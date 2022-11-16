@@ -12,8 +12,8 @@ from orbis2.config.app_config import AppConfig
 from orbis2.metadata import __version__
 from pathlib import Path
 
-# getDocumentsOfCorpus
-# getCorpora
+from orbis2.model.document import Document
+
 # getDocumentForAnnotation
 # getDocument
 # saveDocumentAnnotations
@@ -56,6 +56,18 @@ def get_orbis_service():
 #     return response.as_json()
 
 
+@app.get('/getCorpora', response_model=ResponseModel)
+def get_corpora():
+    if corpora := get_orbis_service().get_corpora():
+        response = Response(status_code=200,
+                            content={'corpora': [corpus.name for corpus in corpora]},
+                            message=f'Found {len(corpora)} corpora in db.')
+    else:
+        response = Response(status_code=400,
+                            message='No corpora found.')
+    return response.as_json()
+
+
 @app.get('/getDocumentsOfCorpus', response_model=ResponseModel)
 def get_documents_of_corpus(corpus_name=None):
     if not corpus_name:
@@ -64,14 +76,49 @@ def get_documents_of_corpus(corpus_name=None):
                                     '/getDocumentsOfCorpus?corpus_name=your_corpus_name')
     elif ((corpus_id := get_orbis_service().get_corpus_id(corpus_name)) and
           (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
-        documents = list(runs[0].document_annotations.keys())
+        run = runs[0]
+        documents = list(run.document_annotations.keys())
         response = Response(status_code=200,
-                            # TODO, anf 14.11.2022: correctly transform documents into expected response format
-                            content={'corpora': documents},
+                            content={'corpora': [{'da_id': run.run_id.__str__() + '|' + document.document_id.__str__(),
+                                                  'd_id': document.document_id,
+                                                  'annotator': 'new_orbis2',
+                                                  'last_edited': '2022-01-01 00:00:00'} for document in documents]},
                             message=f'Found {len(documents)} documents in corpus {corpus_name}.')
     else:
         response = Response(status_code=400,
                             message='No corpora found.')
+    return response.as_json()
+
+
+@app.get('/getDocument', response_model=ResponseModel)
+def get_document(da_id=None):
+    response = Response(status_code=400,
+                        message='No corpora found.')
+    if da_id:
+        run_id, document_id = (int(str_id) for str_id in da_id.split(sep='|'))
+        if run := get_orbis_service().get_run(run_id):
+            document = [document for document in run.document_annotations.keys() if document.document_id == document_id][0]
+            annotations = run.document_annotations[document]
+            response = Response(
+                status_code=200,
+                content={
+                    'da_id': da_id,
+                    'text': document.content,
+                    'annotations': {
+                        'd_id': document_id,
+                        'meta': '',
+                        'annotations': [{
+                            'key': annotation.key,
+                            'type': annotation.annotation_type.name,
+                            'surface_form': annotation.surface_forms[0],
+                            'start': annotation.start_indices[0],
+                            'end': annotation.end_indices[0],
+                            'scope': '',
+                            'meta': annotation.metadata
+                        } for annotation in annotations]
+                    }
+                }
+            )
     return response.as_json()
 
 

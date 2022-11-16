@@ -25,7 +25,7 @@ class Document:
 
     def __eq__(self, other):
         if isinstance(other, Document):
-            return self.key == other.key and self.content == other.content
+            return self.__hash__() == other.__hash__()
         return False
 
     @classmethod

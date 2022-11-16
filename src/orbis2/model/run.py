@@ -17,11 +17,10 @@ class Run:
         CONSTRUCTOR
 
         """
-        # TODO, anf 09.11.2022: you don't want to give the caller a chance to set the run_id manually,
-        #  since it's automatically set by the db, do you?
         self.name = name
         self.description = description
         self.corpus = corpus
+        # TODO, anf 16.11.2022: maybe change to dict[document_id, (Document, [Annotation])] ?? for faster access by id
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
         self.children = children if children else []
@@ -58,7 +57,7 @@ class Run:
 
     @classmethod
     def from_run_daos(cls, run_daos: [RunDao]) -> ['Run']:
-        return [Run.from_run_dao(run_dao) for run_dao in run_daos]
+        return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:
         run_has_document_daos = []
