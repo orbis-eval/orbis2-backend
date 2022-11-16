@@ -1,5 +1,10 @@
 from builtins import staticmethod
+from itertools import chain
 from typing import List, Dict
+
+from orbis2.model.annotation import Annotation
+from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.document import Document
 
 
 class CorpusFormat:
@@ -16,7 +21,7 @@ class CorpusFormat:
         raise NotImplementedError
 
     @staticmethod
-    def get_document_content(document_list: List[str]) -> List[str]:
+    def get_document_content(document_list: List[str]) -> List[Document]:
         """
         Extract the corpus documents.
 
@@ -26,7 +31,7 @@ class CorpusFormat:
         raise NotImplementedError
 
     @staticmethod
-    def get_document_annotations(document_list: List[str]) -> Dict:
+    def get_document_annotations(document_list: List[str]) -> Dict[Document, List[Annotation]]:
         """
         Extract the corpus annotations.
 
@@ -35,3 +40,11 @@ class CorpusFormat:
          of annotations
         """
         raise NotImplementedError
+
+    @staticmethod
+    def get_supported_annotation_types(document_annotations: Dict[Document, List[Annotation]]) -> List[AnnotationType]:
+        """
+        Return:
+            The annotation types that are supported by the corpus.
+        """
+        return list({annotation.annotation_type for annotation in chain(*document_annotations.values())})

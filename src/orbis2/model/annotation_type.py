@@ -15,6 +15,11 @@ class AnnotationType:
     def __hash__(self):
         return xxh32_intdigest(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, AnnotationType):
+            return self.name == other.name
+        return False
+
     @classmethod
     def from_annotation_type_dao(cls, annotation_type_dao: AnnotationTypeDao) -> 'AnnotationType':
         annotation_type = cls(annotation_type_dao.name)

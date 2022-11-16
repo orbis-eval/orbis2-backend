@@ -23,6 +23,11 @@ class Document:
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)
 
+    def __eq__(self, other):
+        if isinstance(other, Document):
+            return self.key == other.key and self.content == other.content
+        return False
+
     @classmethod
     def from_document_dao(cls, document_dao: DocumentDao, run_id: int, done: bool) -> 'Document':
         document = cls(document_dao.content, document_dao.key, run_id,
