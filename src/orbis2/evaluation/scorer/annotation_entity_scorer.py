@@ -19,3 +19,11 @@ def same_type(true: Annotation, predicted: Annotation) -> float:
     return 1. if true.annotation_type == predicted.annotation_type else 0.
 
 
+def always_true(true: Annotation, predicted: Annotation) -> float:
+    """
+    Always return True. Used for entity recognition.
+
+    Return:
+        Always True.
+    """
+    return True
