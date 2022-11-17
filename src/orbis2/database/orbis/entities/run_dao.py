@@ -12,7 +12,9 @@ class RunDao(OrbisBase):
     run_id = Column(BigInteger, Sequence('run_id_seq'), primary_key=True)
     name = Column(VARCHAR(40), nullable=False, unique=True)
     description = Column(Text)
-    run_has_documents = relationship('RunHasDocumentDao', back_populates='run')
+    # TODO, anf 17.11.2022: check correct cascade usage
+    run_has_documents = relationship('RunHasDocumentDao', back_populates='run',
+                                     cascade='save-update, merge, delete, delete-orphan')
     corpus_id = Column(ForeignKey(CorpusDao.corpus_id), nullable=False)
     corpus = relationship(CorpusDao, back_populates='runs')
     parents = relation('RunDao', secondary=run_derived_from_table,

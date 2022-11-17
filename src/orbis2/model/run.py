@@ -29,6 +29,11 @@ class Run:
     def __hash__(self):
         return xxh32_intdigest(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, Run):
+            return self.__hash__() == other.__hash__()
+        return False
+
     @classmethod
     def from_run_dao(cls, run_dao: RunDao) -> 'Run':
         """
@@ -64,8 +69,13 @@ class Run:
         for document, annotations in self.document_annotations.items():
             document_has_annotation_daos = []
             for annotation in annotations:
-                document_has_annotation_daos.append(DocumentHasAnnotationDao(annotation=annotation.to_dao()))
-            run_has_document_daos.append(RunHasDocumentDao(document=document.to_dao(),
+                document_has_annotation_daos.append(DocumentHasAnnotationDao(run_id=self.run_id,
+                                                                             document_id=document.document_id,
+                                                                             annotation_id=annotation.annotation_id,
+                                                                             annotation=annotation.to_dao()))
+            run_has_document_daos.append(RunHasDocumentDao(run_id=self.run_id,
+                                                           document_id=document.document_id,
+                                                           document=document.to_dao(),
                                                            document_has_annotations=document_has_annotation_daos,
                                                            done=document.done))
 

@@ -16,6 +16,11 @@ class Role:
     def __hash__(self):
         return xxh32_intdigest(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, Role):
+            return self.__hash__() == other.__hash__()
+        return False
+
     @classmethod
     def from_role_dao(cls, role_dao: RoleDao) -> 'Role':
         role = cls(role_dao.name)

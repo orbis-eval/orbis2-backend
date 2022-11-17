@@ -17,6 +17,11 @@ class Corpus:
     def __hash__(self):
         return xxh32_intdigest(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, Corpus):
+            return self.__hash__() == other.__hash__()
+        return False
+
     @classmethod
     def from_corpus_dao(cls, corpus_dao: CorpusDao) -> 'Corpus':
         corpus = cls(corpus_dao.name, AnnotationType.from_annotation_type_daos(corpus_dao.supported_annotation_types))

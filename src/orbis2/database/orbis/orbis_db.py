@@ -45,12 +45,12 @@ class OrbisDb(SqlDb):
 
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
-        results = self.try_catch(lambda: self.session.query(RunDao).where(RunDao.run_id == run_id)
-                                 .options(lazyload(RunDao.run_has_documents)).all(),
-                                 f'Run request with run id: {run_id} failed')
-        if len(results) == 1:
-            return results[0]
-        logging.debug(f'{len(results)} (!= 1) runs found in orbis database.')
+        if run := self.try_catch(
+            lambda: self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).get(run_id),
+            f'Run request with run id: {run_id} failed', False
+        ):
+            return run
+        logging.debug(f'Run with run id {run_id} has not been found in orbis database.')
         return None
 
     def get_run_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
@@ -80,7 +80,8 @@ class OrbisDb(SqlDb):
         Returns: A list of corpus objects or None if no according corpus exists in the database
         """
         results = self.try_catch(lambda: self.session.query(CorpusDao).options(lazyload(CorpusDao.runs)).all(),
-                                 'All corpora request failed')
+                                 'All corpora request failed',
+                                 [])
         if len(results) > 0:
             return results
         logging.debug('There are no corpus entries in orbis database.')
@@ -163,13 +164,14 @@ class OrbisDb(SqlDb):
                               f'Adding annotation type {annotation_type} failed.') and self.commit()
 
     @staticmethod
-    def try_catch(method_to_call: Callable[[], any], error_message) -> any:
+    def try_catch(method_to_call: Callable[[], any], error_message, default_return_value: any = False) -> any:
         """
         Surround a callable with a try catch block. Log the error_message as warning in case an exception is cached.
 
         Args:
             method_to_call:
             error_message:
+            default_return_value: return this value if exception occurred
 
         Returns: False if an exception is thrown, otherwise the result of the callable is returned
         """
@@ -178,5 +180,5 @@ class OrbisDb(SqlDb):
         except SQLAlchemyError as e:
             logging.warning(error_message)
             logging.debug(f'The following exception occurred: {e.__str__()}')
-            return False
+            return default_return_value
 

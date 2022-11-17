@@ -1,5 +1,5 @@
 import datetime
-from typing import Union, Tuple
+from typing import Union, Tuple, List
 
 from xxhash import xxh32_intdigest
 
@@ -22,10 +22,16 @@ class Annotation:
                  metadata: [Metadata] = None, timestamp: datetime = None):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
+        if isinstance(start_indices, List):
+            start_indices = tuple(start_indices)
         if isinstance(end_indices, int):
             end_indices = (end_indices, )
+        if isinstance(end_indices, List):
+            end_indices = tuple(end_indices)
         if isinstance(surface_forms, str):
             surface_forms = (surface_forms, )
+        if isinstance(surface_forms, List):
+            surface_forms = tuple(surface_forms)
 
         self.key = key
         self.surface_forms = surface_forms
@@ -40,8 +46,9 @@ class Annotation:
         self.annotation_id = self.__hash__()
 
     def __eq__(self, other):
-        return self.start_indices == other.start_indices and \
-               self.end_indices == other.end_indices
+        if isinstance(other, Annotation):
+            return self.__hash__() == other.__hash__()
+        return False
 
     def __len__(self):
         return sum((end - start for start, end in zip(

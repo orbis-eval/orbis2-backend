@@ -18,6 +18,11 @@ class Annotator:
     def __hash__(self):
         return xxh32_intdigest(self.name)
 
+    def __eq__(self, other):
+        if isinstance(other, Annotator):
+            return self.__hash__() == other.__hash__()
+        return False
+
     @classmethod
     def from_annotator_dao(cls, annotator_dao: AnnotatorDao):
         annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles))

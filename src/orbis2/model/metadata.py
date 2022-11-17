@@ -17,6 +17,11 @@ class Metadata:
     def __hash__(self):
         return xxh32_intdigest(self.key + self.value)
 
+    def __eq__(self, other):
+        if isinstance(other, Metadata):
+            return self.__hash__() == other.__hash__()
+        return False
+
     @classmethod
     def from_metadata_dao(cls, metadata_dao: MetadataDao) -> 'Metadata':
         metadata = cls(metadata_dao.key, metadata_dao.value)
