@@ -16,4 +16,4 @@ def test_token_annotation_tokenizedAnnotation():
                          a(46, 49, 'wir'),
                          a(50, 56, 'rühmen'),
                          a(57, 62, 'deine'),
-                         a(63, 70, 'Stärke')]
+                         a(63, 70, 'Stärke!')]
