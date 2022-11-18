@@ -1,7 +1,7 @@
 import logging.config
 import sys
 import threading
-from typing import Generator, Union, Tuple
+from typing import Union, Tuple
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
@@ -30,7 +30,7 @@ logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_
 logger = logging.getLogger(__name__)
 
 ORBIS_SERVICE_LAZY_INIT_LOCK = threading.Lock()
-DOCUMENT_GEN_LAZY_INIT_LOCK = threading.Lock()
+DOCUMENTS_LAZY_INIT_LOCK = threading.Lock()
 
 app = FastAPI(
     title='Orbis2 Backend',
@@ -38,7 +38,8 @@ app = FastAPI(
 )
 
 global_orbis_service = None
-global_document_gen = None
+global_document_ids = None
+global_document_id_index = -1
 
 
 def get_orbis_service() -> OrbisService:
@@ -49,26 +50,30 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
-def get_document_gen(reset: bool = False) -> Generator:
+def get_document_id(index: int) -> str:
     """
     Get a generator over all documents, each given by 'run_id|document_id'
 
     Args:
-        reset: if true, re-initializes the generator
+        index: relative index from the current position
 
-    Returns: The generator
+    Returns: run-document id
     """
-    global global_document_gen
-    with DOCUMENT_GEN_LAZY_INIT_LOCK:
-        if reset or not global_document_gen:
-            global_document_gen = ()
+    global global_document_ids
+    global global_document_id_index
+    with DOCUMENTS_LAZY_INIT_LOCK:
+        if not global_document_ids:
+            global_document_ids = []
             if ((corpus_id := get_orbis_service().get_corpus_id('careercoach2022')) and
                (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
                 run = runs[0]
                 documents = list(run.document_annotations.keys())
-                global_document_gen = (run.run_id.__str__() + '|' + document.document_id.__str__()
-                                       for document in documents)
-        return global_document_gen
+                global_document_ids = [run.run_id.__str__() + '|' + document.document_id.__str__()
+                                       for document in documents]
+
+        global_document_id_index = (global_document_id_index + int(index)) % len(global_document_ids)
+        logging.info(f'Current index: {global_document_id_index}/{len(global_document_ids) - 1}')
+        return global_document_ids[global_document_id_index]
 
 
 def get_run_and_document(run_document_id: str) -> Union[Tuple[Run, Document], None]:
@@ -115,9 +120,26 @@ def get_documents_of_corpus(corpus_name=None):
 
 @app.get('/getDocumentForAnnotation', response_model=ResponseModel)
 def get_document_for_annotation(corpus_name=None, annotator=None):
-    if not (run_document_id := next(get_document_gen(), None)):
-        run_document_id = next(get_document_gen(True), None)
+    run_document_id = get_document_id(1)
     return get_document(run_document_id)
+
+
+@app.get('/getNextDocumentForAnnotation', response_model=ResponseModel)
+def get_next_document_for_annotation(index):
+    run_document_id = get_document_id(index)
+    return get_document(run_document_id)
+
+
+@app.get('/getCurrentIndexState', response_model=ResponseModel)
+def get_current_index_state():
+    global global_document_ids
+    global global_document_id_index
+    has_next_document = (global_document_ids and global_document_id_index < len(global_document_ids) - 1)
+    has_previous_document = (global_document_ids and global_document_id_index > 0)
+    response = Response(status_code=200,
+                        content={'has_next_document': has_next_document,
+                                 'has_previous_document': has_previous_document})
+    return response.as_json()
 
 
 @app.get('/getDocument', response_model=ResponseModel)
