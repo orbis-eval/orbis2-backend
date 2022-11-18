@@ -124,4 +124,5 @@ Do the following step to start the services correctly:
   1. the documents are shown with the current annotations, each annotation must be approved and the file must be saved only at the end otherwise the annotations which have not been approved get lost
   2. changing documents (next / previous) without saving does not affect anything at the db even when you already approved or added annotations
   3. at the moment the importer imports all documents and all documents are looped through, maybe a user could delete the documents from database he should / must not annotate?
-  4. in the logs of the running app.py from orbis2-backend, you get information about the current document index (ex. 5/54)
+  4. the loop is endless... so when you annotated all documents, ```"nächstes Dokument"``` or ```"speichern & weiter"``` will return the first document again!
+  5. THEREFORE: in the logs of the running app.py from orbis2-backend, you get information about the current document index (ex. 5/54)
