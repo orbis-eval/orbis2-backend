@@ -1,4 +1,4 @@
-from orbis2.evaluation.scorer.annotation_processor_util import tokenize
+from orbis2.evaluation.annotation_preprocessor.tokenizer import tokenize
 from orbis2.model.annotation import get_mock_annotation as a
 
 def test_token_annotation_tokenizedAnnotation():

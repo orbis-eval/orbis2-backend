@@ -1,6 +1,7 @@
 from collections import namedtuple
 from operator import mul
 
+from orbis2.evaluation.annotation_preprocessor.tokenizer import tokenize
 from orbis2.evaluation.metric.f1 import F1Metric
 from orbis2.evaluation.scorer import overlaps, Scorer
 from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true
@@ -33,12 +34,14 @@ SUPPORTED_METRICS = {
                                                 entity_scorer=always_true,
                                                 scoring_operator=mul)),
                                 description='Entity Classification: Precision, Recall and F1; overlapping matching.'),
-    'content_extraction': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
-                                                            entity_scorer=same_entity,
-                                                            scoring_operator=mul)),
-                                            description='Content Extraction: Precision, Recall and F1.'),
-    'content_classification': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
-                                                                entity_scorer=same_entity,
-                                                                scoring_operator=mul)),
-                                                description='Content Classification: Precision, Recall and F1.'),
+    'content_extraction_f1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
+                                                               entity_scorer=always_true,
+                                                               scoring_operator=mul),
+                                                        annotation_preprocessor=tokenize),
+                                               description='Content Extraction: Precision, Recall and F1.'),
+    'content_classification_f1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
+                                                                   entity_scorer=same_entity,
+                                                                   scoring_operator=mul),
+                                                            annotation_preprocessor=tokenize),
+                                                   description='Content Classification: Precision, Recall and F1.'),
 }
