@@ -8,7 +8,10 @@ from orbis2.model.annotation import Annotation
 
 
 class TokenizeBy(Enum):
+    """Tokenize text into white-spaced separated tokens."""
     WHITESPACE = re.compile(r'\S+')
+    """Tokenize text into single characters."""
+    CHARACTERS = re.compile(r'.')
 
 
 class AnnotationTokenizer(AnnotationPreprocessor):
