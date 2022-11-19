@@ -1,7 +1,7 @@
 from collections import namedtuple
 from operator import mul
 
-from orbis2.evaluation.annotation_preprocessor.tokenizer import tokenize
+from orbis2.evaluation.annotation_preprocessor.tokenizer import AnnotationTokenizer, TokenizeBy
 from orbis2.evaluation.metric.f1 import F1Metric
 from orbis2.evaluation.scorer import overlaps, Scorer
 from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true
@@ -37,11 +37,13 @@ SUPPORTED_METRICS = {
     'content_extraction_f1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
                                                                entity_scorer=always_true,
                                                                scoring_operator=mul),
-                                                        annotation_preprocessor=tokenize),
+                                                        annotation_preprocessor=AnnotationTokenizer(
+                                                            tokenize_by=TokenizeBy.WHITESPACE)),
                                                description='Content Extraction: Precision, Recall and F1.'),
     'content_classification_f1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
                                                                    entity_scorer=same_entity,
                                                                    scoring_operator=mul),
-                                                            annotation_preprocessor=tokenize),
+                                                            annotation_preprocessor=AnnotationTokenizer(
+                                                                tokenize_by=TokenizeBy.WHITESPACE)),
                                                    description='Content Classification: Precision, Recall and F1.'),
 }

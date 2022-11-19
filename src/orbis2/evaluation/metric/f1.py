@@ -3,6 +3,7 @@ from statistics import mean
 from typing import Dict, List, Callable
 from warnings import warn
 
+from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.metric.abstract_metric import AbstractMetric
 from orbis2.evaluation.scorer import Scorer
 from orbis2.model.annotation import Annotation
@@ -18,14 +19,14 @@ class F1Metric(AbstractMetric):
             Compute P/R/F1 for the perfect match and same entity setting.
     """
 
-    def __init__(self, scorer: Scorer, annotation_preprocessor: Callable[[List[Annotation]], List[Annotation]] = None):
+    def __init__(self, scorer: Scorer, annotation_preprocessor: AnnotationPreprocessor = None):
         """
         Args:
             scorer: the used scorer.
             annotation_preprocessor: an optional function for pre-processing the document annotations.
         """
         self._scorer = scorer
-        self._annotation_preprocessor = annotation_preprocessor if annotation_preprocessor else lambda x: x
+        self._annotation_preprocessor = annotation_preprocessor.preprocess if annotation_preprocessor else lambda x: x
 
     def compute(self, reference: Dict[Document, List[Annotation]], annotator: Dict[Document, List[Annotation]]) -> \
             F1Result:

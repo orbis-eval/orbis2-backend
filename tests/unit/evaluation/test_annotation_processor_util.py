@@ -1,10 +1,12 @@
-from orbis2.evaluation.annotation_preprocessor.tokenizer import tokenize
+from orbis2.evaluation.annotation_preprocessor.tokenizer import AnnotationTokenizer, TokenizeBy
 from orbis2.model.annotation import get_mock_annotation as a
+
+
 
 def test_token_annotation_tokenizedAnnotation():
     annotation = [a(10, 38, 'Grosser Gott wir loben dich!'),
                   a(40, 70, 'Herr, wir rühmen deine Stärke!')]
-    tokenized = tokenize(annotation)
+    tokenized = AnnotationTokenizer(tokenize_by=TokenizeBy.WHITESPACE).preprocess(annotation)
 
     print(tokenized)
     assert tokenized == [a(10, 17, 'Grosser'),
