@@ -63,9 +63,11 @@ class F1Metric(AbstractMetric):
             y_true_micro += y_true
             y_pred_micro += y_pred
 
+        macro_p = mean(p)
+        macro_r = mean(r)
         return F1Result(mP=precision_score(y_true_micro, y_pred_micro),
                         mR=recall_score(y_true_micro, y_pred_micro),
                         mF1=f1_score(y_true_micro, y_pred_micro),
-                        MP=mean(p),
-                        MR=mean(r),
-                        MF1=mean(f1))
+                        MP=macro_p,
+                        MR=macro_r,
+                        MF1=macro_r * macro_p * 2 / (macro_r + macro_p))
