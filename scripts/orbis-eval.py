@@ -15,8 +15,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     orbis = OrbisService()
-    reference = orbis.get_runs_by_corpus_id(corpus_id=orbis.get_corpus_id(args.reference))[0].document_annotations
-    annotator = orbis.get_runs_by_corpus_id(corpus_id=orbis.get_corpus_id(args.annotator))[0].document_annotations
+    reference = orbis.get_run_by_name(args.reference).document_annotations
+    annotator = orbis.get_run_by_name(args.annotator).document_annotations
 
     for metric in args.metrics:
         if metric not in SUPPORTED_METRICS:

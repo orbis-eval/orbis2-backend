@@ -54,6 +54,13 @@ Import CareerCoach 2022 entity annotations filtered by the page segments
     careercoach2022
 ```
 
+## Corpus export
+
+Export a run with all documents and annotations.
+```bash
+/scripts/exporter.py careercoach2022 /tmp/cc2022 --export-format careercoach2022
+``` 
+
 ## Evaluation
 
 Compare two runs using with two different metrics:

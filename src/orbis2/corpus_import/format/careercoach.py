@@ -7,6 +7,7 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
 from orbis2.model.document import Document
+from orbis2.model.metadata import Metadata
 from orbis2.model.role import Role
 
 SEGMENT_TYPE_PREFIX = 'segment/'
@@ -52,34 +53,32 @@ class CareerCoachFormat(CorpusFormat):
                        end_indices=annotation['end'],
                        annotation_type=AnnotationType(annotation['type']) if 'type' in annotation else
                        AnnotationType(SEGMENT_TYPE_PREFIX + '/' + segment_name),
+                       metadata=(Metadata(key="segment", value=segment_name), ),
                        annotator=ANNOTATOR)
             for segment_name, annotation in segment_generator(doc[partition])
             if annotation.get('type', '') not in invalid_annotation_types])
             for doc in map(json.loads, document_list)}
 
+    @staticmethod
     def remove_overlapping_proposals(annotation_list: List[Annotation]) -> List[Annotation]:
-            """
-            Remove proposals that overlap an annotation of the same type.
-            (e.g. proposal-education and education)
-            """
-            annotations = []
-            for _, identical_annotations in groupby(sorted(annotation_list), lambda a: (
-                    tuple(a.start_indices), tuple(a.end_indices))):
-                ia = list(identical_annotations)
-                for annotation in ia:
-                    if len(list(ia)) != 1:
-                        print(len(ia), ia)
-                    if annotation.annotation_type != 'proposal':
+        """
+        Remove proposals that overlap an annotation of the same type.
+        (e.g. proposal-education and education)
+        """
+        annotations = []
+        for _, identical_annotations in groupby(sorted(annotation_list), lambda a: (
+                tuple(a.start_indices), tuple(a.end_indices))):
+            ia = list(identical_annotations)
+            for annotation in ia:
+                if len(list(ia)) != 1:
+                    print(len(ia), ia)
+                if annotation.annotation_type != 'proposal':
+                    annotations.append(annotation)
+                else:
+                    proposal_type = annotation.key.split("#")[1]
+                    if proposal_type not in [a.get('type', '') for a in ia]:
                         annotations.append(annotation)
-                    else:
-                        proposal_type = annotation.key.split("#")[1]
-                        if proposal_type not in [a.get('type', '') for a in ia]:
-                            annotations.append(annotation)
-            return annotations
-
-
-
-
+        return annotations
 
     @staticmethod
     def get_document_content(document_list: List[str]) -> List[Document]:

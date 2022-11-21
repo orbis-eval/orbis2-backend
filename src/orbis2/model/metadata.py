@@ -39,3 +39,9 @@ class Metadata:
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:
         return [metadata.to_dao() for metadata in metadata]
+
+    def __str__(self):
+        return f'<Metadata: {self.key}: {self.value}>'
+
+    def __repr__(self):
+        return self.__str__()
