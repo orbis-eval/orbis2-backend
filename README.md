@@ -29,14 +29,14 @@ Import CareerCoach 2022 entity annotations
 ```bash
 ./scripts/importer.py --corpus-partition gold_standard_annotation \
      ../education-extraction/corpus/goldDocuments/ \
-     careercoach2022-entities.v1  
+     careercoach2022  
 ```
 
 Import CareerCoach 2022 partition annotations
 ```bash
 ./scripts/importer.py --corpus-partition gold_standard_annotation_segmentation \
      ../education-extraction/corpus/goldDocuments/ \
-     careercoach2022-segments.v1  
+     careercoach2022
 ```
 
 Import CareerCoach 2022 entity annotations filtered with the page segments
@@ -44,7 +44,7 @@ Import CareerCoach 2022 entity annotations filtered with the page segments
 ./scripts/importer.py --corpus-partition gold_standard_annotation \
     --careercoach-filter ../education-extraction/corpus/goldDocumentsPre/ \
     ../education-extraction/corpus/goldDocuments/ \  
-    careercoach2022-entities.v0
+    careercoach2022
 ```
 
 ## Evaluation
@@ -68,7 +68,7 @@ Do the following step to start the services correctly:
   ```
 1. import the CareerCoach 2022 gold documents [see above](Corpus import)
   if you already imported or changed the database and want to start from the beginning: uncomment line 29 & 30 in the importer.py before running it: ```db = OrbisDb()``` ```db.create_database(True)```, but ATTENTION all changes to the db will be lost after this.
-2. start the backend by running app.py
+2. start the backend by running src/orbis2/api/app.py (when the app.py is started over the pycharm IDE set the Working directory to ```/orbis2-backend/src/orbis2```)
 3. checkout [FoW Orbis2](https://git.fhgr.ch/nlp/project/future-of-work/orbis2/-/tree/workaround/NewOrbis2Backend), make sure you change the branch to **```workaround/NewOrbis2Backend```**
 4. to correctly run the frontend you need nodejs and npm installed, if not already done you can do it with the following cmds:
 
