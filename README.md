@@ -23,6 +23,12 @@ The environment variables are all stored in the file [src/orbis2/config/app_conf
 | ORBIS_DB_NAME               |                       | orbis              |
 
 
+## (Re)initialize the Orbis database
+
+```bash
+./scripts/dbtool.py --create-database --force
+``` 
+
 ## Corpus import
 
 Import CareerCoach 2022 entity annotations
@@ -39,7 +45,7 @@ Import CareerCoach 2022 partition annotations
      careercoach2022
 ```
 
-Import CareerCoach 2022 entity annotations filtered with the page segments
+Import CareerCoach 2022 entity annotations filtered by the page segments
 ```bash
 ./scripts/importer.py --corpus-partition gold_standard_annotation \
     --careercoach-filter ../education-extraction/corpus/goldDocumentsPre/ \
