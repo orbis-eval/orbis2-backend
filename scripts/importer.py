@@ -14,8 +14,8 @@ from orbis2.model.run import Run
 IMPORT_FORMATS = (CareerCoachFormat,)
 
 
-def import_documents(document_list: List[str], run_name: str, run_description: str, corpus_partition: str = None,
-                     careercoach_filter: str = None):
+def import_documents(document_list: List[str], run_name: str, run_description: str, invalid_annotation_types: List[str],
+                     corpus_partition:str = None, careercoach_filter: str = None):
     """
     Import the given list of documents into the Orbis database.
     """
@@ -28,14 +28,17 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
     # create run for serialization in the database
     db = OrbisDb()
     db.create_database(True)
-    document_annotations = CareerCoachFormat.get_document_annotations(document_list, corpus_partition)
+    document_annotations = CareerCoachFormat.get_document_annotations(document_list,
+                            invalid_annotation_types=invalid_annotation_types, partition=corpus_partition)
 
     # filter the annotations based on Annotations specified in a second corpus.
     if careercoach_filter:
-        filter_documents = [p.open().read() for p in map(Path, glob(careercoach_filter + "/**", recursive=True)) if p.is_file()]
+        filter_documents = [p.open().read() for p in map(Path, glob(careercoach_filter + "/**", recursive=True))
+                            if p.is_file()]
 
         document_segments = CareerCoachFormat.get_document_annotations(
-            filter_documents, partition='gold_standard_annotation_segmentation')
+            filter_documents, invalid_annotation_types=invalid_annotation_types,
+            partition='gold_standard_annotation_segmentation')
         document_annotations = {document: [annotation
                                            for annotation in annotations if any(
                [contains(segment_annotation, annotation)
@@ -57,6 +60,8 @@ if __name__ == '__main__':
     parser.add_argument('run_name')
     parser.add_argument('--run-description', help='Description of the given run.')
     parser.add_argument('--corpus-partition', help='Corpus partition to import.')
+    parser.add_argument('--invalid-annotation-type', nargs="+", default=[],
+                        help='Annotation types to ignore during import.')
     parser.add_argument('--careercoach-filter', help='Optional CareerCoach segment corpus for filtering the results')
     args = parser.parse_args()
     if not args.run_description:
@@ -67,4 +72,6 @@ if __name__ == '__main__':
                  if p.is_file()]
     print(f'Importing {len(documents)} documents.')
     import_documents(documents, args.run_name, args.run_description,
-                     args.corpus_partition, args.careercoach_filter)
+                     invalid_annotation_types=args.invalid_annotation_type,
+                     corpus_partition=args.corpus_partition,
+                     careercoach_filter=args.careercoach_filter)
