@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+from collections import namedtuple
 from glob import glob
 from pathlib import Path
 from typing import List
@@ -11,19 +11,24 @@ from orbis2.evaluation.scorer.annotation_util import contains
 from orbis2.model.corpus import Corpus
 from orbis2.model.run import Run
 
-IMPORT_FORMATS = (CareerCoachFormat,)
+ExportFormat = namedtuple('ExportFormat', 'class description')
+
+SUPPORTED_EXPORT_FORMATS = {
+    'careercoach': ExportFormat(None, 'The CareerCoach 2022 export format.')
+}
 
 
-def import_documents(document_list: List[str], run_name: str, run_description: str, corpus_partition: str = None,
-                     careercoach_filter: str = None):
+def export_documents(run_id: int, corpus_directory: Path, format: ExportFormat) -> None:
     """
-    Import the given list of documents into the Orbis database.
+    Export the run to the given corpus_directory.
+
+    Args:
+        run_name: The run to export.
+        corpus_directory: The export directory.
+        format: The
     """
-    for import_format in IMPORT_FORMATS:
-        if import_format.is_supported(document_list, corpus_partition):
-            break
-    else:
-        raise ValueError("Unsupported corpus format.")
+    run = OrbisService().get_runs_by_corpus_id(run_id)[ß]
+
 
     # create run for serialization in the database
     # db = OrbisDb()
@@ -53,18 +58,22 @@ if __name__ == '__main__':
     from argparse import ArgumentParser
 
     parser = ArgumentParser()
-    parser.add_argument('corpus_directory')
     parser.add_argument('run_name')
-    parser.add_argument('--run-description', help='Description of the given run.')
-    parser.add_argument('--corpus-partition', help='Corpus partition to import.')
-    parser.add_argument('--careercoach-filter', help='Optional CareerCoach segment corpus for filtering the results')
+    parser.add_argument('corpus_directory', help='Directory to export to')
+    parser.add_argument('--export-format', help='Export run to the given export format.')
     args = parser.parse_args()
-    if not args.run_description:
-        args.run_description = args.run_name
 
-    documents = [p.open().read()
-                 for p in map(Path, glob(args.corpus_directory + "/*"))
-                 if p.is_file()]
-    print(f'Importing {len(documents)} documents.')
-    import_documents(documents, args.run_name, args.run_description,
-                     args.corpus_partition, args.careercoach_filter)
+    corpus_directory = Path(args.corpus_directory)
+    if args.export_format not in SUPPORTED_EXPORT_FORMATS:
+        print(f'Unsupported export format: {args.export_format}.')
+        exit(-1)
+    export_format = SUPPORTED_EXPORT_FORMATS[args.export_format]
+
+    if not (run_id := OrbisService.get_corpus(args.run_name)):
+        print(f'Unknown run with name {args.run_name}')
+        exit(-1)
+
+    if not corpus_directory.exists():
+        corpus_directory.mkdir(parents=True)
+
+    export_documents(run_id, corpus_directory, export_format=export_format)

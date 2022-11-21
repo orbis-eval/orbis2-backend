@@ -9,6 +9,8 @@ from orbis2.model.annotator import Annotator
 from orbis2.model.document import Document
 from orbis2.model.role import Role
 
+SEGMENT_TYPE_PREFIX = 'segment/'
+
 ANNOTATOR = Annotator(name='CorpusImporter', roles=[Role(name='CorpusImporter')])
 
 
@@ -48,7 +50,7 @@ class CareerCoachFormat(CorpusFormat):
                        start_indices=annotation['start'],
                        end_indices=annotation['end'],
                        annotation_type=AnnotationType(annotation['type']) if 'type' in annotation else
-                       AnnotationType(segment_name),
+                       AnnotationType(SEGMENT_TYPE_PREFIX + '/' + segment_name),
                        annotator=ANNOTATOR)
             for segment_name, annotation in segment_generator(doc[partition])]
             for doc in map(json.loads, document_list)}

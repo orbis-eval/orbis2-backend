@@ -43,7 +43,6 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
             )]
                                 for document, annotations in document_annotations.items()}
 
-
     supported_annotation_types = CareerCoachFormat.get_supported_annotation_types(document_annotations)
     OrbisService().add_run(Run(name=run_name, description=run_description,
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),

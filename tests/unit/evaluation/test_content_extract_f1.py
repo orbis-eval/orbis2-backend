@@ -33,7 +33,7 @@ def test_content_extraction_f1_multiple_documents():
         '0': [Annotation("", "Ehre sei Gott in der Höhe!", 30, 56,
                          annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)],
         '1':  [Annotation("", "Und Friede den Menschen, die guten Willens sind.", 90, 138,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)]
+                          annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)]
     }
 
     annotator = {
