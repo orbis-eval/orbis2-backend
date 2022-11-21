@@ -160,7 +160,8 @@ def get_document(da_id=None):
                         'meta': '',
                         'annotations': [{
                             'key': annotation.key,
-                            'type': annotation.annotation_type.name,
+                            'type': annotation.annotation_type.name + "-" + annotation.key.split('#')[1].replace('/', '')
+                            if annotation.annotation_type.name == 'proposal' else annotation.annotation_type.name,
                             'surface_form': annotation.surface_forms[0],
                             'start': annotation.start_indices[0],
                             'end': annotation.end_indices[0],
@@ -179,8 +180,9 @@ def save_document_annotations(data: DataExchangeModel):
     da_id = data.get('da_id')
     if run_document := get_run_and_document(da_id):
         run, document = run_document
-        annotations = [Annotation(annotation.get('key'), annotation.get('surface_form'), annotation.get('start'),
-                                  annotation.get('end'), AnnotationType(annotation.get('type')),
+        annotations = [Annotation(f"https://semanticlab.net/career-coach#{annotation.get('type').split('-')[1]}/" if 'proposal' in annotation.get('type') else annotation.get('key'),
+                                  annotation.get('surface_form'), annotation.get('start'),
+                                  annotation.get('end'), AnnotationType(annotation.get('type').split('-')[0]),
                                   Annotator(data.get('annotator'), []))
                        for annotation in data.get('data').get('annotations')]
         run.document_annotations[document] = annotations
