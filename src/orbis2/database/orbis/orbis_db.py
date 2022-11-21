@@ -39,6 +39,22 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def get_run_by_name(self, run_name: str) -> Union[RunDao, None]:
+        """
+        Get run from database by its name
+
+        Returns: A single run object or None if zero or multiple runs exists in the database
+        """
+        if results := self.try_catch(
+            lambda: self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).where(
+                RunDao.name == run_name).all(),
+            f'Run request with run name: {run_name} failed', False
+        ):
+            if len(results) == 1:
+                return results[0]
+            logging.debug(f'There are {len(results)} (!=0) runs run name {run_name} in orbis database.')
+        return None
+
     def get_run(self, run_id: int) -> Union[RunDao, None]:
         """
         Get run from database by its id

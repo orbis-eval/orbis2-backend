@@ -72,6 +72,14 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
 
 
 # noinspection PyPep8Naming
+def test_get_run_by_name_dbExistsAndContainsRun_getRunWithId1(insert_test_data_orbis):
+    run = OrbisService().get_run_by_name('run1')
+
+    assert run
+    assert run.run_id == 1
+
+
+# noinspection PyPep8Naming
 def test_add_runs_emptyDbExistsAndRunIsCorrectlyInitialized_returnTrue(clear_test_data_orbis):
     assert OrbisService().add_runs([Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
                                                                            AnnotationType('annotation-tpye2')]),

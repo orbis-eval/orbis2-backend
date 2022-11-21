@@ -22,6 +22,11 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
+    def get_run_by_name(self, run_name: str) -> Union[Run, None]:
+        if run := self.orbis_db.get_run_by_name(run_name):
+            return Run.from_run_dao(run)
+        return None
+
     def get_run(self, run_id: int) -> Union[Run, None]:
         if run := self.orbis_db.get_run(run_id):
             return Run.from_run_dao(run)
