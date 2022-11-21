@@ -68,8 +68,8 @@ def get_document_id(index: int) -> str:
                (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
                 run = runs[0]
                 documents = list(run.document_annotations.keys())
-                global_document_ids = [run.run_id.__str__() + '|' + document.document_id.__str__()
-                                       for document in documents]
+                global_document_ids = sorted([run.run_id.__str__() + '|' + document.document_id.__str__()
+                                              for document in documents])
 
         global_document_id_index = (global_document_id_index + int(index)) % len(global_document_ids)
         logging.info(f'Current index: {global_document_id_index}/{len(global_document_ids) - 1}')
