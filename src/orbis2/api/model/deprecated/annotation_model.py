@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,7 @@ class AnnotationModel(BaseModel):
                                         'in the text representation of the html.')
     end: int = Field(..., description='Start position of the annotated element in the text representation of the html.')
     scope: str = Field(..., description='Scope of the annotations')
-    meta: Dict
+    meta: List[Dict]
 
     class Config:
         schema_extra = {
