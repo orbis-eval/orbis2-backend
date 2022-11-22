@@ -47,11 +47,10 @@ Import CareerCoach 2022 partition annotations
 
 Import CareerCoach 2022 entity annotations filtered by the page segments
 ```bash
-./scripts/importer.py --corpus-partition gold_standard_annotation \
+./scripts/importer.py ../education-extraction/corpus/goldDocuments/ careercoach2022 \
+    --corpus-partition gold_standard_annotation \
     --careercoach-filter ../education-extraction/corpus/goldDocumentsPre/ \
-    --invalid-annotation-type languageSkill languageskill position scope school softskill industry sco  \
-    ../education-extraction/corpus/goldDocuments/ \  
-    careercoach2022
+    --invalid-annotation-type languageSkill languageskill position scope school softskill industry sco
 ```
 
 ## Corpus export
