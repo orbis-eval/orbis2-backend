@@ -13,7 +13,7 @@ class AnnotationModel(BaseModel):
                                         'in the text representation of the html.')
     end: int = Field(..., description='Start position of the annotated element in the text representation of the html.')
     scope: str = Field(..., description='Scope of the annotations')
-    meta: List[Dict]
+    meta: Dict
 
     class Config:
         schema_extra = {

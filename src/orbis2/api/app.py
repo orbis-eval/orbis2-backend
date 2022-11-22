@@ -166,7 +166,7 @@ def get_document(da_id=None):
                             'start': annotation.start_indices[0],
                             'end': annotation.end_indices[0],
                             'scope': '',
-                            'meta': annotation.metadata
+                            'meta': {}
                         } for annotation in annotations]
                     }
                 }
