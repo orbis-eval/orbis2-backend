@@ -4,7 +4,7 @@ from xxhash import xxh3_64_intdigest, xxh32_intdigest
 
 class AnnotationType:
 
-    __slots__ = ('name', 'type_id')
+    cls_cache = {}
 
     def __init__(self, name: str):
         """
@@ -35,7 +35,9 @@ class AnnotationType:
                 for annotation_type_dao in annotation_type_daos]
 
     def to_dao(self) -> AnnotationTypeDao:
-        return AnnotationTypeDao(type_id=self.type_id, name=self.name)
+        if self.type_id not in self.cls_cache:
+            self.cls_cache[self.type_id] = AnnotationTypeDao(type_id=self.type_id, name=self.name)
+        return self.cls_cache[self.type_id]
 
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:
