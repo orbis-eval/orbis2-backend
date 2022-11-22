@@ -22,7 +22,7 @@ def get_entity_annotations(annotations: List[Annotation]) -> Dict[str, List[Dict
 
     def get_entity_annotation_dict(annotation: Annotation) -> Dict[str, str]:
         return {
-            'surface_forma': annotation.surface_forms[0],
+            'surface_form': annotation.surface_forms[0],
             'start': annotation.start_indices[0],
             'end': annotation.end_indices[0],
             'key': annotation.key,
