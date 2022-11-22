@@ -63,12 +63,12 @@ class CareerCoachExportFormat:
     @staticmethod
     def export(run: Run, path: Path):
         for document, annotations in run.document_annotations.items():
-            with path.joinpath(get_export_doc_name(document)).open('w') as f:
-                export_doc = {
-                    'id': document.document_id,
-                    'url': document.key,
-                    'text': document.content,
-                    'gold_standard_annotation': get_entity_annotations(annotations),
-                    'gold_standard_annotation_segmentation': get_segment_annotations(annotations)
-                }
-                json.dump(export_doc, f, indent=True)
+                with path.joinpath(get_export_doc_name(document)).open('w') as f:
+                    export_doc = {
+                        'id': document.document_id,
+                        'url': document.key,
+                        'text': document.content,
+                        'gold_standard_annotation': get_entity_annotations(annotations),
+                        'gold_standard_annotation_segmentation': get_segment_annotations(annotations)
+                    }
+                    json.dump(export_doc, f, indent=True)
