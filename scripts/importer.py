@@ -20,11 +20,10 @@ def append_annotations_with_segments(document_annotations: Dict[Document, List[A
                                      document_segments: Dict[Document, List[Annotation]]):
     resulting_document_annotations = {}
     for document, annotations in document_annotations.items():
+        resulting_document_annotations[document] = []
         for segment in document_segments[document]:
             for annotation in annotations:
                 if contains(segment, annotation):
-                    if document not in resulting_document_annotations.keys():
-                        resulting_document_annotations[document] = []
                     annotation.metadata = segment.metadata
                     resulting_document_annotations[document].append(annotation)
     return resulting_document_annotations
