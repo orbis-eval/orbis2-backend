@@ -31,7 +31,7 @@ def append_annotations_with_segments(document_annotations: Dict[Document, List[A
 
 
 def import_documents(document_list: List[str], run_name: str, run_description: str, invalid_annotation_types: List[str],
-                     corpus_partition:str = None, careercoach_filter: str = None):
+                     corpus_partition: str = None, careercoach_filter: str = None):
     """
     Import the given list of documents into the Orbis database.
     """
