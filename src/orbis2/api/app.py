@@ -40,7 +40,7 @@ app = FastAPI(
 
 global_orbis_service = None
 global_document_ids = None
-global_document_id_index = -1
+global_document_id_index = 2
 
 
 def get_orbis_service() -> OrbisService:
