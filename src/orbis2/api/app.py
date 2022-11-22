@@ -18,6 +18,7 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
 from orbis2.model.document import Document
+from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
 
 
@@ -183,7 +184,7 @@ def save_document_annotations(data: DataExchangeModel):
         annotations = [Annotation(f"https://semanticlab.net/career-coach#{annotation.get('type').split('-')[1]}/" if 'proposal' in annotation.get('type') else annotation.get('key'),
                                   annotation.get('surface_form'), annotation.get('start'),
                                   annotation.get('end'), AnnotationType(annotation.get('type').split('-')[0]),
-                                  Annotator(data.get('annotator'), []))
+                                  Annotator(data.get('annotator'), []), metadata=[Metadata('segment', 'unknown')])
                        for annotation in data.get('data').get('annotations')]
         run.document_annotations[document] = annotations
         if get_orbis_service().add_run(run):
