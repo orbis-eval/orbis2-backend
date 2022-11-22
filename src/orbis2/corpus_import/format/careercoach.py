@@ -46,7 +46,7 @@ class CareerCoachFormat(CorpusFormat):
                 for annotation in annotations:
                     yield segment_name, annotation
 
-        return {Document(content=doc['text'], key=doc['url']): CareerCoachFormat.remove_overlapping_proposals([
+        return {Document(content=doc['text'], key=doc['url']): [
             Annotation(key=annotation['key'] if 'key' in annotation else '',
                        surface_forms=annotation['surface_form'],
                        start_indices=annotation['start'],
@@ -56,7 +56,7 @@ class CareerCoachFormat(CorpusFormat):
                        metadata=(Metadata(key="segment", value=segment_name), ),
                        annotator=ANNOTATOR)
             for segment_name, annotation in segment_generator(doc[partition])
-            if annotation.get('type', '') not in invalid_annotation_types])
+            if annotation.get('type', '') not in invalid_annotation_types]
             for doc in map(json.loads, document_list)}
 
     @staticmethod
