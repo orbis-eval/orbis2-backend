@@ -4,6 +4,8 @@ from xxhash import xxh3_64_intdigest, xxh32_intdigest
 
 class AnnotationType:
 
+    __slots__ = ('name', 'type_id')
+
     def __init__(self, name: str):
         """
         CONSTRUCTOR

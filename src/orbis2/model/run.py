@@ -46,14 +46,12 @@ class Run:
         document_annotations = {}
         run_id = run_dao.run_id
         for run_document_dao in run_dao.run_has_documents:
-            document_annotation = []
-            document_annotations[Document.from_document_dao(
-                run_document_dao.document, run_id, run_document_dao.done
-            )] = document_annotation
-            for document_annotation_dao in run_document_dao.document_has_annotations:
-                document_annotation.append(Annotation.from_annotation_dao(document_annotation_dao.annotation, run_id,
-                                                                          document_annotation_dao.document_id,
-                                                                          document_annotation_dao.timestamp))
+            document = Document.from_document_dao(run_document_dao.document, run_id, run_document_dao.done)
+            document_annotations[document] = [Annotation.from_annotation_dao(document_annotation_dao.annotation, run_id,
+                                                                             document_annotation_dao.document_id,
+                                                                             document_annotation_dao.timestamp)
+
+                                              for document_annotation_dao in run_document_dao.document_has_annotations]
         run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
                   Run.from_run_daos(run_dao.parents), Run.from_run_daos(run_dao.children))
         if run_dao.run_id:
@@ -67,12 +65,13 @@ class Run:
     def to_dao(self) -> RunDao:
         run_has_document_daos = []
         for document, annotations in self.document_annotations.items():
-            document_has_annotation_daos = []
-            for annotation in annotations:
-                document_has_annotation_daos.append(DocumentHasAnnotationDao(run_id=self.run_id,
-                                                                             document_id=document.document_id,
-                                                                             annotation_id=annotation.annotation_id,
-                                                                             annotation=annotation.to_dao()))
+            document_has_annotation_daos = [
+                DocumentHasAnnotationDao(run_id=self.run_id,
+                                         document_id=document.document_id,
+                                         annotation_id=annotation.annotation_id,
+                                         annotation=annotation.to_dao())
+                for annotation in annotations]
+
             run_has_document_daos.append(RunHasDocumentDao(run_id=self.run_id,
                                                            document_id=document.document_id,
                                                            document=document.to_dao(),

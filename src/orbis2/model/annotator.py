@@ -6,6 +6,8 @@ from orbis2.model.role import Role
 
 class Annotator:
 
+    __slots__ = ('annotator_id', 'name', 'roles')
+
     def __init__(self, name: str, roles: [Role]):
         """
         CONSTRUCTOR
