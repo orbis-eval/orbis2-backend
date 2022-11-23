@@ -5,6 +5,7 @@ from orbis2.model.annotation import Annotation
 
 SEGMENT_METADATA_KEY = 'segment'
 
+
 def overlaps(true, predicted):
     """
     Return:
@@ -16,8 +17,8 @@ def overlaps(true, predicted):
     """
     return any((p_end >= t_start and p_start <= t_end
                 for (t_start, t_end), (p_start, p_end) in product(
-                        zip(true.start_indices, true.end_indices),
-                        zip(predicted.start_indices, predicted.end_indices))))
+        zip(true.start_indices, true.end_indices),
+        zip(predicted.start_indices, predicted.end_indices))))
 
 
 def contains(true: Annotation, predicted: Annotation) -> bool:
@@ -44,8 +45,8 @@ def len_overlap(true: Annotation, predicted: Annotation) -> int:
     """
     return sum((max(0, min(t_end, p_end) - max(t_start, p_start))
                 for (t_start, t_end), (p_start, p_end) in product(
-                    zip(true.start_indices, true.end_indices),
-                    zip(predicted.start_indices, predicted.end_indices))))
+        zip(true.start_indices, true.end_indices),
+        zip(predicted.start_indices, predicted.end_indices))))
 
 
 def overlap_percentage(true: Annotation, predicted: Annotation) -> float:
@@ -53,7 +54,7 @@ def overlap_percentage(true: Annotation, predicted: Annotation) -> float:
     Return:
         The percentage of overlap between true and predicted
     """
-    return len_overlap(true, predicted)/(max(len(true), len(predicted)))
+    return len_overlap(true, predicted) / (max(len(true), len(predicted)))
 
 
 def get_annotation_segment(annotation: Annotation) -> Union[str, None]:
