@@ -3,6 +3,8 @@ from warnings import warn
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.evaluation.metric import SUPPORTED_METRICS
+from orbis2.evaluation.output_formatter import OrbisEvaluationResult
+from orbis2.evaluation.output_formatter.markdown import MarkdownOutputFormatter
 
 if __name__ == '__main__':
     from argparse import ArgumentParser
@@ -18,11 +20,13 @@ if __name__ == '__main__':
     reference = orbis.get_run_by_name(args.reference).document_annotations
     annotator = orbis.get_run_by_name(args.annotator).document_annotations
 
+    result = []
     for metric in args.metrics:
         if metric not in SUPPORTED_METRICS:
             warn(f'Ignoring unsupported metric: {metric}.')
             continue
 
         res = SUPPORTED_METRICS[metric].metric.compute(reference, annotator)
-        print(f'Results for metric \'{metric}\': {SUPPORTED_METRICS[metric].description}')
-        print('   ', res)
+        result.append(OrbisEvaluationResult(SUPPORTED_METRICS[metric].description, res))
+
+    print(MarkdownOutputFormatter().format_output(result))

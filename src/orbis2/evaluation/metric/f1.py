@@ -1,6 +1,6 @@
 from collections import namedtuple
 from statistics import mean
-from typing import Dict, List, Callable
+from typing import Dict, List
 from warnings import warn
 
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
@@ -19,14 +19,19 @@ class F1Metric(AbstractMetric):
             Compute P/R/F1 for the perfect match and same entity setting.
     """
 
-    def __init__(self, scorer: Scorer, annotation_preprocessor: AnnotationPreprocessor = None):
+    def __init__(self, scorer: Scorer, *annotation_preprocessor: AnnotationPreprocessor):
         """
         Args:
             scorer: the used scorer.
             annotation_preprocessor: an optional function for pre-processing the document annotations.
         """
         self._scorer = scorer
-        self._annotation_preprocessor = annotation_preprocessor.preprocess if annotation_preprocessor else lambda x: x
+        self._annotation_preprocessor = annotation_preprocessor
+
+    def apply_preprocessor(self, annotations: List[Annotation]) -> List[Annotation]:
+        for preprocessor in self._annotation_preprocessor:
+            annotations = preprocessor.preprocess(annotations)
+        return annotations
 
     def compute(self, reference: Dict[Document, List[Annotation]], annotator: Dict[Document, List[Annotation]]) -> \
             F1Result:
@@ -49,10 +54,11 @@ class F1Metric(AbstractMetric):
         r = []
         for document, annotations in reference.items():
             if document in annotator:
-                scoring = self._scorer.score_annotation_list(self._annotation_preprocessor(annotations),
-                                                             self._annotation_preprocessor(annotator[document]))
+                scoring = self._scorer.score_annotation_list(self.apply_preprocessor(annotations),
+                                                             self.apply_preprocessor(annotator[document]))
             else:
                 warn(f'No annotations for document {document.key} found - ignoring document.')
+                continue
 
             y_true = (len(scoring.tp) + len(scoring.fn)) * [1] + len(scoring.fp) * [0]
             y_pred = (len(scoring.tp) * [1] + len(scoring.fn) * [0] + len(scoring.fp) * [1])
