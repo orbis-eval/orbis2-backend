@@ -53,11 +53,11 @@ def test_len_overlap_twoAnnotations_returnLenOfOverlap():
 
 def test_get_annotation_segment():
     empty = Annotation(1, 2)
-    one_segment = Annotation(1, 2, metadata=(Metadata('segment', 'first')))
-    two_segments = Annotation(1, 2, metadata=(Metadata('segment', 'first'), Metadata('segement', 'second')))
+    one_segment = Annotation(1, 2, metadata=(Metadata('segment', 'first'), ))
+    two_segments = Annotation(1, 2, metadata=(Metadata('segment', 'first'), Metadata('segment', 'second')))
     mixed_segment_metadata = Annotation(1, 2, metadata=(Metadata('segment', 'first'),
                                                         Metadata('name', 'Julius'),
-                                                        Metadata('segement', 'second')))
+                                                        Metadata('segment', 'second')))
 
     assert get_annotation_segment(empty) is None, "Incorrect handling of Annotation without a segment."
     assert get_annotation_segment(one_segment) == 'first'
