@@ -5,15 +5,15 @@ from orbis2.model.annotation import get_mock_annotation as Annotation
 
 # noinspection PyPep8Naming
 def test_exact_match_twoEqualAnnotations_returnOne():
-    a1 = Annotation(1, 12)
-    a2 = Annotation(1, 12)
+    a1 = Annotation(1, 12, "Ana")
+    a2 = Annotation(1, 12, "Petra")
     assert exact_match(a1, a2) == 1.
 
 
 # noinspection PyPep8Naming
 def test_exact_match_twoDifferentAnnotations_returnZero():
-    a1 = Annotation(1, 12)
-    half_left = Annotation(3, 7)
+    a1 = Annotation(1, 12, "Ana")
+    half_left = Annotation(3, 7, "Petra")
     assert exact_match(a1, half_left) == 0.
 
 

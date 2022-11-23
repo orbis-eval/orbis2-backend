@@ -8,7 +8,8 @@ def exact_match(true: Annotation, predicted: Annotation) -> float:
     Return:
         The 1 if both annotations match perfectly otherwise 0.
     """
-    return 1. if true == predicted else 0.
+    return 1. if true.start_indices == predicted.start_indices and \
+        true.end_indices == predicted.end_indices else 0.
 
 
 def overlapping_match(true: Annotation, predicted: Annotation) -> float:
