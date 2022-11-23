@@ -41,8 +41,6 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
         raise ValueError("Unsupported corpus format.")
 
     # create run for serialization in the database
-    # db = OrbisDb()
-    # db.create_database(True)
     document_annotations = CareerCoachFormat.get_document_annotations(document_list,
                             invalid_annotation_types=invalid_annotation_types, partition=corpus_partition)
 

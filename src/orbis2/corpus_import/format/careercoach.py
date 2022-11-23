@@ -51,20 +51,21 @@ class CareerCoachFormat(CorpusFormat):
             annotations = []
             document_annotations[Document(content=doc['text'], key=doc['url'])] = annotations
             for segment_name, annotation in segment_generator(doc[partition]):
-                if annotation.get('type', '') not in invalid_annotation_types:
-                    if 'type' in annotation:
-                        annotation_type = AnnotationType(annotation['type'])
-                    elif 'entity_type' in annotation:
-                        annotation_type = AnnotationType(annotation['entity_type'])
-                    else:
-                        annotation_type = AnnotationType(SEGMENT_TYPE_PREFIX + '/' + segment_name)
+                if 'type' in annotation:
+                    annotation_type = annotation['type']
+                elif 'entity_type' in annotation:
+                    annotation_type = annotation['entity_type']
+                else:
+                    annotation_type = SEGMENT_TYPE_PREFIX + '/' + segment_name
+
+                if annotation_type not in invalid_annotation_types:
                     annotations.append(
                         Annotation(key=annotation['key'] if 'key' in annotation else '',
                                    surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation[
                                        'surface_form'],
                                    start_indices=annotation['start'],
                                    end_indices=annotation['end'],
-                                   annotation_type=annotation_type,
+                                   annotation_type=AnnotationType(annotation_type),
                                    metadata=(Metadata(key="segment", value=segment_name),),
                                    annotator=ANNOTATOR)
                     )
