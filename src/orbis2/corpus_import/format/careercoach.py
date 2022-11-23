@@ -48,7 +48,7 @@ class CareerCoachFormat(CorpusFormat):
 
         return {Document(content=doc['text'], key=doc['url']): [
             Annotation(key=annotation['key'] if 'key' in annotation else '',
-                       surface_forms=annotation['surface_form'],
+                       surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation['surface_form'],
                        start_indices=annotation['start'],
                        end_indices=annotation['end'],
                        annotation_type=AnnotationType(annotation['type']) if 'type' in annotation else
