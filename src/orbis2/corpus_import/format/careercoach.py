@@ -46,18 +46,29 @@ class CareerCoachFormat(CorpusFormat):
                 for annotation in annotations:
                     yield segment_name, annotation
 
-        return {Document(content=doc['text'], key=doc['url']): [
-            Annotation(key=annotation['key'] if 'key' in annotation else '',
-                       surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation['surface_form'],
-                       start_indices=annotation['start'],
-                       end_indices=annotation['end'],
-                       annotation_type=AnnotationType(annotation['type']) if 'type' in annotation else
-                       AnnotationType(SEGMENT_TYPE_PREFIX + '/' + segment_name),
-                       metadata=(Metadata(key="segment", value=segment_name), ),
-                       annotator=ANNOTATOR)
-            for segment_name, annotation in segment_generator(doc[partition])
-            if annotation.get('type', '') not in invalid_annotation_types]
-            for doc in map(json.loads, document_list)}
+        document_annotations = {}
+        for doc in map(json.loads, document_list):
+            annotations = []
+            document_annotations[Document(content=doc['text'], key=doc['url'])] = annotations
+            for segment_name, annotation in segment_generator(doc[partition]):
+                if annotation.get('type', '') not in invalid_annotation_types:
+                    if 'type' in annotation:
+                        annotation_type = AnnotationType(annotation['type'])
+                    elif 'entity_type' in annotation:
+                        annotation_type = AnnotationType(annotation['entity_type'])
+                    else:
+                        annotation_type = AnnotationType(SEGMENT_TYPE_PREFIX + '/' + segment_name)
+                    annotations.append(
+                        Annotation(key=annotation['key'] if 'key' in annotation else '',
+                                   surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation[
+                                       'surface_form'],
+                                   start_indices=annotation['start'],
+                                   end_indices=annotation['end'],
+                                   annotation_type=annotation_type,
+                                   metadata=(Metadata(key="segment", value=segment_name),),
+                                   annotator=ANNOTATOR)
+                    )
+        return document_annotations
 
     @staticmethod
     def remove_overlapping_proposals(annotation_list: List[Annotation]) -> List[Annotation]:
