@@ -1,7 +1,9 @@
 from itertools import product
+from typing import Union
 
 from orbis2.model.annotation import Annotation
 
+SEGMENT_METADATA_KEY = 'segment'
 
 def overlaps(true, predicted):
     """
@@ -52,3 +54,12 @@ def overlap_percentage(true: Annotation, predicted: Annotation) -> float:
         The percentage of overlap between true and predicted
     """
     return len_overlap(true, predicted)/(max(len(true), len(predicted)))
+
+
+def get_annotation_segment(annotation: Annotation) -> Union[str, None]:
+    """
+    Return:
+        The segment of the given Annotation or None string, if no segment has been specified.
+    """
+    partitions = [metadata.value for metadata in annotation.metadata if metadata.key == SEGMENT_METADATA_KEY]
+    return max(partitions) if partitions else None

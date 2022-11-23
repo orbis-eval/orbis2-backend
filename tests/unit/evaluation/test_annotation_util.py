@@ -1,6 +1,7 @@
 from orbis2.evaluation.scorer import overlaps
-from orbis2.evaluation.scorer.annotation_util import len_overlap
+from orbis2.evaluation.scorer.annotation_util import len_overlap, get_annotation_segment
 from orbis2.model.annotation import get_mock_annotation as Annotation
+from orbis2.model.metadata import Metadata
 
 
 # noinspection PyPep8Naming
@@ -49,3 +50,16 @@ def test_len_overlap_twoAnnotations_returnLenOfOverlap():
     assert len_overlap(Annotation(start_indices=(1, 5), end_indices=(3, 10)),
                        Annotation(start_indices=(3, 9), end_indices=(6, 12))) \
            == 1 + 1
+
+def test_get_annotation_segment():
+    empty = Annotation(1, 2)
+    one_segment = Annotation(1, 2, metadata=(Metadata('segment', 'first')))
+    two_segments = Annotation(1, 2, metadata=(Metadata('segment', 'first'), Metadata('segement', 'second')))
+    mixed_segment_metadata = Annotation(1, 2, metadata=(Metadata('segment', 'first'),
+                                                        Metadata('name', 'Julius'),
+                                                        Metadata('segement', 'second')))
+
+    assert get_annotation_segment(empty) is None, "Incorrect handling of Annotation without a segment."
+    assert get_annotation_segment(one_segment) == 'first'
+    assert get_annotation_segment(two_segments) == 'second', 'Does not return the "largest" segment name.'
+    assert get_annotation_segment(mixed_segment_metadata) == 'second', 'Incorrect handling of mixed segment metadata.'

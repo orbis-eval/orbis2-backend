@@ -96,14 +96,17 @@ class Annotation:
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
                         end_indices: Union[Tuple[int, ...], int],
-                        surface_forms: Union[Tuple[str, ...], str] = None):
+                        surface_forms: Union[Tuple[str, ...], str] = None,
+                        key: str = "mock",
+                        metadata: [Metadata] = None):
     """
     Return:
          A mock Annotation to be used in unittests.
     """
-    return Annotation(key="mock",
+    return Annotation(key=key,
                       surface_forms=surface_forms,
                       start_indices=start_indices,
                       end_indices=end_indices,
                       annotation_type=None,
-                      annotator=None)
+                      annotator=None,
+                      metadata=metadata)
