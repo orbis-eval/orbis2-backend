@@ -5,7 +5,8 @@ from orbis2.evaluation.annotation_preprocessor.tokenizer import AnnotationTokeni
 from orbis2.evaluation.annotation_preprocessor.unique import UniqueSlotValue
 from orbis2.evaluation.metric.f1 import F1Metric
 from orbis2.evaluation.scorer import overlaps, Scorer
-from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true
+from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true, \
+    same_type_or_proposed_type
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match
 
 MetricDescription = namedtuple('MetricDescription', 'metric description')
@@ -29,6 +30,17 @@ SUPPORTED_METRICS = {
                                                 entity_scorer=same_entity,
                                                 scoring_operator=mul)),
                                 description='Entity Linking: Precision, Recall and F1; overlapping matching.'),
+    'ec_prop_pF1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
+                                                     entity_scorer=same_type_or_proposed_type,
+                                                     scoring_operator=mul)),
+                                     description='Entity Classification with verification of proposed types: '
+                                                 'Precision, Recall and F1; perfect matching.'),
+    'ec_prop_oF1': MetricDescription(F1Metric(Scorer(surface_scorer=overlaps,
+                                                     entity_scorer=same_type_or_proposed_type,
+                                                     scoring_operator=mul)),
+                                     description='Entity Classification with verification of proposed types: '
+                                                 'Precision, Recall and F1; overlapping matching.'),
+
     'ec_pF1': MetricDescription(F1Metric(Scorer(surface_scorer=exact_match,
                                                 entity_scorer=same_type,
                                                 scoring_operator=mul)),
