@@ -4,6 +4,7 @@ from typing import Union, Tuple, List
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
+from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
 from orbis2.model.metadata import Metadata
@@ -83,6 +84,12 @@ class Annotation:
         if annotation_dao.annotator_id:
             annotation.annotation_id = annotation_dao.annotation_id
         return annotation
+
+    @classmethod
+    def from_document_has_annotations(cls, document_has_annotations: [DocumentHasAnnotationDao]) -> ['Annotation']:
+        return [cls.from_annotation_dao(document_annotation_dao.annotation, document_annotation_dao.run_id,
+                                        document_annotation_dao.document_id, document_annotation_dao.timestamp)
+                for document_annotation_dao in document_has_annotations]
 
     def to_dao(self) -> AnnotationDao:
         return AnnotationDao(annotation_id=self.annotation_id, key=self.key,
