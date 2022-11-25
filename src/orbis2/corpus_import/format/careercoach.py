@@ -15,6 +15,15 @@ SEGMENT_TYPE_PREFIX = 'segment/'
 ANNOTATOR = Annotator(name='CorpusImporter', roles=[Role(name='CorpusImporter')])
 
 
+def get_type_or_proposed_type(annotation: Annotation) -> str:
+    """
+    Return:
+        The type for the given key.
+    """
+    return annotation.key.split('#')[1].split("/")[0] if annotation.annotation_type.name == 'proposal' else \
+        annotation.annotation_type.name
+
+
 class CareerCoachFormat(CorpusFormat):
     """
     CorpusFormat used to support imports from the CareerCoach corpus.

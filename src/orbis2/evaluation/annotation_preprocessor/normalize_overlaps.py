@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
-from orbis2.evaluation.format_specific.careercoach2022 import get_type_or_proposed_type
+from orbis2.corpus_import.format.careercoach import get_type_or_proposed_type
 from orbis2.evaluation.scorer import overlaps
 from orbis2.model.annotation import Annotation
 

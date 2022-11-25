@@ -19,7 +19,8 @@ def test_content_extraction_f1_single_document():
               ]
     }
 
-    res = SUPPORTED_METRICS['content_extraction_f1'].metric.compute(reference, annotator)
+    print(SUPPORTED_METRICS['content_extraction_f1'].metric)
+    res = SUPPORTED_METRICS['content_extraction_f1'].metric().compute(reference, annotator)
     assert res.mP == 1
     assert res.MP == 1
     assert res.mR == 3 / 6
@@ -43,7 +44,7 @@ def test_content_extraction_f1_multiple_documents():
                          annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)]
     }
 
-    res = SUPPORTED_METRICS['content_extraction_f1'].metric.compute(reference, annotator)
+    res = SUPPORTED_METRICS['content_extraction_f1'].metric().compute(reference, annotator)
     assert res.mP == 10 / 12, "Incorrect mP."
     assert res.MP == (1 + 7 / 9) / 2, "Incorrect MP."
     assert res.mR == 10 / 14, "Incorrect mR"

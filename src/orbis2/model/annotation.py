@@ -105,6 +105,7 @@ def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
                         end_indices: Union[Tuple[int, ...], int],
                         surface_forms: Union[Tuple[str, ...], str] = None,
                         key: str = "mock",
+                        annotation_type: str = None,
                         metadata: [Metadata] = None):
     """
     Return:
@@ -114,6 +115,6 @@ def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
                       surface_forms=surface_forms,
                       start_indices=start_indices,
                       end_indices=end_indices,
-                      annotation_type=None,
+                      annotation_type=AnnotationType(annotation_type) if annotation_type else None,
                       annotator=None,
                       metadata=metadata)
