@@ -100,6 +100,10 @@ class Annotation:
                              annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
+    def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
+        return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
+                                        annotation=self.to_dao())
+
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
                         end_indices: Union[Tuple[int, ...], int],

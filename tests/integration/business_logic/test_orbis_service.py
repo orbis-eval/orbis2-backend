@@ -252,11 +252,11 @@ def test_update_run_documentHasBeenDeleted_correctlyUpdatedOnDb(clear_test_data_
                }
               )
     updated_run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
-                                                 AnnotationType('annotation-tpye2')]),
-              {Document('Text, das ist ein Beispiel'):
-                   [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
-                               Annotator('Andreas', [Role('admin')]))]}
-              )
+                                                         AnnotationType('annotation-tpye2')]),
+                      {Document('Text, das ist ein Beispiel'):
+                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                                       Annotator('Andreas', [Role('admin')]))]}
+                      )
 
     assert OrbisService().add_run(run)
     assert OrbisService().add_run(updated_run)
@@ -319,20 +319,20 @@ def test_update_run_newAnnotationHasBeenAddedToExistingDocument_correctlyUpdated
 # noinspection PyPep8Naming
 def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdatedOnDb(clear_test_data_orbis):
     run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
-                                                         AnnotationType('annotation-tpye2')]),
-                      {Document('Text, das ist ein Beispiel'):
-                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
-                                       Annotator('Andreas', [Role('admin')])),
-                            Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
-                                       Annotator('Andreas', [Role('admin')]))]
-                       }
-                      )
-    updated_run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
                                                  AnnotationType('annotation-tpye2')]),
               {Document('Text, das ist ein Beispiel'):
                    [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
-                               Annotator('Andreas', [Role('admin')]))]}
+                               Annotator('Andreas', [Role('admin')])),
+                    Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]))]
+               }
               )
+    updated_run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                         AnnotationType('annotation-tpye2')]),
+                      {Document('Text, das ist ein Beispiel'):
+                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                                       Annotator('Andreas', [Role('admin')]))]}
+                      )
 
     assert OrbisService().add_run(run)
     assert OrbisService().add_run(updated_run)
@@ -355,5 +355,116 @@ def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdate
     assert updated_run_on_db.children == run.children
 
 
+# noinspection PyPep8Naming
+def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(clear_test_data_orbis):
+    run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                 AnnotationType('annotation-tpye2')]),
+              {Document('Text, das ist ein Beispiel'):
+                   [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                               Annotator('Andreas', [Role('admin')])),
+                    Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]))]
+               }
+              )
+    OrbisService().add_run(run)
+    db_run = OrbisService().get_runs()[0]
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+    run_id = db_run.get_run_id()
+    assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
+                                                                    AnnotationType('annotation_type1'),
+                                                                    Annotator('Andreas', []), run_id))
+    db_run = OrbisService().get_run(run_id)
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+
+# noinspection PyPep8Naming
+def test_add_annotation_to_document_annotationIsMissingRunId_returnFalse(clear_test_data_orbis):
+    run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                 AnnotationType('annotation-tpye2')]),
+              {Document('Text, das ist ein Beispiel'):
+                   [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                               Annotator('Andreas', [Role('admin')])),
+                    Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]))]
+               }
+              )
+    OrbisService().add_run(run)
+    db_run = OrbisService().get_runs()[0]
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+    run_id = db_run.get_run_id()
+    document_id = list(db_run.document_annotations.keys())[0].document_id
+    assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
+                                                                    AnnotationType('annotation_type1'),
+                                                                    Annotator('Andreas', []), document_id=document_id))
+    db_run = OrbisService().get_run(run_id)
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+
+# noinspection PyPep8Naming
+def test_add_annotation_to_document_addNewAnnotationToExistingDocument_existingDocumentContainsNewAnnotation(
+        clear_test_data_orbis):
+    run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                 AnnotationType('annotation-tpye2')]),
+              {Document('Text, das ist ein Beispiel'):
+                   [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                               Annotator('Andreas', [Role('admin')])),
+                    Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]))]
+               }
+              )
+    OrbisService().add_run(run)
+    db_run = OrbisService().get_runs()[0]
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+    run_id = db_run.get_run_id()
+    document_id = list(db_run.document_annotations.keys())[0].document_id
+    assert OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
+                                                                AnnotationType('annotation_type1'),
+                                                                Annotator('Andreas', []), run_id, document_id))
+    db_run = OrbisService().get_run(run_id)
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 3
+
+
+# noinspection PyPep8Naming
+def test_add_annotation_to_document_addNewAnnotationTwice_annotationShouldBeAddedOnlyOnce(clear_test_data_orbis):
+    run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
+                                                 AnnotationType('annotation-tpye2')]),
+              {Document('Text, das ist ein Beispiel'):
+                   [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'),
+                               Annotator('Andreas', [Role('admin')])),
+                    Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]))]
+               }
+              )
+    OrbisService().add_run(run)
+    db_run = OrbisService().get_runs()[0]
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 2
+
+    run_id = db_run.get_run_id()
+    document_id = list(db_run.document_annotations.keys())[0].document_id
+    annotation = Annotation('', 'something', 0, 9, AnnotationType('annotation_type1'),
+                            Annotator('Andreas', []), run_id, document_id)
+    assert OrbisService().add_annotation_to_document(annotation)
+    assert OrbisService().add_annotation_to_document(annotation)
+    db_run = OrbisService().get_run(run_id)
+    # contains only one document
+    assert len(list(db_run.document_annotations.keys())) == 1
+    assert len(list(db_run.document_annotations.values())[0]) == 3
 # TODO, anf 10.11.2022: add test for two runs where one has a parent and check whether the parent got the correct child
 #  entry

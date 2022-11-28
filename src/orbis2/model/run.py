@@ -62,12 +62,7 @@ class Run:
     def to_dao(self) -> RunDao:
         run_has_document_daos = []
         for document, annotations in self.document_annotations.items():
-            document_has_annotation_daos = [
-                DocumentHasAnnotationDao(run_id=self.run_id,
-                                         document_id=document.document_id,
-                                         annotation_id=annotation.annotation_id,
-                                         annotation=annotation.to_dao())
-                for annotation in annotations]
+            document_has_annotation_daos = [annotation.to_document_annotation_dao() for annotation in annotations]
 
             run_has_document_daos.append(RunHasDocumentDao(run_id=self.run_id,
                                                            document_id=document.document_id,

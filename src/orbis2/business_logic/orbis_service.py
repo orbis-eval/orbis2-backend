@@ -1,10 +1,11 @@
 import logging
 from typing import Union
 
+from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.corpus import Corpus
-from orbis2.model.document import Document
 from orbis2.model.run import Run
 
 
@@ -62,6 +63,9 @@ class OrbisService:
             if not self.orbis_db.add_run(run.to_dao()):
                 return False
         return True
+
+    def add_annotation_to_document(self, annotation: Annotation) -> bool:
+        return self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao())
 
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
         if annotation_type:

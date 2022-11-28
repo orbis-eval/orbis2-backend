@@ -8,6 +8,7 @@ from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
+from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
@@ -166,6 +167,18 @@ class OrbisDb(SqlDb):
         Returns: True if it worked, false otherwise
         """
         return self.try_catch(lambda: self.session.merge(run), f'Adding the run {run} failed.') and self.commit()
+
+    def add_annotation_to_document(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
+        """
+        Add annotation to an existing document in orbis database.
+
+        Args:
+            document_has_annotation:
+
+        Returns: True if it worked, false otherwise
+        """
+        self.session.merge(document_has_annotation)
+        return self.commit()
 
     def add_annotation_type(self, annotation_type: AnnotationTypeDao) -> bool:
         """
