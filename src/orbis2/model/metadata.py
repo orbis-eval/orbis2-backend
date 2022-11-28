@@ -5,8 +5,6 @@ from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 
 class Metadata:
 
-    cls_cache = {}
-
     def __init__(self, key: str, value: str):
         """
         CONSTRUCTOR
@@ -36,9 +34,7 @@ class Metadata:
         return [cls.from_metadata_dao(metadata_dao) for metadata_dao in metadata_daos]
 
     def to_dao(self) -> MetadataDao:
-        if self.metadata_id not in self.cls_cache:
-            self.cls_cache[self.metadata_id] = MetadataDao(metadata_id=self.metadata_id, key=self.key, value=self.value)
-        return self.cls_cache[self.metadata_id]
+        return MetadataDao(metadata_id=self.metadata_id, key=self.key, value=self.value)
 
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:

@@ -1,12 +1,10 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
-from orbis2.model.annotation import Annotation
 from orbis2.model.metadata import Metadata
 
 
 class Document:
-    cls_cache = {}
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
@@ -38,8 +36,5 @@ class Document:
         return document
 
     def to_dao(self) -> DocumentDao:
-        if self.document_id not in self.cls_cache:
-            self.cls_cache[self.document_id] = DocumentDao(document_id=self.document_id, content=self.content,
-                                                           key=self.key,
-                                                           meta_data=Metadata.to_metadata_daos(self.metadata))
-        return self.cls_cache[self.document_id]
+        return DocumentDao(document_id=self.document_id, content=self.content, key=self.key,
+                           meta_data=Metadata.to_metadata_daos(self.metadata))

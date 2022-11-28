@@ -6,8 +6,6 @@ from orbis2.model.role import Role
 
 class Annotator:
 
-    cls_cache = {}
-
     def __init__(self, name: str, roles: [Role]):
         """
         CONSTRUCTOR
@@ -33,7 +31,4 @@ class Annotator:
         return annotator
 
     def to_dao(self) -> AnnotatorDao:
-        if self.annotator_id not in self.cls_cache:
-            self.cls_cache[self.annotator_id] = AnnotatorDao(annotator_id=self.annotator_id, name=self.name,
-                                                             roles=Role.to_role_daos(self.roles))
-        return self.cls_cache[self.annotator_id]
+        return AnnotatorDao(annotator_id=self.annotator_id, name=self.name, roles=Role.to_role_daos(self.roles))
