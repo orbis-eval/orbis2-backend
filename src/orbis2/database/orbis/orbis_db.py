@@ -2,7 +2,7 @@ import logging
 from typing import Union, List, Callable
 
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import lazyload
+from sqlalchemy.orm import subqueryload
 
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
@@ -30,7 +30,7 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no run exists in the database
         """
         try:
-            results = self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).all()
+            results = self.session.query(RunDao).options(subqueryload('*')).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no run entries in orbis database.')
@@ -47,7 +47,7 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if results := self.try_catch(
-            lambda: self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).where(
+            lambda: self.session.query(RunDao).options(subqueryload('*')).where(
                 RunDao.name == run_name).all(),
             f'Run request with run name: {run_name} failed', False
         ):
@@ -63,7 +63,7 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if run := self.try_catch(
-            lambda: self.session.query(RunDao).options(lazyload(RunDao.run_has_documents)).get(run_id),
+            lambda: self.session.query(RunDao).options(subqueryload('*')).get(run_id),
             f'Run request with run id: {run_id} failed', False
         ):
             return run
@@ -96,7 +96,7 @@ class OrbisDb(SqlDb):
 
         Returns: A list of corpus objects or None if no according corpus exists in the database
         """
-        results = self.try_catch(lambda: self.session.query(CorpusDao).options(lazyload(CorpusDao.runs)).all(),
+        results = self.try_catch(lambda: self.session.query(CorpusDao).options(subqueryload('*')).all(),
                                  'All corpora request failed',
                                  [])
         if len(results) > 0:
