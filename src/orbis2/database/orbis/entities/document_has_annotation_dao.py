@@ -15,7 +15,6 @@ class DocumentHasAnnotationDao(OrbisBase):
     __table_args__ = (ForeignKeyConstraint((run_id, document_id),
                                            [RunHasDocumentDao.run_id, RunHasDocumentDao.document_id]),
                       {})
-    run_has_document = relationship('RunHasDocumentDao', back_populates='document_has_annotations')
     annotation_id = Column(ForeignKey(AnnotationDao.annotation_id), primary_key=True)
-    annotation = relationship(AnnotationDao, back_populates='document_has_annotations')
+    annotation = relationship(AnnotationDao)
     timestamp = Column(TIMESTAMP, default=datetime.utcnow)

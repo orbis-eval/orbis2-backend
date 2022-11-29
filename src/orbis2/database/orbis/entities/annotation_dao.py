@@ -21,5 +21,4 @@ class AnnotationDao(OrbisBase):
     annotator_id = Column(ForeignKey(AnnotatorDao.annotator_id), nullable=False)
     annotator = relationship(AnnotatorDao, back_populates='annotations')
     meta_data = relationship(MetadataDao, secondary=annotation_has_metadata_table, back_populates='annotations')
-    document_has_annotations = relationship('DocumentHasAnnotationDao', back_populates='annotation')
     # TODO, anf 02.11.2022: add constraint for equal array size
