@@ -26,8 +26,6 @@ class Corpus(BaseModel):
     @classmethod
     def from_corpus_dao(cls, corpus_dao: CorpusDao) -> 'Corpus':
         corpus = cls(corpus_dao.name, AnnotationType.from_annotation_type_daos(corpus_dao.supported_annotation_types))
-        if corpus_dao.corpus_id:
-            corpus.corpus_id = corpus_dao.corpus_id
         return corpus
 
     @classmethod

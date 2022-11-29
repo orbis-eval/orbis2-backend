@@ -1,17 +1,16 @@
 import os
 import pytest as pytest
 
-from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
-from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
-from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
-from orbis2.database.orbis.entities.corpus_dao import CorpusDao
-from orbis2.database.orbis.entities.document_dao import DocumentDao
-from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
-from orbis2.database.orbis.entities.metadata_dao import MetadataDao
-from orbis2.database.orbis.entities.role_dao import RoleDao
-from orbis2.database.orbis.entities.run_dao import RunDao
-from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
+from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.model.annotation import Annotation
+from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.annotator import Annotator
+from orbis2.model.corpus import Corpus
+from orbis2.model.document import Document
+from orbis2.model.metadata import Metadata
+from orbis2.model.role import Role
+from orbis2.model.run import Run
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -28,27 +27,9 @@ def clear_test_data_orbis():
 
 @pytest.fixture()
 def insert_test_data_orbis(clear_test_data_orbis):
-    metadata = MetadataDao(
-        metadata_id=1111111, key='key1', value='value1'
-    )
-    annotation_type = AnnotationTypeDao(
-        type_id=11111, name='type11111'
-    )
-    run = RunDao(run_id=1, name='run1', description='run1', run_has_documents=[
-        RunHasDocumentDao(document=DocumentDao(
-            document_id=11, content='Text, das ist ein Beispiel', meta_data=[metadata]
-        ), document_has_annotations=[DocumentHasAnnotationDao(
-            annotation=AnnotationDao(
-                annotation_id=111, key='url', annotation_type=annotation_type,
-                annotator=AnnotatorDao(
-                    annotator_id=111111, name='annotator111111', roles=[RoleDao(
-                        role_id=2, name='role2'
-                    )]
-                ), meta_data=[metadata], surface_forms=['Text'], start_indices=[0], end_indices=[4]
-            )
-        )], done=False)
-    ], corpus=CorpusDao(corpus_id=1111, name='Corpus1111', supported_annotation_types=[
-        annotation_type
-    ]))
-
-    assert OrbisDb().add_run(run)
+    run = Run(
+        'run1', 'run1', Corpus('corpus1', [AnnotationType('annotation-type1')]),
+        {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+         [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                     Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]})
+    assert OrbisService().add_run(run)

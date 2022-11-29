@@ -25,8 +25,6 @@ class Metadata(BaseModel):
     @classmethod
     def from_metadata_dao(cls, metadata_dao: MetadataDao) -> 'Metadata':
         metadata = cls(metadata_dao.key, metadata_dao.value)
-        if metadata_dao.metadata_id:
-            metadata.metadata_id = metadata_dao.metadata_id
         return metadata
 
     @classmethod

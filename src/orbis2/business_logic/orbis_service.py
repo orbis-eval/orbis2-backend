@@ -1,11 +1,12 @@
-import logging
 from typing import Union
 
-from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.annotator import Annotator
 from orbis2.model.corpus import Corpus
+from orbis2.model.document import Document
+from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
 
 
@@ -38,6 +39,16 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
+    def get_documents(self) -> [Document]:
+        if documents := self.orbis_db.get_documents():
+            return Document.from_document_daos(documents)
+        return []
+
+    def get_annotations(self) -> [Annotation]:
+        if annotations := self.orbis_db.get_annotations():
+            return Annotation.from_annotation_daos(annotations)
+        return []
+
     def get_corpora(self) -> [Corpus]:
         if corpora := self.orbis_db.get_corpora():
             return Corpus.from_corpus_daos(corpora)
@@ -49,6 +60,16 @@ class OrbisService:
     def get_annotation_types(self) -> [AnnotationType]:
         if annotation_types := self.orbis_db.get_annotation_types():
             return AnnotationType.from_annotation_type_daos(annotation_types)
+        return []
+
+    def get_metadata(self) -> [Metadata]:
+        if metadata := self.orbis_db.get_metadata():
+            return Metadata.from_metadata_daos(metadata)
+        return []
+
+    def get_annotators(self) -> [Annotator]:
+        if annotators := self.orbis_db.get_annotators():
+            return Annotator.from_annotator_daos(annotators)
         return []
 
     def add_run(self, run: Run) -> bool:

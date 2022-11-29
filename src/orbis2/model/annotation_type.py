@@ -24,8 +24,6 @@ class AnnotationType(BaseModel):
     @classmethod
     def from_annotation_type_dao(cls, annotation_type_dao: AnnotationTypeDao) -> 'AnnotationType':
         annotation_type = cls(annotation_type_dao.name)
-        if annotation_type_dao.type_id:
-            annotation_type.type_id = annotation_type_dao.type_id
         return annotation_type
 
     @classmethod

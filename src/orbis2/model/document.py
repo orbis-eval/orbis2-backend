@@ -30,12 +30,14 @@ class Document(BaseModel):
         return False
 
     @classmethod
-    def from_document_dao(cls, document_dao: DocumentDao, run_id: int, done: bool) -> 'Document':
+    def from_document_dao(cls, document_dao: DocumentDao, run_id: int = None, done: bool = False) -> 'Document':
         document = cls(document_dao.content, document_dao.key, run_id,
                        Metadata.from_metadata_daos(document_dao.meta_data), done)
-        if document_dao.document_id:
-            document.document_id = document_dao.document_id
         return document
+
+    @classmethod
+    def from_document_daos(cls, document_daos: [DocumentDao], run_id: int = None, done: bool = False) -> ['Document']:
+        return [cls.from_document_dao(document_dao, run_id, done) for document_dao in document_daos]
 
     def to_dao(self) -> DocumentDao:
         return DocumentDao(document_id=self.get_id(), content=self.content, key=self.key,

@@ -24,8 +24,6 @@ class Role(BaseModel):
     @classmethod
     def from_role_dao(cls, role_dao: RoleDao) -> 'Role':
         role = cls(role_dao.name)
-        if role_dao:
-            role.role_id = role_dao.role_id
         return role
 
     @classmethod

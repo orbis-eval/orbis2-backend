@@ -42,15 +42,12 @@ class Run(BaseModel):
 
         """
         document_annotations = {}
-        run_id = run_dao.run_id
         for run_document_dao in run_dao.run_has_documents:
-            document = Document.from_document_dao(run_document_dao.document, run_id, run_document_dao.done)
+            document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
         run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
                   Run.from_run_daos(run_dao.parents), Run.from_run_daos(run_dao.children))
-        if run_dao.run_id:
-            run.run_id = run_dao.run_id
         return run
 
     @classmethod
@@ -63,7 +60,7 @@ class Run(BaseModel):
                           document.to_run_document_dao(
                               [annotation.to_document_annotation_dao() for annotation in annotations])
                           for document, annotations in self.document_annotations.items()
-                      ], corpus=self.corpus.to_dao(),
+                      ], corpus_id=self.corpus.get_id(), corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
     @staticmethod

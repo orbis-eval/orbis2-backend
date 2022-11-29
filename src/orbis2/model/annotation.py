@@ -74,16 +74,20 @@ class Annotation(BaseModel):
         return self.__str__()
 
     @classmethod
-    def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int, document_id: int,
-                            timestamp: datetime) -> 'Annotation':
+    def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int = None, document_id: int = None,
+                            timestamp: datetime = None) -> 'Annotation':
         annotation = cls(annotation_dao.key, annotation_dao.surface_forms, annotation_dao.start_indices,
                          annotation_dao.end_indices,
                          AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),
                          Annotator.from_annotator_dao(annotation_dao.annotator), run_id, document_id,
                          Metadata.from_metadata_daos(annotation_dao.meta_data), timestamp)
-        if annotation_dao.annotator_id:
-            annotation.annotation_id = annotation_dao.annotation_id
         return annotation
+
+    @classmethod
+    def from_annotation_daos(cls, annotation_daos: [AnnotationDao], run_id: int = None, document_id: int = None,
+                             timestamp: datetime = None) -> ['Annotation']:
+        return [cls.from_annotation_dao(annotation_dao, run_id, document_id, timestamp)
+                for annotation_dao in annotation_daos]
 
     @classmethod
     def from_document_has_annotations(cls, document_has_annotations: [DocumentHasAnnotationDao]) -> ['Annotation']:
@@ -96,7 +100,9 @@ class Annotation(BaseModel):
                              surface_forms=list(self.surface_forms),
                              start_indices=list(self.start_indices),
                              end_indices=list(self.end_indices),
+                             annotation_type_id=self.annotation_type.get_id(),
                              annotation_type=self.annotation_type.to_dao(),
+                             annotator_id=self.annotator.get_id(),
                              annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 

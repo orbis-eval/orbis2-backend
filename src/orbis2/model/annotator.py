@@ -24,11 +24,13 @@ class Annotator(BaseModel):
         return False
 
     @classmethod
-    def from_annotator_dao(cls, annotator_dao: AnnotatorDao):
+    def from_annotator_dao(cls, annotator_dao: AnnotatorDao) -> 'Annotator':
         annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles))
-        if annotator_dao.annotator_id:
-            annotator.annotator_id = annotator_dao.annotator_id
         return annotator
+
+    @classmethod
+    def from_annotator_daos(cls, annotator_daos: [AnnotatorDao]) -> ['Annotator']:
+        return [cls.from_annotator_dao(annotator_dao) for annotator_dao in annotator_daos]
 
     def to_dao(self) -> AnnotatorDao:
         return AnnotatorDao(annotator_id=self.get_id(), name=self.name, roles=Role.to_role_daos(self.roles))

@@ -5,10 +5,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
 from orbis2.config.app_config import AppConfig
+from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
+from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
+from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
@@ -141,6 +144,23 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def get_annotations(self) -> Union[List[AnnotationDao], None]:
+        """
+        Get all annotations from database
+
+        Returns: A list of annotation objects or None if no annotation exists in the database
+        """
+        try:
+            results = self.session.query(AnnotationDao).all()
+            if len(results) > 0:
+                return results
+            logging.debug('There are no annotation entries in orbis database.')
+            return None
+        except SQLAlchemyError as e:
+            logging.warning('All annotations request failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
+            return None
+
     def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
         """
         Get all annotation types from database
@@ -156,6 +176,39 @@ class OrbisDb(SqlDb):
         except SQLAlchemyError as e:
             logging.warning('All annotation type request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')
+
+    def get_metadata(self) -> Union[List[MetadataDao], None]:
+        """
+        Get all metadata from database
+
+        Returns: A list of metadata objects or None if no metadata exists in the database
+        """
+        try:
+            results = self.session.query(MetadataDao).all()
+            if len(results) > 0:
+                return results
+            logging.debug('There are no metadata entries in orbis database.')
+            return None
+        except SQLAlchemyError as e:
+            logging.warning('All metadata request failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
+
+    def get_annotators(self) -> Union[List[AnnotatorDao], None]:
+        """
+        Get all annotators from database
+
+        Returns: A list of annotator objects or None if no annotation exists in the database
+        """
+        try:
+            results = self.session.query(AnnotatorDao).all()
+            if len(results) > 0:
+                return results
+            logging.debug('There are no annotator entries in orbis database.')
+            return None
+        except SQLAlchemyError as e:
+            logging.warning('All annotator request failed.')
+            logging.debug(f'The following exception occurred: {e.__str__()}')
+            return None
 
     def add_run(self, run: RunDao) -> bool:
         """
@@ -177,8 +230,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if it worked, false otherwise
         """
-        self.session.merge(document_has_annotation)
-        return self.commit()
+        return self.try_catch(lambda: self.session.merge(document_has_annotation),
+                              f'Adding the annotation_document {document_has_annotation} failed.') and self.commit()
 
     def add_annotation_type(self, annotation_type: AnnotationTypeDao) -> bool:
         """
