@@ -1,6 +1,8 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
+from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
+from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
@@ -38,3 +40,9 @@ class Document(BaseModel):
     def to_dao(self) -> DocumentDao:
         return DocumentDao(document_id=self.get_id(), content=self.content, key=self.key,
                            meta_data=Metadata.to_metadata_daos(self.metadata))
+
+    def to_run_document_dao(self, document_has_annotation_daos: [DocumentHasAnnotationDao] = None) -> RunHasDocumentDao:
+        if not document_has_annotation_daos:
+            document_has_annotation_daos = []
+        return RunHasDocumentDao(run_id=self.run_id, document_id=self.get_id(), document=self.to_dao(),
+                                 document_has_annotations=document_has_annotation_daos, done=self.done)

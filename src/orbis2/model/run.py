@@ -1,7 +1,6 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.run_dao import RunDao
-from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.model.annotation import Annotation
 from orbis2.model.base_model import BaseModel
 from orbis2.model.corpus import Corpus
@@ -59,18 +58,12 @@ class Run(BaseModel):
         return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:
-        run_has_document_daos = []
-        for document, annotations in self.document_annotations.items():
-            document_has_annotation_daos = [annotation.to_document_annotation_dao() for annotation in annotations]
-
-            run_has_document_daos.append(RunHasDocumentDao(run_id=self.get_id(),
-                                                           document_id=document.get_id(),
-                                                           document=document.to_dao(),
-                                                           document_has_annotations=document_has_annotation_daos,
-                                                           done=document.done))
-
         return RunDao(run_id=self.get_id(), name=self.name, description=self.description,
-                      run_has_documents=run_has_document_daos, corpus=self.corpus.to_dao(),
+                      run_has_documents=[
+                          document.to_run_document_dao(
+                              [annotation.to_document_annotation_dao() for annotation in annotations])
+                          for document, annotations in self.document_annotations.items()
+                      ], corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
     @staticmethod
