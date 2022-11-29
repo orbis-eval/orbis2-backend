@@ -10,5 +10,4 @@ class AnnotatorDao(OrbisBase):
 
     annotator_id = Column(BigInteger, Sequence('annotator_id_seq'), primary_key=True)
     name = Column(VARCHAR(40), nullable=False)
-    annotations = relationship('AnnotationDao', back_populates='annotator')
-    roles = relationship('RoleDao', secondary=annotator_has_role_table, back_populates='annotators')
+    roles = relationship('RoleDao', secondary=annotator_has_role_table)

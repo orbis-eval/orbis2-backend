@@ -17,8 +17,8 @@ class AnnotationDao(OrbisBase):
     start_indices = Column(ARRAY(Integer), nullable=False)
     end_indices = Column(ARRAY(Integer), nullable=False)
     annotation_type_id = Column(ForeignKey(AnnotationTypeDao.type_id), nullable=False)
-    annotation_type = relationship(AnnotationTypeDao, back_populates='annotations')
+    annotation_type = relationship(AnnotationTypeDao)
     annotator_id = Column(ForeignKey(AnnotatorDao.annotator_id), nullable=False)
-    annotator = relationship(AnnotatorDao, back_populates='annotations')
-    meta_data = relationship(MetadataDao, secondary=annotation_has_metadata_table, back_populates='annotations')
+    annotator = relationship(AnnotatorDao)
+    meta_data = relationship(MetadataDao, secondary=annotation_has_metadata_table)
     # TODO, anf 02.11.2022: add constraint for equal array size

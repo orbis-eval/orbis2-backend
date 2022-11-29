@@ -16,7 +16,7 @@ class RunDao(OrbisBase):
     run_has_documents = relationship('RunHasDocumentDao',
                                      cascade='save-update, merge, delete, delete-orphan')
     corpus_id = Column(ForeignKey(CorpusDao.corpus_id), nullable=False)
-    corpus = relationship(CorpusDao, back_populates='runs')
+    corpus = relationship(CorpusDao)
     parents = relation('RunDao', secondary=run_derived_from_table,
                        primaryjoin=run_derived_from_table.c.parent_id == run_id,
                        secondaryjoin=run_derived_from_table.c.child_id == run_id,

@@ -9,4 +9,3 @@ class RoleDao(OrbisBase):
 
     role_id = Column(BigInteger, Sequence('role_id_seq'), primary_key=True)
     name = Column(Text, nullable=False)
-    annotators = relationship('AnnotatorDao', secondary='annotator_has_role', back_populates='roles')
