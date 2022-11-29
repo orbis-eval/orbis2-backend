@@ -1,10 +1,11 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
+from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
 
-class Document:
+class Document(BaseModel):
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
@@ -17,7 +18,6 @@ class Document:
         self.run_id = run_id
         self.metadata = metadata if metadata else []
         self.done = done
-        self.document_id = self.__hash__()
 
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)
@@ -36,5 +36,5 @@ class Document:
         return document
 
     def to_dao(self) -> DocumentDao:
-        return DocumentDao(document_id=self.document_id, content=self.content, key=self.key,
+        return DocumentDao(document_id=self.get_id(), content=self.content, key=self.key,
                            meta_data=Metadata.to_metadata_daos(self.metadata))

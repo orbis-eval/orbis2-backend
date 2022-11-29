@@ -372,7 +372,7 @@ def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(cl
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 2
 
-    run_id = db_run.get_run_id()
+    run_id = db_run.get_id()
     assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                     AnnotationType('annotation_type1'),
                                                                     Annotator('Andreas', []), run_id))
@@ -399,7 +399,7 @@ def test_add_annotation_to_document_annotationIsMissingRunId_returnFalse(clear_t
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 2
 
-    run_id = db_run.get_run_id()
+    run_id = db_run.get_id()
     document_id = list(db_run.document_annotations.keys())[0].document_id
     assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                     AnnotationType('annotation_type1'),
@@ -428,7 +428,7 @@ def test_add_annotation_to_document_addNewAnnotationToExistingDocument_existingD
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 2
 
-    run_id = db_run.get_run_id()
+    run_id = db_run.get_id()
     document_id = list(db_run.document_annotations.keys())[0].document_id
     assert OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                 AnnotationType('annotation_type1'),
@@ -456,7 +456,7 @@ def test_add_annotation_to_document_addNewAnnotationTwice_annotationShouldBeAdde
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 2
 
-    run_id = db_run.get_run_id()
+    run_id = db_run.get_id()
     document_id = list(db_run.document_annotations.keys())[0].document_id
     annotation = Annotation('', 'something', 0, 9, AnnotationType('annotation_type1'),
                             Annotator('Andreas', []), run_id, document_id)

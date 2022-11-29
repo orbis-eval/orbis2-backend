@@ -7,10 +7,11 @@ from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
+from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
 
-class Annotation:
+class Annotation(BaseModel):
     """
     Mock Annotation class used within the unittests.
     """
@@ -44,7 +45,6 @@ class Annotation:
         self.document_id = document_id
         self.metadata = metadata if metadata else []
         self.timestamp = timestamp
-        self.annotation_id = self.__hash__()
 
     def __eq__(self, other):
         if isinstance(other, Annotation):
@@ -92,7 +92,7 @@ class Annotation:
                 for document_annotation_dao in document_has_annotations]
 
     def to_dao(self) -> AnnotationDao:
-        return AnnotationDao(annotation_id=self.annotation_id, key=self.key,
+        return AnnotationDao(annotation_id=self.get_id(), key=self.key,
                              surface_forms=list(self.surface_forms),
                              start_indices=list(self.start_indices),
                              end_indices=list(self.end_indices),
@@ -102,7 +102,7 @@ class Annotation:
 
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
-                                        annotation_id=self.annotation_id, annotation=self.to_dao())
+                                        annotation_id=self.get_id(), annotation=self.to_dao())
 
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],

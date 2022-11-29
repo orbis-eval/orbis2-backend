@@ -1,9 +1,10 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.role_dao import RoleDao
+from orbis2.model.base_model import BaseModel
 
 
-class Role:
+class Role(BaseModel):
 
     def __init__(self, name: str):
         """
@@ -11,7 +12,6 @@ class Role:
 
         """
         self.name = name
-        self.role_id = self.__hash__()
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -33,7 +33,7 @@ class Role:
         return [cls.from_role_dao(role_dao) for role_dao in role_daos]
 
     def to_dao(self) -> RoleDao:
-        return RoleDao(role_id=self.role_id, name=self.name)
+        return RoleDao(role_id=self.get_id(), name=self.name)
 
     @staticmethod
     def to_role_daos(roles: [RoleDao]) -> [RoleDao]:

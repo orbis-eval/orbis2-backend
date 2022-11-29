@@ -1,9 +1,11 @@
-from orbis2.database.orbis.entities.corpus_dao import CorpusDao
-from orbis2.model.annotation_type import AnnotationType
 from xxhash import xxh32_intdigest
 
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao
+from orbis2.model.annotation_type import AnnotationType
+from orbis2.model.base_model import BaseModel
 
-class Corpus:
+
+class Corpus(BaseModel):
 
     def __init__(self, name: str, supported_annotation_types: [AnnotationType]):
         """
@@ -12,7 +14,6 @@ class Corpus:
         """
         self.name = name
         self.supported_annotation_types = supported_annotation_types
-        self.corpus_id = self.__hash__()
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -34,6 +35,6 @@ class Corpus:
         return [cls.from_corpus_dao(corpus_dao) for corpus_dao in corpus_daos]
 
     def to_dao(self) -> CorpusDao:
-        return CorpusDao(corpus_id=self.corpus_id, name=self.name,
+        return CorpusDao(corpus_id=self.get_id(), name=self.name,
                          supported_annotation_types=AnnotationType.to_annotation_type_daos(
                              self.supported_annotation_types))

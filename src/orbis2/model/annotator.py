@@ -1,10 +1,11 @@
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
+from orbis2.model.base_model import BaseModel
 from orbis2.model.role import Role
 
 
-class Annotator:
+class Annotator(BaseModel):
 
     def __init__(self, name: str, roles: [Role]):
         """
@@ -13,7 +14,6 @@ class Annotator:
         """
         self.name = name
         self.roles = roles
-        self.annotator_id = self.__hash__()
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -31,4 +31,4 @@ class Annotator:
         return annotator
 
     def to_dao(self) -> AnnotatorDao:
-        return AnnotatorDao(annotator_id=self.annotator_id, name=self.name, roles=Role.to_role_daos(self.roles))
+        return AnnotatorDao(annotator_id=self.get_id(), name=self.name, roles=Role.to_role_daos(self.roles))

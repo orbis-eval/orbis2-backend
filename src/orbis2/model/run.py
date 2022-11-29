@@ -1,14 +1,14 @@
 from xxhash import xxh32_intdigest
 
-from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.model.annotation import Annotation
+from orbis2.model.base_model import BaseModel
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 
 
-class Run:
+class Run(BaseModel):
 
     def __init__(self, name: str, description: str, corpus: Corpus,
                  document_annotations: dict[Document, [Annotation]] = None, parents: ['Run'] = None,
@@ -24,7 +24,6 @@ class Run:
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
         self.children = children if children else []
-        self.run_id = self.__hash__()
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -64,13 +63,13 @@ class Run:
         for document, annotations in self.document_annotations.items():
             document_has_annotation_daos = [annotation.to_document_annotation_dao() for annotation in annotations]
 
-            run_has_document_daos.append(RunHasDocumentDao(run_id=self.run_id,
-                                                           document_id=document.document_id,
+            run_has_document_daos.append(RunHasDocumentDao(run_id=self.get_id(),
+                                                           document_id=document.get_id(),
                                                            document=document.to_dao(),
                                                            document_has_annotations=document_has_annotation_daos,
                                                            done=document.done))
 
-        return RunDao(run_id=self.run_id, name=self.name, description=self.description,
+        return RunDao(run_id=self.get_id(), name=self.name, description=self.description,
                       run_has_documents=run_has_document_daos, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
