@@ -464,6 +464,28 @@ def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdate
 
 
 # noinspection PyPep8Naming
+def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_returnFalse(insert_test_data_orbis):
+    run = OrbisService().get_runs()[0]
+    run_id = run.get_id()
+    document_id = list(run.document_annotations.keys())[0].get_id()
+    annotation = Annotation('', ('test', 'text'), (0, 7, 13), (4, 11), AnnotationType('annotation-type1'),
+                            Annotator('Andreas', [Role('admin')]), run_id, document_id)
+
+    assert not OrbisService().add_annotation_to_document(annotation)
+
+
+# noinspection PyPep8Naming
+def test_add_annotation_to_document_surfaceFormLenDiffersFromEndIndicesLen_returnFalse(insert_test_data_orbis):
+    run = OrbisService().get_runs()[0]
+    run_id = run.get_id()
+    document_id = list(run.document_annotations.keys())[0].get_id()
+    annotation = Annotation('', ('test', 'text'), (0, 7), (4, 11, 18), AnnotationType('annotation-type1'),
+                            Annotator('Andreas', [Role('admin')]), run_id, document_id)
+
+    assert not OrbisService().add_annotation_to_document(annotation)
+
+
+# noinspection PyPep8Naming
 def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(clear_test_data_orbis):
     run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
                                                  AnnotationType('annotation-tpye2')]),

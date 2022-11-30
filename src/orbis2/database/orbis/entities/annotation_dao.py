@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, Sequence, BigInteger, Text, ForeignKey, ARRAY
+from sqlalchemy import Column, Integer, Sequence, BigInteger, Text, ForeignKey, ARRAY, CheckConstraint
+from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
@@ -21,4 +22,5 @@ class AnnotationDao(OrbisBase):
     annotator_id = Column(ForeignKey(AnnotatorDao.annotator_id), nullable=False)
     annotator = relationship(AnnotatorDao)
     meta_data = relationship(MetadataDao, secondary=annotation_has_metadata_table)
-    # TODO, anf 02.11.2022: add constraint for equal array size
+    __table_args__ = (CheckConstraint(func.array_length(surface_forms, 1) == func.array_length(start_indices, 1)),
+                      CheckConstraint(func.array_length(start_indices, 1) == func.array_length(end_indices, 1)))
