@@ -19,5 +19,4 @@ class RunDao(OrbisBase):
     corpus = relationship(CorpusDao)
     parents = relation('RunDao', secondary=run_derived_from_table,
                        primaryjoin=run_derived_from_table.c.parent_id == run_id,
-                       secondaryjoin=run_derived_from_table.c.child_id == run_id,
-                       backref='children')
+                       secondaryjoin=run_derived_from_table.c.child_id == run_id)

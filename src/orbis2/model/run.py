@@ -10,8 +10,7 @@ from orbis2.model.document import Document
 class Run(BaseModel):
 
     def __init__(self, name: str, description: str, corpus: Corpus,
-                 document_annotations: dict[Document, [Annotation]] = None, parents: ['Run'] = None,
-                 children: ['Run'] = None):
+                 document_annotations: dict[Document, [Annotation]] = None, parents: ['Run'] = None):
         """
         CONSTRUCTOR
 
@@ -22,7 +21,6 @@ class Run(BaseModel):
         # TODO, anf 16.11.2022: maybe change to dict[document_id, (Document, [Annotation])] ?? for faster access by id
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
-        self.children = children if children else []
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -47,7 +45,7 @@ class Run(BaseModel):
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
         run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
-                  Run.from_run_daos(run_dao.parents), Run.from_run_daos(run_dao.children))
+                  Run.from_run_daos(run_dao.parents))
         return run
 
     @classmethod
@@ -58,8 +56,8 @@ class Run(BaseModel):
         return RunDao(run_id=self.get_id(), name=self.name, description=self.description,
                       run_has_documents=[
                           document.to_run_document_dao(
-                              [annotation.to_document_annotation_dao() for annotation in annotations])
-                          for document, annotations in self.document_annotations.items()
+                              [annotation.to_document_annotation_dao() for annotation in annotations]
+                          ) for document, annotations in self.document_annotations.items()
                       ], corpus_id=self.corpus.get_id(), corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
