@@ -64,3 +64,16 @@ class Run(BaseModel):
     @staticmethod
     def to_run_daos(runs: ['Run']) -> [RunDao]:
         return [run.to_dao() for run in runs]
+
+    def copy(self, new_name: str, new_description: str) -> 'Run':
+        parents = [self]
+        if self.parents:
+            parents = parents.append([parent for parent in self.parents])
+        new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
+        document_annotations = {
+            document.copy(new_run.get_id()): [
+                annotation.copy(new_run.get_id(), document.get_id()) for annotation in annotations
+            ] for document, annotations in self.document_annotations.items()
+        }
+        new_run.document_annotations = document_annotations
+        return new_run

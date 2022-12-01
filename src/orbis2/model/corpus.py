@@ -36,3 +36,6 @@ class Corpus(BaseModel):
         return CorpusDao(corpus_id=self.get_id(), name=self.name,
                          supported_annotation_types=AnnotationType.to_annotation_type_daos(
                              self.supported_annotation_types))
+
+    def copy(self) -> 'Corpus':
+        return Corpus(self.name, [annotation_type.copy() for annotation_type in self.supported_annotation_types])

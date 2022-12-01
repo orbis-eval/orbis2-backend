@@ -34,3 +34,6 @@ class Annotator(BaseModel):
 
     def to_dao(self) -> AnnotatorDao:
         return AnnotatorDao(annotator_id=self.get_id(), name=self.name, roles=Role.to_role_daos(self.roles))
+
+    def copy(self) -> 'Annotator':
+        return Annotator(self.name, [role.copy() for role in self.roles])

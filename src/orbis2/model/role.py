@@ -36,3 +36,6 @@ class Role(BaseModel):
     @staticmethod
     def to_role_daos(roles: [RoleDao]) -> [RoleDao]:
         return [role.to_dao() for role in roles]
+
+    def copy(self) -> 'Role':
+        return Role(self.name)

@@ -34,6 +34,8 @@ class Annotation(BaseModel):
             surface_forms = (surface_forms, )
         if isinstance(surface_forms, List):
             surface_forms = tuple(surface_forms)
+        if not metadata:
+            metadata = []
 
         self.key = key
         self.surface_forms = surface_forms
@@ -65,7 +67,9 @@ class Annotation(BaseModel):
 
     def __hash__(self):
         return xxh32_intdigest((self.key, self.surface_forms, self.start_indices, self.end_indices,
-                                self.annotation_type.__hash__(), self.annotator.__hash__()).__str__())
+                                self.annotation_type.__hash__(), self.annotator.__hash__(),
+                                [metadata.__hash__() for metadata in self.metadata].__str__(),
+                                ).__str__())
 
     def __str__(self):
         return f'Annotation({self.surface_forms}{self.start_indices}, {self.end_indices})'
@@ -109,6 +113,11 @@ class Annotation(BaseModel):
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
                                         annotation_id=self.get_id(), annotation=self.to_dao())
+
+    def copy(self, run_id: int, document_id: int) -> 'Annotation':
+        return Annotation(self.key, self.surface_forms, self.start_indices, self.end_indices,
+                          self.annotation_type.copy(), self.annotator.copy(), run_id, document_id, self.metadata.copy(),
+                          self.timestamp)
 
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],

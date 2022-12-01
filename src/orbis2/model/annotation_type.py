@@ -37,3 +37,6 @@ class AnnotationType(BaseModel):
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:
         return [annotation_type.to_dao() for annotation_type in annotation_types]
+
+    def copy(self) -> 'AnnotationType':
+        return AnnotationType(self.name)

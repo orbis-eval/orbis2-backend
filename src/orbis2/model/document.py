@@ -48,3 +48,6 @@ class Document(BaseModel):
             document_has_annotation_daos = []
         return RunHasDocumentDao(run_id=self.run_id, document_id=self.get_id(), document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
+
+    def copy(self, run_id: int) -> 'Document':
+        return Document(self.content, self.key, run_id, self.metadata.copy())
