@@ -49,5 +49,7 @@ class UniqueSlotValue(AnnotationPreprocessor):
                                          end_indices=UniqueSlotValue.normalize_indices(annotation.end_indices,
                                                                                        annotation.start_indices[0]),
                                          annotation_type=annotation.annotation_type,
-                                         annotator=annotation.annotator))
+                                         annotator=annotation.annotator,
+                                         metadata=annotation.metadata,
+                                         timestamp=annotation.timestamp))
         return result
