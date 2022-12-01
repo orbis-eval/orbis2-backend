@@ -86,7 +86,9 @@ class OrbisService:
         return True
 
     def add_annotation_to_document(self, annotation: Annotation) -> bool:
-        return self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao())
+        if annotation:
+            return self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao())
+        return False
 
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
         if annotation_type:
