@@ -1,0 +1,34 @@
+include:
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.pre-static-analysis-api.yaml'
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.pre-static-analysis-tox.yaml'
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.test.yaml'
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.sonar.yaml'
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.docker-build.yaml'
+  - project: 'nlp/team/ci-templates'
+    file: 'python/.publish.yaml'
+
+variables:
+  coverage_path: "./coverage.xml"
+  requirements_file: "requirements.txt"
+  APPLICATION_NAME: orbis2-backend
+
+  DOCKER_IMAGE: davos.fhgr.ch/nlp/Orbis2/$CI_PROJECT_NAME
+  KUBE_NAMESPACE_FHGR: orbis2
+  HELM_CHART_NAME_FHGR: chart
+  URL_FHGR: prod.semanticlab.net
+  VERSION: "$CI_COMMIT_TAG"
+  DOCKERFILEPATH: dockerfile
+  DEBUG: "true"
+
+
+stages:
+    - Pre Static Analysis
+    - Test
+    - Post Static Analysis
+    # - Docker Build
+    # - Kubernetes Deployment
