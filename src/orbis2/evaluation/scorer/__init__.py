@@ -52,7 +52,7 @@ class Scorer:
             # compute best match for overlap
             matches = [AnnotationMatch(score=self._scorer(true, pred),
                                        true=true, pred=pred)
-                       for pred in takewhile(lambda x: x.start_indices < true.end_indices,
+                       for pred in takewhile(lambda pred, gold=true: pred.start_indices < gold.end_indices,
                                              pred_annotations)]
             if matches and (match := max(matches)).score > 0:
                 result.tp.add(match)

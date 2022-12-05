@@ -21,7 +21,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    files = list(sorted(glob(args.source_directory + "/*"), key=lambda p: _get_document_id(p)))
+    files = sorted(glob(args.source_directory + "/*"), key=lambda p: _get_document_id(p))
     for fname in files[args.start:args.end]:
         print(fname)
         copy(fname, os.path.join(args.destination_directory, os.path.basename(fname)))
