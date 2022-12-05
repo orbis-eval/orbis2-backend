@@ -32,3 +32,8 @@ stages:
     - Post Static Analysis
     # - Docker Build
     # - Kubernetes Deployment
+
+pytest:
+  services:
+    - name: postgres:15
+      alias: 'localhost'
