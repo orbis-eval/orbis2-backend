@@ -70,19 +70,19 @@ class SqlDb:
 
         Returns: True if database exists after creation.
         """
-        try:
-            if not database_exists(self.session.get_bind().url):
-                create_database(self.session.get_bind().url)
-            elif enforce:
-                self.clear_tables()
-            else:
-                logging.warning('Database already exists, if you want to reinitialize it, set enforce = True '
-                                '(ATTENTION: data will be lost)')
-                return False
-            return database_exists(self.session.get_bind().url)
-        except SQLAlchemyError as e:
-            logging.error(f'During database creation the following exception occurred: {e.__str__()}')
+        # try:
+        if not database_exists(self.session.get_bind().url):
+            create_database(self.session.get_bind().url)
+        elif enforce:
+            self.clear_tables()
+        else:
+            logging.warning('Database already exists, if you want to reinitialize it, set enforce = True '
+                            '(ATTENTION: data will be lost)')
             return False
+        return database_exists(self.session.get_bind().url)
+        # except SQLAlchemyError as e:
+        #     logging.error(f'During database creation the following exception occurred: {e.__str__()}')
+        #     return False
 
     def clear_tables(self) -> bool:
         """
