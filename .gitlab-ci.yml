@@ -7,10 +7,10 @@ include:
     file: 'python/.test.yaml'
   - project: 'nlp/team/ci-templates'
     file: 'python/.sonar.yaml'
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.docker-build.yaml'
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.publish.yaml'
+  # - project: 'nlp/team/ci-templates'
+  #   file: 'python/.docker-build.yaml'
+  # - project: 'nlp/team/ci-templates'
+  #   file: 'python/.publish.yaml'
 
 variables:
   coverage_path: "./coverage.xml"
