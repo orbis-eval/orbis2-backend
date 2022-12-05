@@ -1,4 +1,4 @@
-from orbis2.evaluation.scorer import overlaps
+from orbis2.evaluation.scorer.annotation_util import overlaps
 from orbis2.evaluation.scorer.annotation_util import len_overlap, get_annotation_segment
 from orbis2.model.annotation import get_mock_annotation as Annotation
 from orbis2.model.metadata import Metadata
