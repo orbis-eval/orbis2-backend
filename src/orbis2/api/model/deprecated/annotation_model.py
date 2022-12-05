@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict
 
 from pydantic import BaseModel, Field
 
@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class AnnotationModel(BaseModel):
     key: str = Field(..., description='Key which uniquely assigns the element to the corresponding entry '
                                       'in the x28 ontology.')
-    type: str = Field(..., description='Annotation type.')
+    type: str = Field(..., description='Annotation type.')  # noqa: A003
     surface_form: str = Field(..., description='Annotated element as it is written '
                                                'in the text representation of the html.')
     start: int = Field(..., description='Start position of the annotated element '

@@ -1,15 +1,6 @@
 #!/usr/bin/env python3
 
-from glob import glob
-from pathlib import Path
-from typing import List
-
-from orbis2.business_logic.orbis_service import OrbisService
-from orbis2.corpus_import.format.careercoach import CareerCoachFormat
 from orbis2.database.orbis.orbis_db import OrbisDb
-from orbis2.evaluation.scorer.annotation_util import contains
-from orbis2.model.corpus import Corpus
-from orbis2.model.run import Run
 
 
 if __name__ == '__main__':

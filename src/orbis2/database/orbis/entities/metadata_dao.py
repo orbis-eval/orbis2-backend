@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Text, Sequence, BigInteger
-from sqlalchemy.orm import relationship
 
 from orbis2.database.orbis.orbis_base import OrbisBase
 

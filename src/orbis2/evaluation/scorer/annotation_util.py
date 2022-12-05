@@ -16,9 +16,8 @@ def overlaps(true, predicted):
         overlaps.
     """
     return any((p_end >= t_start and p_start <= t_end
-                for (t_start, t_end), (p_start, p_end) in product(
-        zip(true.start_indices, true.end_indices),
-        zip(predicted.start_indices, predicted.end_indices))))
+                for (t_start, t_end), (p_start, p_end) in product(zip(true.start_indices, true.end_indices),
+                                                                  zip(predicted.start_indices, predicted.end_indices))))
 
 
 def contains(true: Annotation, predicted: Annotation) -> bool:

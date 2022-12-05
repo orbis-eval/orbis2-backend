@@ -6,7 +6,6 @@ from typing import List, Dict
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.corpus_import.format.careercoach import CareerCoachFormat
-from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.evaluation.scorer.annotation_util import contains
 from orbis2.model.annotation import Annotation
 from orbis2.model.corpus import Corpus
@@ -42,7 +41,8 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
 
     # create run for serialization in the database
     document_annotations = CareerCoachFormat.get_document_annotations(document_list,
-                            invalid_annotation_types=invalid_annotation_types, partition=corpus_partition)
+                                                                      invalid_annotation_types=invalid_annotation_types,
+                                                                      partition=corpus_partition)
 
     # filter the annotations based on Annotations specified in a second corpus.
     if careercoach_filter:

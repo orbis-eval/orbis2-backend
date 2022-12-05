@@ -1,4 +1,4 @@
-from xxhash import  xxh32_intdigest
+from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.model.base_model import BaseModel

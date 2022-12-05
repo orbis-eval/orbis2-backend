@@ -13,7 +13,7 @@ class MarkdownOutputFormatter(OutputFormatter):
         return ' | '.join(metric._fields) + '|'
 
     def format_metric_result(self, metric: namedtuple):
-        return ' | '.join([self.format_string.format(getattr(metric, field)) for field in metric._fields ]) + '|'
+        return ' | '.join([self.format_string.format(getattr(metric, field)) for field in metric._fields]) + '|'
 
     def format_output(self, result: List[OrbisEvaluationResult]):
         if not result:

@@ -68,7 +68,7 @@ class Run(BaseModel):
     def copy(self, new_name: str, new_description: str) -> 'Run':
         parents = [self]
         if self.parents:
-            parents = parents.append([parent for parent in self.parents])
+            parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
             document.copy(new_run.get_id()): [

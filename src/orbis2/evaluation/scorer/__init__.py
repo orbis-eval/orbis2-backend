@@ -5,7 +5,6 @@ from typing import List, Set
 from operator import mul
 
 from orbis2.model.annotation import Annotation
-from orbis2.evaluation.scorer.annotation_util import overlaps
 
 AnnotationMatch = namedtuple('AnnotationMatch', 'score true pred')
 
@@ -41,7 +40,7 @@ class Scorer:
             pred_annotations: list of predicted annotations
         """
         result = ScorerResult(tp=set(), fn=set(), fp=set())
-        pred_annotations = list(sorted(pred_annotations))
+        pred_annotations = sorted(pred_annotations)
 
         for true in sorted(true_annotations):
             # process head, i.e. detected annotations prior to the next true

@@ -32,13 +32,12 @@ def get_entity_annotations(annotations: List[Annotation]) -> Dict[str, List[Dict
     return {
         page_segment: list(map(get_entity_annotation_dict, partition_annotations))
         for page_segment, partition_annotations in groupby(sorted(annotations, key=get_page_segment),
-                                                        get_page_segment)
+                                                           get_page_segment)
         if page_segment
     }
 
 
 def get_segment_annotations(annotations):
-
     def get_page_segment(annotation: Annotation) -> str:
         return "" if not annotation.annotation_type.name.startswith(SEGMENT_TYPE_PREFIX) else \
             annotation.annotation_type.name.split(SEGMENT_TYPE_PREFIX)[1]
@@ -50,6 +49,7 @@ def get_segment_annotations(annotations):
             'end': annotation.end_indices[0],
             'content_type': 'Text'
         }
+
     return [{page_segment: list(map(get_segment_annotation_dict, segment_annotations))}
             for page_segment, segment_annotations in groupby(sorted(annotations, key=get_page_segment),
                                                              get_page_segment)
@@ -60,15 +60,16 @@ class CareerCoachExportFormat:
     """
     CorpusFormat used to support imports from the CareerCoach corpus.
     """
+
     @staticmethod
     def export(run: Run, path: Path):
         for document, annotations in run.document_annotations.items():
-                with path.joinpath(get_export_doc_name(document)).open('w') as f:
-                    export_doc = {
-                        'id': document.document_id,
-                        'url': document.key,
-                        'text': document.content,
-                        'gold_standard_annotation': get_entity_annotations(annotations),
-                        'gold_standard_annotation_segmentation': get_segment_annotations(annotations)
-                    }
-                    json.dump(export_doc, f, indent=True)
+            with path.joinpath(get_export_doc_name(document)).open('w') as f:
+                export_doc = {
+                    'id': document.document_id,
+                    'url': document.key,
+                    'text': document.content,
+                    'gold_standard_annotation': get_entity_annotations(annotations),
+                    'gold_standard_annotation_segmentation': get_segment_annotations(annotations)
+                }
+                json.dump(export_doc, f, indent=True)

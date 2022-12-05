@@ -26,15 +26,15 @@ class AnnotationTokenizer(AnnotationPreprocessor):
         """
         result = []
         for annotation in annotations:
-            for surface, start, end in zip(annotation.surface_forms,
-                                           annotation.start_indices,
-                                           annotation.end_indices):
+            for surface, start, _ in zip(annotation.surface_forms,
+                                         annotation.start_indices,
+                                         annotation.end_indices):
                 idx = 0
                 while m := self._tokenize.search(surface[idx:]):
                     new = copy(annotation)
-                    new.surface_forms = (m.group(), )
-                    new.start_indices = (start + idx + m.start(), )
-                    new.end_indices = (start + idx + m.end(), )
+                    new.surface_forms = (m.group(),)
+                    new.start_indices = (start + idx + m.start(),)
+                    new.end_indices = (start + idx + m.end(),)
                     result.append(new)
                     idx += m.end()
 

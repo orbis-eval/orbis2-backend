@@ -21,7 +21,6 @@ from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
 
-
 PROJECT_DIR = Path(__file__).parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
 
@@ -66,7 +65,7 @@ def get_document_id(index: int) -> str:
         if not global_document_ids:
             global_document_ids = []
             if ((corpus_id := get_orbis_service().get_corpus_id('careercoach2022')) and
-               (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
+                    (runs := get_orbis_service().get_runs_by_corpus_id(corpus_id))):
                 run = runs[0]
                 documents = list(run.document_annotations.keys())
                 global_document_ids = sorted([run.run_id.__str__() + '|' + document.document_id.__str__()
@@ -161,7 +160,8 @@ def get_document(da_id=None):
                         'meta': '',
                         'annotations': [{
                             'key': annotation.key,
-                            'type': annotation.annotation_type.name + "-" + annotation.key.split('#')[1].replace('/', '')
+                            'type': annotation.annotation_type.name + "-" + annotation.key.split('#')[1].replace(
+                                '/', '')
                             if annotation.annotation_type.name == 'proposal' else annotation.annotation_type.name,
                             'surface_form': annotation.surface_forms[0],
                             'start': annotation.start_indices[0],
@@ -181,10 +181,12 @@ def save_document_annotations(data: DataExchangeModel):
     da_id = data.get('da_id')
     if run_document := get_run_and_document(da_id):
         run, document = run_document
-        annotations = [Annotation(f"https://semanticlab.net/career-coach#{annotation.get('type').split('-')[1]}/" if 'proposal' in annotation.get('type') else annotation.get('key'),
-                                  annotation.get('surface_form'), annotation.get('start'),
-                                  annotation.get('end'), AnnotationType(annotation.get('type').split('-')[0]),
-                                  Annotator(data.get('annotator'), []), metadata=[Metadata('segment', 'unknown')])
+        annotations = [Annotation(
+            f"https://semanticlab.net/career-coach#{annotation.get('type').split('-')[1]}/"
+            if 'proposal' in annotation.get('type') else annotation.get('key'),
+            annotation.get('surface_form'), annotation.get('start'),
+            annotation.get('end'), AnnotationType(annotation.get('type').split('-')[0]),
+            Annotator(data.get('annotator'), []), metadata=[Metadata('segment', 'unknown')])
                        for annotation in data.get('data').get('annotations')]
         run.document_annotations[document] = annotations
         if get_orbis_service().add_run(run):

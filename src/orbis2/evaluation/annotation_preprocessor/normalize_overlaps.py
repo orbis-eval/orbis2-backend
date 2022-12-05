@@ -32,7 +32,7 @@ class NormalizeOverlaps(AnnotationPreprocessor):
         if not annotation_list or not self.annotation_priority:
             return annotation_list
 
-        bucket = list(sorted(annotation_list))
+        bucket = sorted(annotation_list)
         current_annotation = bucket.pop(0)
         while bucket:
             next_annotation = bucket.pop(0)

@@ -263,4 +263,3 @@ class OrbisDb(SqlDb):
             logging.warning(error_message)
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return default_return_value
-

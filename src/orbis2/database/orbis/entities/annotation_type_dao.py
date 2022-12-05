@@ -9,4 +9,3 @@ class AnnotationTypeDao(OrbisBase):
 
     type_id = Column(BigInteger, Sequence('annotation_type_id_seq'), primary_key=True)
     name = Column(Text, nullable=False)
-
