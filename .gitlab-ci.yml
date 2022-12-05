@@ -36,3 +36,9 @@ stages:
 pytest:
   services:
     - name: postgres:15
+      alias: 'localhost'
+  variables:
+    POSTGRES_DB: 'orbis_test'
+    POSTGRES_USER: 'postgres'
+    POSTGRES_PASSWORD: ''
+    POSTGRES_HOST_AUTH_METHOD: trust
