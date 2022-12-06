@@ -17,6 +17,7 @@ class Run(BaseModel):
     corpus: Corpus
     document_annotations: Dict[int, Tuple[Document, List[Annotation]]]
     # parents: ['Run']
+    id: int
 
     class Config:
         arbitrary_types_allowed = True
@@ -54,7 +55,7 @@ class Run(BaseModel):
         document_annotations = {}
         for run_document_dao in run_dao.run_has_documents:
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
-            document_annotations[document.get_id()] = (document, Annotation.from_document_has_annotations(
+            document_annotations[document.id] = (document, Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations))
         run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
                   Run.from_run_daos(run_dao.parents))
@@ -65,12 +66,12 @@ class Run(BaseModel):
         return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:
-        return RunDao(run_id=self.get_id(), name=self.name, description=self.description,
+        return RunDao(run_id=self.id, name=self.name, description=self.description,
                       run_has_documents=[
                           document.to_run_document_dao(
                               [annotation.to_document_annotation_dao() for annotation in annotations]
                           ) for document, annotations in self.document_annotations.values()
-                      ], corpus_id=self.corpus.get_id(), corpus=self.corpus.to_dao(),
+                      ], corpus_id=self.corpus.id, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
     @staticmethod
@@ -83,8 +84,8 @@ class Run(BaseModel):
             parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
-            document.copy(new_run.get_id()): [
-                annotation.copy(new_run.get_id(), document.get_id()) for annotation in annotations
+            document.copy(new_run.id): [
+                annotation.copy(new_run.id, document.id) for annotation in annotations
             ] for document, annotations in self.document_annotations.values()
         }
         new_run.document_annotations = document_annotations

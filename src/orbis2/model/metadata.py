@@ -9,6 +9,7 @@ from orbis2.model.base_model import BaseModel
 class Metadata(BaseModel):
     key: str
     value: str
+    id: int
 
     def __init__(self, key: str, value: str):
         """
@@ -36,7 +37,7 @@ class Metadata(BaseModel):
         return [cls.from_metadata_dao(metadata_dao) for metadata_dao in metadata_daos]
 
     def to_dao(self) -> MetadataDao:
-        return MetadataDao(metadata_id=self.get_id(), key=self.key, value=self.value)
+        return MetadataDao(metadata_id=self.id, key=self.key, value=self.value)
 
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:

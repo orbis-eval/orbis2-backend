@@ -20,6 +20,7 @@ class Annotator(BaseModel):
         """
         self.name = name
         self.roles = roles
+        id: int
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -39,7 +40,7 @@ class Annotator(BaseModel):
         return [cls.from_annotator_dao(annotator_dao) for annotator_dao in annotator_daos]
 
     def to_dao(self) -> AnnotatorDao:
-        return AnnotatorDao(annotator_id=self.get_id(), name=self.name, roles=Role.to_role_daos(self.roles))
+        return AnnotatorDao(annotator_id=self.id, name=self.name, roles=Role.to_role_daos(self.roles))
 
     def copy(self) -> 'Annotator':
         return Annotator(self.name, [role.copy() for role in self.roles])

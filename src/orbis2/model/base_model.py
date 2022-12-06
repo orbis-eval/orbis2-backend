@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-from pydantic.dataclasses import dataclass
-
 
 class BaseModel:
 
@@ -13,7 +11,8 @@ class BaseModel:
     def __eq__(self, other) -> bool:
         pass
 
-    def get_id(self) -> int:
+    @property
+    def id(self) -> int:
         """
 
         Returns: the ID of the current object, which is defined by its hash.

@@ -17,6 +17,7 @@ class Document(BaseModel):
     run_id: int
     metadata: List[Metadata]
     done: bool
+    id: int
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
@@ -49,13 +50,13 @@ class Document(BaseModel):
         return [cls.from_document_dao(document_dao, run_id, done) for document_dao in document_daos]
 
     def to_dao(self) -> DocumentDao:
-        return DocumentDao(document_id=self.get_id(), content=self.content, key=self.key,
+        return DocumentDao(document_id=self.id, content=self.content, key=self.key,
                            meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def to_run_document_dao(self, document_has_annotation_daos: [DocumentHasAnnotationDao] = None) -> RunHasDocumentDao:
         if not document_has_annotation_daos:
             document_has_annotation_daos = []
-        return RunHasDocumentDao(run_id=self.run_id, document_id=self.get_id(), document=self.to_dao(),
+        return RunHasDocumentDao(run_id=self.run_id, document_id=self.id, document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
 
     def copy(self, run_id: int) -> 'Document':
