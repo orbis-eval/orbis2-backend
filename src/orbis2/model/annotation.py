@@ -16,8 +16,8 @@ from orbis2.model.metadata import Metadata
 class Annotation(BaseModel):
     key: str
     surface_forms: Tuple[str]
-    start_indices: Tuple[str]
-    end_indices: Tuple[str]
+    start_indices: Tuple[int]
+    end_indices: Tuple[int]
     annotation_type: AnnotationType
     annotator: Annotator
     run_id: int
