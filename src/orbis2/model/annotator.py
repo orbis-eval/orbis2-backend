@@ -12,6 +12,7 @@ from orbis2.model.role import Role
 class Annotator(BaseModel):
     name: str
     roles: List[Role]
+    id: int
 
     def __init__(self, name: str, roles: List[Role]):
         """
@@ -20,7 +21,6 @@ class Annotator(BaseModel):
         """
         self.name = name
         self.roles = roles
-        id: int
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
