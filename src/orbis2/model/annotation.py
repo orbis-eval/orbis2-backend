@@ -1,6 +1,7 @@
-import datetime
+from datetime import datetime
 from typing import Union, Tuple, List
 
+from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -11,17 +12,25 @@ from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
 
+@dataclass
 class Annotation(BaseModel):
-    """
-    Mock Annotation class used within the unittests.
-    """
+    key: str
+    surface_forms: Tuple[str]
+    start_indices: Tuple[str]
+    end_indices: Tuple[str]
+    annotation_type: AnnotationType
+    annotator: Annotator
+    run_id: int
+    document_id: int
+    metadata: List[Metadata]
+    timestamp: datetime
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: [Metadata] = None, timestamp: datetime = None):
+                 metadata: List[Metadata] = None, timestamp: datetime = None):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
         if isinstance(start_indices, List):

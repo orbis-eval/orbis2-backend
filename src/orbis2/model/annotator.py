@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
@@ -5,9 +8,12 @@ from orbis2.model.base_model import BaseModel
 from orbis2.model.role import Role
 
 
+@dataclass
 class Annotator(BaseModel):
+    name: str
+    roles: List[Role]
 
-    def __init__(self, name: str, roles: [Role]):
+    def __init__(self, name: str, roles: List[Role]):
         """
         CONSTRUCTOR
 

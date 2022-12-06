@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
@@ -5,9 +8,12 @@ from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.base_model import BaseModel
 
 
+@dataclass
 class Corpus(BaseModel):
+    name: str
+    supported_annotation_types: List[AnnotationType]
 
-    def __init__(self, name: str, supported_annotation_types: [AnnotationType]):
+    def __init__(self, name: str, supported_annotation_types: List[AnnotationType]):
         """
         CONSTRUCTOR
 

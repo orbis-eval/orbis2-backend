@@ -1,10 +1,14 @@
+from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.model.base_model import BaseModel
 
 
+@dataclass
 class Metadata(BaseModel):
+    key: str
+    value: str
 
     def __init__(self, key: str, value: str):
         """

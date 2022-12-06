@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
@@ -7,7 +10,13 @@ from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
 
+@dataclass
 class Document(BaseModel):
+    content: str
+    key: str
+    run_id: int
+    metadata: List[Metadata]
+    done: bool
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
