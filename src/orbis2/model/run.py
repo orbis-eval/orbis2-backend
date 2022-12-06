@@ -19,9 +19,6 @@ class Run(BaseModel):
     # parents: ['Run']
     id: int
 
-    class Config:
-        arbitrary_types_allowed = True
-
     def __init__(self, name: str, description: str, corpus: Corpus,
                  document_annotations: Dict[int, Tuple[Document, List[Annotation]]] = None, parents: ['Run'] = None):
         """
