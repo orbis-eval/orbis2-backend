@@ -1,6 +1,7 @@
 import logging.config
 import sys
 import threading
+from typing import List
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
@@ -10,7 +11,7 @@ from orbis2.config.app_config import AppConfig
 from orbis2.metadata import __version__
 from pathlib import Path
 
-from orbis2.model.run import Run
+from orbis2.model.document import Document
 
 
 PROJECT_DIR = Path(__file__).parents[1]
@@ -40,10 +41,9 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
-@app.get('/getCorpus/{corpus_id}', response_model=Run)
-def save_document_annotations(corpus_id: int):
-    runs = get_orbis_service().get_runs_by_corpus_id(corpus_id)
-    return runs[0]
+@app.get('/getDocumentsOfCorpus/{corpus_id}')
+def get_documents_of_corpus(corpus_id: int) -> List[Document]:
+    return get_orbis_service().get_documents_of_corpus(corpus_id)
 
 
 def get_app():
