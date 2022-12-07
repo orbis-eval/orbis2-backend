@@ -1,8 +1,18 @@
+from abc import abstractmethod
 
 
 class BaseModel:
 
-    def get_id(self) -> int:
+    @abstractmethod
+    def __hash__(self) -> int:
+        pass
+
+    @abstractmethod
+    def __eq__(self, other) -> bool:
+        pass
+
+    @property
+    def id(self) -> int:  # noqa: A003
         """
 
         Returns: the ID of the current object, which is defined by its hash.

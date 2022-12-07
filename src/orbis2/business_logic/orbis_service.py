@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, List
 
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
@@ -19,7 +19,7 @@ class OrbisService:
         """
         self.orbis_db = OrbisDb()
 
-    def get_runs(self) -> [Run]:
+    def get_runs(self) -> List[Run]:
         if runs := self.orbis_db.get_runs():
             return Run.from_run_daos(runs)
         return []
@@ -34,22 +34,27 @@ class OrbisService:
             return Run.from_run_dao(run)
         return None
 
-    def get_runs_by_corpus_id(self, corpus_id: int) -> [Run]:
+    def get_runs_by_corpus_id(self, corpus_id: int) -> List[Run]:
         if runs := self.orbis_db.get_run_by_corpus_id(corpus_id):
             return Run.from_run_daos(runs)
         return []
 
-    def get_documents(self) -> [Document]:
+    def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
             return Document.from_document_daos(documents)
         return []
 
-    def get_annotations(self) -> [Annotation]:
+    def get_documents_of_corpus(self, corpus_id: int) -> List[Document]:
+        if documents := self.orbis_db.get_documents_of_corpus(corpus_id):
+            return Document.from_document_daos(documents)
+        return []
+
+    def get_annotations(self) -> List[Annotation]:
         if annotations := self.orbis_db.get_annotations():
             return Annotation.from_annotation_daos(annotations)
         return []
 
-    def get_corpora(self) -> [Corpus]:
+    def get_corpora(self) -> List[Corpus]:
         if corpora := self.orbis_db.get_corpora():
             return Corpus.from_corpus_daos(corpora)
         return []
@@ -57,17 +62,17 @@ class OrbisService:
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
         return self.orbis_db.get_corpus_id(corpus_name)
 
-    def get_annotation_types(self) -> [AnnotationType]:
+    def get_annotation_types(self) -> List[AnnotationType]:
         if annotation_types := self.orbis_db.get_annotation_types():
             return AnnotationType.from_annotation_type_daos(annotation_types)
         return []
 
-    def get_metadata(self) -> [Metadata]:
+    def get_metadata(self) -> List[Metadata]:
         if metadata := self.orbis_db.get_metadata():
             return Metadata.from_metadata_daos(metadata)
         return []
 
-    def get_annotators(self) -> [Annotator]:
+    def get_annotators(self) -> List[Annotator]:
         if annotators := self.orbis_db.get_annotators():
             return Annotator.from_annotator_daos(annotators)
         return []

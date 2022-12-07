@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
@@ -5,9 +8,13 @@ from orbis2.model.base_model import BaseModel
 from orbis2.model.role import Role
 
 
+@dataclass
 class Annotator(BaseModel):
+    name: str
+    roles: List[Role]
+    id: int  # noqa: A003
 
-    def __init__(self, name: str, roles: [Role]):
+    def __init__(self, name: str, roles: List[Role]):
         """
         CONSTRUCTOR
 
@@ -33,7 +40,7 @@ class Annotator(BaseModel):
         return [cls.from_annotator_dao(annotator_dao) for annotator_dao in annotator_daos]
 
     def to_dao(self) -> AnnotatorDao:
-        return AnnotatorDao(annotator_id=self.get_id(), name=self.name, roles=Role.to_role_daos(self.roles))
+        return AnnotatorDao(annotator_id=self.id, name=self.name, roles=Role.to_role_daos(self.roles))
 
     def copy(self) -> 'Annotator':
         return Annotator(self.name, [role.copy() for role in self.roles])
