@@ -1,10 +1,15 @@
+from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.model.base_model import BaseModel
 
 
+@dataclass
 class Metadata(BaseModel):
+    key: str
+    value: str
+    id: int  # noqa: A003
 
     def __init__(self, key: str, value: str):
         """
@@ -32,7 +37,7 @@ class Metadata(BaseModel):
         return [cls.from_metadata_dao(metadata_dao) for metadata_dao in metadata_daos]
 
     def to_dao(self) -> MetadataDao:
-        return MetadataDao(metadata_id=self.get_id(), key=self.key, value=self.value)
+        return MetadataDao(metadata_id=self.id, key=self.key, value=self.value)
 
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:

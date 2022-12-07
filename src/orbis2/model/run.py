@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+from typing import Dict, List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.run_dao import RunDao
@@ -7,10 +10,17 @@ from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 
 
+@dataclass
 class Run(BaseModel):
+    name: str
+    description: str
+    corpus: Corpus
+    document_annotations: Dict[Document, List[Annotation]]
+    # parents: ['Run']
+    id: int  # noqa: A003
 
     def __init__(self, name: str, description: str, corpus: Corpus,
-                 document_annotations: dict[Document, [Annotation]] = None, parents: ['Run'] = None):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None):
         """
         CONSTRUCTOR
 
@@ -53,12 +63,12 @@ class Run(BaseModel):
         return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:
-        return RunDao(run_id=self.get_id(), name=self.name, description=self.description,
+        return RunDao(run_id=self.id, name=self.name, description=self.description,
                       run_has_documents=[
                           document.to_run_document_dao(
                               [annotation.to_document_annotation_dao() for annotation in annotations]
                           ) for document, annotations in self.document_annotations.items()
-                      ], corpus_id=self.corpus.get_id(), corpus=self.corpus.to_dao(),
+                      ], corpus_id=self.corpus.id, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
     @staticmethod
@@ -71,8 +81,8 @@ class Run(BaseModel):
             parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
-            document.copy(new_run.get_id()): [
-                annotation.copy(new_run.get_id(), document.get_id()) for annotation in annotations
+            document.copy(new_run.id): [
+                annotation.copy(new_run.id, document.id) for annotation in annotations
             ] for document, annotations in self.document_annotations.items()
         }
         new_run.document_annotations = document_annotations

@@ -1,6 +1,7 @@
-import datetime
+from datetime import datetime
 from typing import Union, Tuple, List
 
+from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -11,17 +12,26 @@ from orbis2.model.base_model import BaseModel
 from orbis2.model.metadata import Metadata
 
 
+@dataclass
 class Annotation(BaseModel):
-    """
-    Mock Annotation class used within the unittests.
-    """
+    key: str
+    surface_forms: Tuple[str]
+    start_indices: Tuple[int]
+    end_indices: Tuple[int]
+    annotation_type: AnnotationType
+    annotator: Annotator
+    run_id: int
+    document_id: int
+    metadata: List[Metadata]
+    timestamp: datetime
+    id: int  # noqa: A003
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: [Metadata] = None, timestamp: datetime = None):
+                 metadata: List[Metadata] = None, timestamp: datetime = None):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
         if isinstance(start_indices, List):
@@ -100,19 +110,19 @@ class Annotation(BaseModel):
                 for document_annotation_dao in document_has_annotations]
 
     def to_dao(self) -> AnnotationDao:
-        return AnnotationDao(annotation_id=self.get_id(), key=self.key,
+        return AnnotationDao(annotation_id=self.id, key=self.key,
                              surface_forms=list(self.surface_forms),
                              start_indices=list(self.start_indices),
                              end_indices=list(self.end_indices),
-                             annotation_type_id=self.annotation_type.get_id(),
+                             annotation_type_id=self.annotation_type.id,
                              annotation_type=self.annotation_type.to_dao(),
-                             annotator_id=self.annotator.get_id(),
+                             annotator_id=self.annotator.id,
                              annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
-                                        annotation_id=self.get_id(), annotation=self.to_dao())
+                                        annotation_id=self.id, annotation=self.to_dao())
 
     def copy(self, run_id: int, document_id: int) -> 'Annotation':
         return Annotation(self.key, self.surface_forms, self.start_indices, self.end_indices,

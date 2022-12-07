@@ -1,10 +1,14 @@
+from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.model.base_model import BaseModel
 
 
+@dataclass
 class AnnotationType(BaseModel):
+    name: str
+    id: int  # noqa: A003
 
     def __init__(self, name: str):
         """
@@ -32,7 +36,7 @@ class AnnotationType(BaseModel):
                 for annotation_type_dao in annotation_type_daos]
 
     def to_dao(self) -> AnnotationTypeDao:
-        return AnnotationTypeDao(type_id=self.get_id(), name=self.name)
+        return AnnotationTypeDao(type_id=self.id, name=self.name)
 
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:

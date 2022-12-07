@@ -1,6 +1,7 @@
 import logging
 from typing import Union, List, Callable
 
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -13,6 +14,7 @@ from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.database.orbis.entities.run_dao import RunDao
+from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
 
@@ -143,6 +145,29 @@ class OrbisDb(SqlDb):
             logging.warning('All documents request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
+
+    def get_documents_of_corpus(self, corpus_id: int) -> Union[List[DocumentDao], None]:
+        """
+        Get all documents for a given corpus from database
+
+        Args:
+            corpus_id: id of the corpus for which the documents are looked up
+
+        Returns: A list of document objects or None if no document exists for this corpus in the database
+        """
+        if documents := self.try_catch(
+                lambda: self.session.query(DocumentDao).where(and_(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == RunDao.run_id,
+                    RunDao.corpus_id == corpus_id
+                )).all(),
+                f'Documents for corpus request with corpus id: {corpus_id} failed', False
+        ):
+            return documents
+        logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
+        return None
+
+
 
     def get_annotations(self) -> Union[List[AnnotationDao], None]:
         """
