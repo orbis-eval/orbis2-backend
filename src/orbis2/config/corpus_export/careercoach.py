@@ -9,10 +9,12 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
 from orbis2.model.run import Run
 
+PROPOSAL_PREFIX = 'https://semanticlab.net/career-coach#{}/'
+
 
 def get_export_doc_name(document: Document) -> str:
     normalized_url = urlparse(document.key).netloc
-    return f'{normalized_url}_i{document.document_id}.json'
+    return f'{normalized_url}_i{hash(document)}.json'
 
 
 def get_entity_annotations(annotations: List[Annotation]) -> Dict[str, List[Dict[str, str]]]:
@@ -25,8 +27,8 @@ def get_entity_annotations(annotations: List[Annotation]) -> Dict[str, List[Dict
             'surface_form': annotation.surface_forms[0],
             'start': annotation.start_indices[0],
             'end': annotation.end_indices[0],
-            'key': annotation.key,
-            'type': annotation.annotation_type.name
+            'key': annotation.key if annotation.key else PROPOSAL_PREFIX.format(annotation.annotation_type.name),
+            'type': annotation.annotation_type.name if annotation.key else "proposal"
         }
 
     return {
@@ -66,7 +68,7 @@ class CareerCoachExportFormat:
         for document, annotations in run.document_annotations.items():
             with path.joinpath(get_export_doc_name(document)).open('w') as f:
                 export_doc = {
-                    'id': document.document_id,
+                    'id': hash(document),
                     'url': document.key,
                     'text': document.content,
                     'gold_standard_annotation': get_entity_annotations(annotations),

@@ -20,8 +20,11 @@ def get_type_or_proposed_type(annotation: Annotation) -> str:
     Return:
         The type for the given key.
     """
-    return annotation.key.split('#')[1].split("/")[0] if annotation.annotation_type.name == 'proposal' else \
-        annotation.annotation_type.name
+    if 'type' not in annotation:
+        return 'page-segment'
+
+    return annotation['key'].split('#')[1].split("/")[0] if annotation['type'] == 'proposal' else \
+        annotation['type']
 
 
 class CareerCoachFormat(CorpusFormat):
@@ -69,12 +72,13 @@ class CareerCoachFormat(CorpusFormat):
 
                 if annotation_type not in invalid_annotation_types:
                     annotations.append(
-                        Annotation(key=annotation['key'] if 'key' in annotation else '',
+                        Annotation(key=annotation['key'] if 'key' in annotation and \
+                                                            annotation_type != 'proposal' else None,
                                    surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation[
                                        'surface_form'],
                                    start_indices=annotation['start'],
                                    end_indices=annotation['end'],
-                                   annotation_type=AnnotationType(annotation_type),
+                                   annotation_type=AnnotationType(get_type_or_proposed_type(annotation)),
                                    metadata=(Metadata(key="segment", value=segment_name),),
                                    annotator=ANNOTATOR)
                     )
