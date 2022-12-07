@@ -12,7 +12,7 @@ class BaseModel:
         pass
 
     @property
-    def id(self) -> int:
+    def id(self) -> int:  # noqa: A003
         """
 
         Returns: the ID of the current object, which is defined by its hash.

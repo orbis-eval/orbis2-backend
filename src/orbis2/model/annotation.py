@@ -24,7 +24,7 @@ class Annotation(BaseModel):
     document_id: int
     metadata: List[Metadata]
     timestamp: datetime
-    id: int
+    id: int  # noqa: A003
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],

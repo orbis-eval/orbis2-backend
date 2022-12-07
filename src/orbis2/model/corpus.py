@@ -12,7 +12,7 @@ from orbis2.model.base_model import BaseModel
 class Corpus(BaseModel):
     name: str
     supported_annotation_types: List[AnnotationType]
-    id: int
+    id: int  # noqa: A003
 
     def __init__(self, name: str, supported_annotation_types: List[AnnotationType]):
         """

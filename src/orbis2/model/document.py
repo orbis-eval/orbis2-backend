@@ -17,7 +17,7 @@ class Document(BaseModel):
     run_id: int
     metadata: List[Metadata]
     done: bool
-    id: int
+    id: int  # noqa: A003
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):

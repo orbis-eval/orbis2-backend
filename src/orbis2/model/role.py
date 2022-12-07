@@ -8,7 +8,7 @@ from orbis2.model.base_model import BaseModel
 @dataclass
 class Role(BaseModel):
     name: str
-    id: int
+    id: int  # noqa: A003
 
     def __init__(self, name: str):
         """

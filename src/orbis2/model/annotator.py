@@ -12,7 +12,7 @@ from orbis2.model.role import Role
 class Annotator(BaseModel):
     name: str
     roles: List[Role]
-    id: int
+    id: int  # noqa: A003
 
     def __init__(self, name: str, roles: List[Role]):
         """
