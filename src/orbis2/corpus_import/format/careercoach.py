@@ -72,7 +72,7 @@ class CareerCoachFormat(CorpusFormat):
 
                 if annotation_type not in invalid_annotation_types:
                     annotations.append(
-                        Annotation(key=annotation['key'] if 'key' in annotation and \
+                        Annotation(key=annotation['key'] if 'key' in annotation and
                                                             annotation_type != 'proposal' else None,
                                    surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation[
                                        'surface_form'],
