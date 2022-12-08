@@ -41,9 +41,11 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
-@app.get('/getDocumentsOfCorpus/{corpus_id}')
-def get_documents_of_corpus(corpus_id: int) -> List[Document]:
-    return get_orbis_service().get_documents_of_corpus(corpus_id)
+@app.get('/getDocuments')
+def get_documents_of_corpus(corpus_id: int = None) -> List[Document]:
+    if corpus_id:
+        return get_orbis_service().get_documents_of_corpus(corpus_id)
+    return get_orbis_service().get_documents()
 
 
 def get_app():
