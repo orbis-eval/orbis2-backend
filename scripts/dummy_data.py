@@ -57,14 +57,16 @@ ANOTHER_RUN = Run(
                                                          AnnotationType('annotation-type2'),
                                                          AnnotationType('annotation-type3')]),
     {
-        Document('Ein komplett anderer Text. Er enthält sogar zwei ganze Sätze.', metadata=[Metadata('key1', 'value1')]):
+        Document('Ein komplett anderer Text. Er enthält sogar zwei ganze Sätze.',
+                 metadata=[Metadata('key1', 'value1')]):
             [
                 Annotation('url', 'Text', 21, 25, AnnotationType('annotation-type1'),
                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
                 Annotation('url', 'Sätze', 55, 60, AnnotationType('annotation-type3'),
                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
             ],
-        Document('Ein zweites neues Dokumnet. Auch das enthält zwei ganze Sätze.', metadata=[Metadata('key3', 'value3')]):
+        Document('Ein zweites neues Dokumnet. Auch das enthält zwei ganze Sätze.',
+                 metadata=[Metadata('key3', 'value3')]):
             [
                 Annotation('url', 'Dokument', 18, 26, AnnotationType('annotation-type1'),
                            Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]),
