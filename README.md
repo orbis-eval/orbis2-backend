@@ -26,8 +26,8 @@ The environment variables are all stored in the file [src/orbis2/config/app_conf
 ## (Re)initialize the Orbis database
 
 ```bash
-./scripts/dbtool.py --create-database --force
-``` 
+./scripts/dbtool.py --create-database --force --add-dummy-data
+```
 
 ## Corpus import
 
@@ -58,7 +58,7 @@ Import CareerCoach 2022 entity annotations filtered by the page segments
 Export a run with all documents and annotations.
 ```bash
 /scripts/exporter.py careercoach2022 /tmp/cc2022 --export-format careercoach2022
-``` 
+```
 
 ## Evaluation
 
