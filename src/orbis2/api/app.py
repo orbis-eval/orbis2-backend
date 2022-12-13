@@ -6,6 +6,7 @@ from typing import List
 import uvicorn as uvicorn
 from fastapi import FastAPI
 
+from orbis2.model.corpus import Corpus
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.config.app_config import AppConfig
 from orbis2.metadata import __version__
@@ -53,6 +54,11 @@ def get_run_names(corpus_id: int = None) -> List[str]:
     if corpus_id:
         return get_orbis_service().get_run_names(corpus_id)
     return get_orbis_service().get_run_names()
+
+
+@app.get('/getCorpora')
+def get_corpora() -> List[Corpus]:
+    return get_orbis_service().get_corpora()
 
 
 def get_app():
