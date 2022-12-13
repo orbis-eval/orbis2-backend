@@ -51,7 +51,7 @@ def get_documents_of_corpus(corpus_id: int = None) -> List[Document]:
 @app.get('/getRunNames')
 def get_run_names(corpus_id: int = None) -> List[str]:
     if corpus_id:
-        return get_orbis_service().get_run_names_by_corpus_id(corpus_id)
+        return get_orbis_service().get_run_names(corpus_id)
     return get_orbis_service().get_run_names()
 
 

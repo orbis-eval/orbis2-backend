@@ -39,13 +39,12 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
-    def get_run_names_by_corpus_id(self, corpus_id: int) -> List[str]:
-        if runs := self.orbis_db.get_run_names_by_corpus_id(corpus_id):
-            return runs
-        return []
-
-    def get_run_names(self) -> List[str]:
-        if runs := self.orbis_db.get_run_names():
+    def get_run_names(self, corpus_id: int = None) -> List[str]:
+        if corpus_id:
+            runs = self.orbis_db.get_run_names_by_corpus_id(corpus_id)
+        else:
+            runs = self.orbis_db.get_run_names()
+        if runs:
             return runs
         return []
 
