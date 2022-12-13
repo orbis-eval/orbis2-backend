@@ -49,6 +49,11 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
+    def get_document(self, document_id: int) -> Union[Document, None]:
+        if document := self.orbis_db.get_document(document_id):
+            return Document.from_document_dao(document)
+        return None
+
     def get_annotations(self) -> List[Annotation]:
         if annotations := self.orbis_db.get_annotations():
             return Annotation.from_annotation_daos(annotations)
