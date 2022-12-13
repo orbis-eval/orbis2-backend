@@ -1,7 +1,7 @@
 import logging.config
 import sys
 import threading
-from typing import List
+from typing import List, Union
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
@@ -59,6 +59,11 @@ def get_run_names(corpus_id: int = None) -> List[str]:
 @app.get('/getCorpora')
 def get_corpora() -> List[Corpus]:
     return get_orbis_service().get_corpora()
+
+
+@app.post('/addCorpus/')
+def add_corpus(corpus: Corpus):
+    return corpus
 
 
 def get_app():
