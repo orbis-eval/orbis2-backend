@@ -12,7 +12,6 @@ logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_
 
 if __name__ == '__main__':
 
-
     os.environ['ORBIS_DB_NAME'] = 'orbis_test'
     # OrbisDb().create_database(True)
 
