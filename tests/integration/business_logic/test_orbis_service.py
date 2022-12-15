@@ -631,6 +631,23 @@ def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdate
     assert updated_run_on_db.corpus == run.corpus
     assert updated_run_on_db.parents == run.parents
 
+
+# noinspection PyPep8Naming
+def test_get_run_names_defaultDbData_correctRunWithNamesAndId(insert_test_data_orbis):
+    all_runs = OrbisService().get_run_names()
+    assert len(all_runs) == 1
+    assert all_runs[0].name == 'run1'
+    assert isinstance(all_runs[0], Run)
+
+
+# noinspection PyPep8Naming
+def test_get_run_names_defaultDbData_correctRunWithNamesAndIdByCorpusId(insert_test_data_orbis):
+    service = OrbisService()
+    runs_by_corpus_id = service.get_run_names((service.get_corpora()[0])._id)
+    assert len(runs_by_corpus_id) == 1
+    assert runs_by_corpus_id[0].name == 'run1'
+    assert isinstance(runs_by_corpus_id[0], Run)
+
 # TODO, anf 06.12.2022: test whether entries are deleted when there are no more references to it
 #  ex.: Document contains Annotation, this Annotation is changed and save -> in fact a new Annotation is created,
 #  but the old one must be deleted if no other Document references this Annotation

@@ -19,7 +19,7 @@ class Run(BaseModel):
     # parents: ['Run']
     _id: int
 
-    def __init__(self, name: str, description: str, corpus: Corpus,
+    def __init__(self, name: str, description: str, corpus: Corpus = None,
                  document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
         """
         CONSTRUCTOR
@@ -54,7 +54,10 @@ class Run(BaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
-        run = cls(run_dao.name, run_dao.description, Corpus.from_corpus_dao(run_dao.corpus), document_annotations,
+        run = cls(run_dao.name,
+                  run_dao.description,
+                  Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
+                  document_annotations,
                   Run.from_run_daos(run_dao.parents))
         return run
 

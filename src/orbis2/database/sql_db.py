@@ -34,7 +34,7 @@ class SqlDb:
     @property
     def session(self):
         try:
-            # check whether db connection is working properly
+            # check whether database connection is working properly
             self._session.execute('SELECT 1')
         except DBAPIError:
             logging.info(f'Lost DB connection ({self.__class__.__name__}), reconnect...')
@@ -66,7 +66,7 @@ class SqlDb:
 
     def create_database(self, enforce: bool = False) -> bool:
         """
-        Create recommender db scheme if not already existing and create/clear recommender tables.
+        Create recommender database scheme if not already existing and create/clear recommender tables.
 
         Returns: True if database exists after creation.
         """

@@ -13,7 +13,7 @@ from orbis2.metadata import __version__
 from pathlib import Path
 
 from orbis2.model.document import Document
-
+from orbis2.model.run import Run
 
 PROJECT_DIR = Path(__file__).parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
@@ -56,8 +56,8 @@ def get_document(document_id: int) -> Document:
         return get_orbis_service().get_document(document_id)
 
 
-@app.get('/getRunNames')
-def get_run_names(corpus_id: int = None) -> List[str]:
+@app.get('/getRuns')
+def get_runs(corpus_id: int = None) -> List[Run]:
     if corpus_id:
         return get_orbis_service().get_run_names(corpus_id)
     return get_orbis_service().get_run_names()

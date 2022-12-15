@@ -1,3 +1,4 @@
+from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
@@ -47,3 +48,12 @@ def test_run_getAnnotationsByExistingDocument_returnCorrectAnnotations():
               )
     assert run.document_annotations[document1][0].surface_forms[0] == 'Text'
     assert run.document_annotations[document2][0].surface_forms[0] == 'Text2'
+
+
+# noinspection PyPep8Naming
+def test_from_run_dao_nameOnly_validRun():
+    test = 'test'
+    run_dao = RunDao(name=test)
+    run = Run.from_run_dao(run_dao)
+    assert run.name == test
+    assert run._id is not None
