@@ -49,6 +49,13 @@ def get_documents_of_corpus(corpus_id: int = None) -> List[Document]:
     return get_orbis_service().get_documents()
 
 
+@app.get('/getDocument')
+def get_document(document_id: int) -> Document:
+    # TODO, anf 13.12.2022: implement response in error case
+    if document_id:
+        return get_orbis_service().get_document(document_id)
+
+
 @app.get('/getRunNames')
 def get_run_names(corpus_id: int = None) -> List[str]:
     if corpus_id:

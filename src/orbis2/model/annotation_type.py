@@ -8,9 +8,9 @@ from orbis2.model.base_model import BaseModel
 @dataclass
 class AnnotationType(BaseModel):
     name: str
-    id: int  # noqa: A003
+    _id: int
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, _id: int = 0):
         """
         CONSTRUCTOR
 
@@ -36,7 +36,7 @@ class AnnotationType(BaseModel):
                 for annotation_type_dao in annotation_type_daos]
 
     def to_dao(self) -> AnnotationTypeDao:
-        return AnnotationTypeDao(type_id=self.id, name=self.name)
+        return AnnotationTypeDao(type_id=self._id, name=self.name)
 
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:

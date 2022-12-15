@@ -12,9 +12,9 @@ from orbis2.model.base_model import BaseModel
 class Corpus(BaseModel):
     name: str
     supported_annotation_types: List[AnnotationType]
-    id: int  # noqa: A003
+    _id: int
 
-    def __init__(self, name: str, supported_annotation_types: List[AnnotationType]):
+    def __init__(self, name: str, supported_annotation_types: List[AnnotationType], _id: int = 0):
         """
         CONSTRUCTOR
 
@@ -40,7 +40,7 @@ class Corpus(BaseModel):
         return [cls.from_corpus_dao(corpus_dao) for corpus_dao in corpus_daos]
 
     def to_dao(self) -> CorpusDao:
-        return CorpusDao(corpus_id=self.id, name=self.name,
+        return CorpusDao(corpus_id=self._id, name=self.name,
                          supported_annotation_types=AnnotationType.to_annotation_type_daos(
                              self.supported_annotation_types))
 

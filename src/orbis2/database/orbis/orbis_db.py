@@ -95,6 +95,20 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
+    def get_document(self, document_id: int) -> Union[DocumentDao, None]:
+        """
+        Get document from database by its id
+
+        Returns: A single document object or None if zero or multiple documents exists in the database
+        """
+        if document := self.try_catch(
+            lambda: self.session.query(DocumentDao).options(subqueryload('*')).get(document_id),
+            f'Document request with document id: {document_id} failed', False
+        ):
+            return document
+        logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
+        return None
+
     def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[str], None]:
         """
         Get all runs with a given corpus_id from database

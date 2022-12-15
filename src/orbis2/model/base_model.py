@@ -12,9 +12,10 @@ class BaseModel:
         pass
 
     @property
-    def id(self) -> int:  # noqa: A003
+    def _id(self) -> int:
         """
 
         Returns: the ID of the current object, which is defined by its hash.
+            The underscore is necessary, otherwise the deserialization of the property throws an error.
         """
         return self.__hash__()
