@@ -239,7 +239,6 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
         return None
 
-
     def get_annotations(self) -> Union[List[AnnotationDao], None]:
         """
         Get all annotations from database
