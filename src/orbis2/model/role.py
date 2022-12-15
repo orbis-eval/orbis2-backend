@@ -35,7 +35,7 @@ class Role(BaseModel):
         return [cls.from_role_dao(role_dao) for role_dao in role_daos]
 
     def to_dao(self) -> RoleDao:
-        return RoleDao(role_id=self.id, name=self.name)
+        return RoleDao(role_id=self._id, name=self.name)
 
     @staticmethod
     def to_role_daos(roles: [RoleDao]) -> [RoleDao]:

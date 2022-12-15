@@ -40,7 +40,7 @@ class Corpus(BaseModel):
         return [cls.from_corpus_dao(corpus_dao) for corpus_dao in corpus_daos]
 
     def to_dao(self) -> CorpusDao:
-        return CorpusDao(corpus_id=self.id, name=self.name,
+        return CorpusDao(corpus_id=self._id, name=self.name,
                          supported_annotation_types=AnnotationType.to_annotation_type_daos(
                              self.supported_annotation_types))
 

@@ -16,29 +16,29 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert len(runs) == 1
     run = runs[0]
     assert type(run) is Run
-    assert run.id > 0
+    assert run._id > 0
     assert run.name == 'run1'
     assert type(run.corpus) is Corpus
-    assert run.corpus.id > 0
+    assert run.corpus._id > 0
     assert run.corpus.name == 'corpus1'
 
     assert len(run.corpus.supported_annotation_types) == 1
     supported_annotation_type = run.corpus.supported_annotation_types[0]
     assert type(supported_annotation_type) is AnnotationType
-    assert supported_annotation_type.id > 0
+    assert supported_annotation_type._id > 0
     assert supported_annotation_type.name == 'annotation-type1'
 
     documents = list(run.document_annotations.keys())
     assert len(documents) == 1
     document = documents[0]
     assert type(document) is Document
-    assert document.id > 0
+    assert document._id > 0
     assert document.content == 'Text, das ist ein Beispiel'
 
     assert len(document.metadata) == 1
     metadata = document.metadata[0]
     assert type(metadata) is Metadata
-    assert metadata.id > 0
+    assert metadata._id > 0
     assert metadata.value == 'value1'
     assert metadata.key == 'key1'
 
@@ -46,27 +46,27 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert len(annotations) == 1
     annotation = annotations[0]
     assert type(annotation) is Annotation
-    assert annotation.id > 0
+    assert annotation._id > 0
     assert annotation.key == 'url'
     assert annotation.surface_forms[0] == 'Text'
     assert annotation.start_indices[0] == 0
     assert annotation.end_indices[0] == 4
     assert type(annotation.annotation_type) is AnnotationType
-    assert annotation.annotation_type.id > 0
+    assert annotation.annotation_type._id > 0
     assert annotation.annotation_type.name == 'annotation-type1'
     assert type(annotation.annotator) is Annotator
-    assert annotation.annotator.id > 0
+    assert annotation.annotator._id > 0
     assert annotation.annotator.name == 'Andreas'
 
     assert len(annotation.annotator.roles) == 1
     role = annotation.annotator.roles[0]
-    assert role.id > 0
+    assert role._id > 0
     assert role.name == 'admin'
 
     assert len(annotation.metadata) == 1
     metadata = annotation.metadata[0]
     assert type(metadata) is Metadata
-    assert metadata.id > 0
+    assert metadata._id > 0
     assert metadata.value == 'value2'
     assert metadata.key == 'key2'
 
@@ -76,35 +76,35 @@ def test_get_run_by_name_dbExistsAndContainsRun_returnsRun(insert_test_data_orbi
     run = OrbisService().get_run_by_name('run1')
 
     assert run
-    assert run.id > 0
+    assert run._id > 0
     assert run.name == 'run1'
 
 
 # noinspection PyPep8Naming
 def test_get_run_dbExistsAndContainsRun_returnsRun(insert_test_data_orbis):
-    run_id = OrbisService().get_runs()[0].id
+    run_id = OrbisService().get_runs()[0]._id
     run = OrbisService().get_run(run_id)
 
     assert run
-    assert run.id > 0
+    assert run._id > 0
     assert run.name == 'run1'
 
 
 # noinspection PyPep8Naming
 def test_get_run_by_corpus_id_dbExistsAndContainsRun_returnsRun(insert_test_data_orbis):
-    corpus_id = OrbisService().get_corpora()[0].id
+    corpus_id = OrbisService().get_corpora()[0]._id
     runs = OrbisService().get_runs_by_corpus_id(corpus_id)
 
     assert runs
     assert len(runs) == 1
     run = runs[0]
-    assert run.id > 0
+    assert run._id > 0
     assert run.name == 'run1'
 
 
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_dbExistsAndContainsCorpus_returnDocuments(insert_test_data_orbis):
-    corpus_id = OrbisService().get_corpora()[0].id
+    corpus_id = OrbisService().get_corpora()[0]._id
     documents = OrbisService().get_documents_of_corpus(corpus_id)
 
     assert len(documents) == 1
@@ -114,7 +114,7 @@ def test_get_documents_of_corpus_dbExistsAndContainsCorpus_returnDocuments(inser
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumentsOfCorrectCorpus(
         insert_test_data_orbis):
-    corpus_id = OrbisService().get_corpora()[0].id
+    corpus_id = OrbisService().get_corpora()[0]._id
     documents = OrbisService().get_documents_of_corpus(corpus_id)
 
     assert len(documents) == 1
@@ -139,7 +139,7 @@ def test_get_corpora_dbExistsAndContainsCorpus_returnsCorpus(insert_test_data_or
     assert corpora
     assert len(corpora) == 1
     corpus = corpora[0]
-    assert corpus.id > 0
+    assert corpus._id > 0
     assert corpus.name == 'corpus1'
 
 
@@ -155,7 +155,7 @@ def test_get_annotation_types_dbExistsAndContainsAnnotationTypes_returnsAnnotati
     assert annotation_types
     assert len(annotation_types) == 1
     annotation_type = annotation_types[0]
-    assert annotation_type.id > 0
+    assert annotation_type._id > 0
     assert annotation_type.name == 'annotation-type1'
 
 
@@ -166,7 +166,7 @@ def test_get_metadata_dbExistsAndContainsMetadata_returnsMetadata(insert_test_da
     assert metadata
     assert len(metadata) == 2
     metadatum = metadata[0]
-    assert metadatum.id > 0
+    assert metadatum._id > 0
     assert metadatum.key == 'key1'
     assert metadatum.value == 'value1'
 
@@ -365,8 +365,8 @@ def test_add_run_runHasParent_childIsReferencedInParent(insert_test_data_orbis):
 # noinspection PyPep8Naming
 def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_returnFalse(insert_test_data_orbis):
     run = OrbisService().get_runs()[0]
-    run_id = run.id
-    document_id = list(run.document_annotations.keys())[0].id
+    run_id = run._id
+    document_id = list(run.document_annotations.keys())[0]._id
     annotation = Annotation('', ('test', 'text'), (0, 7, 13), (4, 11), AnnotationType('annotation-type1'),
                             Annotator('Andreas', [Role('admin')]), run_id, document_id)
 
@@ -376,8 +376,8 @@ def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_ret
 # noinspection PyPep8Naming
 def test_add_annotation_to_document_surfaceFormLenDiffersFromEndIndicesLen_returnFalse(insert_test_data_orbis):
     run = OrbisService().get_runs()[0]
-    run_id = run.id
-    document_id = list(run.document_annotations.keys())[0].id
+    run_id = run._id
+    document_id = list(run.document_annotations.keys())[0]._id
     annotation = Annotation('', ('test', 'text'), (0, 7), (4, 11, 18), AnnotationType('annotation-type1'),
                             Annotator('Andreas', [Role('admin')]), run_id, document_id)
 
@@ -391,7 +391,7 @@ def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(in
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 1
 
-    run_id = db_run.id
+    run_id = db_run._id
     assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                     AnnotationType('annotation_type1'),
                                                                     Annotator('Andreas', []), run_id))
@@ -408,8 +408,8 @@ def test_add_annotation_to_document_annotationIsMissingRunId_returnFalse(insert_
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 1
 
-    run_id = db_run.id
-    document_id = list(db_run.document_annotations.keys())[0].id
+    run_id = db_run._id
+    document_id = list(db_run.document_annotations.keys())[0]._id
     assert not OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                     AnnotationType('annotation_type1'),
                                                                     Annotator('Andreas', []), document_id=document_id))
@@ -427,8 +427,8 @@ def test_add_annotation_to_document_addNewAnnotationToExistingDocument_existingD
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 1
 
-    run_id = db_run.id
-    document_id = list(db_run.document_annotations.keys())[0].id
+    run_id = db_run._id
+    document_id = list(db_run.document_annotations.keys())[0]._id
     assert OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
                                                                 AnnotationType('annotation_type1'),
                                                                 Annotator('Andreas', []), run_id, document_id))
@@ -445,8 +445,8 @@ def test_add_annotation_to_document_addNewAnnotationTwice_annotationShouldBeAdde
     assert len(list(db_run.document_annotations.keys())) == 1
     assert len(list(db_run.document_annotations.values())[0]) == 1
 
-    run_id = db_run.id
-    document_id = list(db_run.document_annotations.keys())[0].id
+    run_id = db_run._id
+    document_id = list(db_run.document_annotations.keys())[0]._id
     annotation = Annotation('', 'something', 0, 9, AnnotationType('annotation_type1'),
                             Annotator('Andreas', []), run_id, document_id)
     assert OrbisService().add_annotation_to_document(annotation)

@@ -110,19 +110,19 @@ class Annotation(BaseModel):
                 for document_annotation_dao in document_has_annotations]
 
     def to_dao(self) -> AnnotationDao:
-        return AnnotationDao(annotation_id=self.id, key=self.key,
+        return AnnotationDao(annotation_id=self._id, key=self.key,
                              surface_forms=list(self.surface_forms),
                              start_indices=list(self.start_indices),
                              end_indices=list(self.end_indices),
-                             annotation_type_id=self.annotation_type.id,
+                             annotation_type_id=self.annotation_type._id,
                              annotation_type=self.annotation_type.to_dao(),
-                             annotator_id=self.annotator.id,
+                             annotator_id=self.annotator._id,
                              annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
-                                        annotation_id=self.id, annotation=self.to_dao())
+                                        annotation_id=self._id, annotation=self.to_dao())
 
     def copy(self, run_id: int, document_id: int) -> 'Annotation':
         return Annotation(self.key, self.surface_forms, self.start_indices, self.end_indices,
