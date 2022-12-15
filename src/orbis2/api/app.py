@@ -42,33 +42,33 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
-@app.get('/getDocuments', response_model=List[Document])
+@app.get('/getDocuments')
 def get_documents_of_corpus(corpus_id: int = None) -> List[Document]:
     if corpus_id:
         return get_orbis_service().get_documents_of_corpus(corpus_id)
     return get_orbis_service().get_documents()
 
 
-@app.get('/getDocument', response_model=Document)
+@app.get('/getDocument')
 def get_document(document_id: int) -> Document:
     # TODO, anf 13.12.2022: implement response in error case
     if document_id:
         return get_orbis_service().get_document(document_id)
 
 
-@app.get('/getRunNames', response_model=List[str])
+@app.get('/getRunNames')
 def get_run_names(corpus_id: int = None) -> List[str]:
     if corpus_id:
         return get_orbis_service().get_run_names(corpus_id)
     return get_orbis_service().get_run_names()
 
 
-@app.get('/getCorpora', response_model=List[Corpus])
+@app.get('/getCorpora')
 def get_corpora() -> List[Corpus]:
     return get_orbis_service().get_corpora()
 
 
-@app.post('/addCorpus/', response_model=Corpus)
+@app.post('/addCorpus/')
 def add_corpus(corpus: Corpus) -> Corpus:
     return corpus
 
