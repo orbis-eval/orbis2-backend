@@ -17,10 +17,10 @@ class Run(BaseModel):
     corpus: Corpus
     document_annotations: Dict[Document, List[Annotation]]
     # parents: ['Run']
-    id: int  # noqa: A003
+    _id: int
 
     def __init__(self, name: str, description: str, corpus: Corpus,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
         """
         CONSTRUCTOR
 

@@ -8,9 +8,9 @@ from orbis2.model.base_model import BaseModel
 @dataclass
 class AnnotationType(BaseModel):
     name: str
-    id: int  # noqa: A003
+    _id: int
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, _id: int = 0):
         """
         CONSTRUCTOR
 

@@ -24,14 +24,14 @@ class Annotation(BaseModel):
     document_id: int
     metadata: List[Metadata]
     timestamp: datetime
-    id: int  # noqa: A003
+    _id: int
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: List[Metadata] = None, timestamp: datetime = None):
+                 metadata: List[Metadata] = None, timestamp: datetime = None, _id: int = 0):
         if isinstance(start_indices, int):
             start_indices = (start_indices, )
         if isinstance(start_indices, List):

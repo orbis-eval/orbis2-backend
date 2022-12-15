@@ -17,10 +17,10 @@ class Document(BaseModel):
     run_id: int
     metadata: List[Metadata]
     done: bool
-    id: int  # noqa: A003
+    _id: int
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
-                 done: bool = False):
+                 done: bool = False, _id: int = 0):
         """
         CONSTRUCTOR
 

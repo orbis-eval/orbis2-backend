@@ -9,9 +9,9 @@ from orbis2.model.base_model import BaseModel
 class Metadata(BaseModel):
     key: str
     value: str
-    id: int  # noqa: A003
+    _id: int
 
-    def __init__(self, key: str, value: str):
+    def __init__(self, key: str, value: str, _id: int = 0):
         """
         CONSTRUCTOR
 
