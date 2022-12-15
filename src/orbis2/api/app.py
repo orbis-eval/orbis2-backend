@@ -1,7 +1,7 @@
 import logging.config
 import sys
 import threading
-from typing import List, Union
+from typing import List
 
 import uvicorn as uvicorn
 from fastapi import FastAPI

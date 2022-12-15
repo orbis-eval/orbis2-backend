@@ -111,12 +111,12 @@ class OrbisDb(SqlDb):
 
     def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[str], None]:
         """
-        Get all runs with a given corpus_id from database
+        Get all run names with a given corpus_id from database
 
         Args:
             corpus_id:
 
-        Returns: A list of run objects or None if no according run exists in the database
+        Returns: A list of run names or None if no according run exists in the database
         """
         try:
             results = self.session.query(RunDao.name).where(RunDao.corpus_id == corpus_id).all()
@@ -125,24 +125,24 @@ class OrbisDb(SqlDb):
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning(f'Run by corpus id request with corpus id: {corpus_id} failed.')
+            logging.warning(f'Run names by corpus id request with corpus id: {corpus_id} failed.')
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
     def get_run_names(self) -> Union[List[str], None]:
         """
-        Get all runs
+        Get all run names from database
 
-        Returns: A list of all run objects or None if no run exists
+        Returns: A list of all run names or None if no run exists
         """
         try:
             results = self.session.query(RunDao.name).all()
             if len(results) > 0:
                 return results
-            logging.debug(f'There are no run entries in orbis database.')
+            logging.debug('There are no run entries in orbis database.')
             return None
         except SQLAlchemyError as e:
-            logging.warning(f'all run request failed.')
+            logging.warning('All run names request failed.')
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
