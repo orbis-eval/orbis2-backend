@@ -58,6 +58,11 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
+    def get_documents_of_run(self, run_id: int) -> List[Document]:
+        if documents := self.orbis_db.get_documents_of_run(run_id):
+            return Document.from_document_daos(documents)
+        return []
+
     def get_document(self, document_id: int) -> Union[Document, None]:
         if document := self.orbis_db.get_document(document_id):
             return Document.from_document_dao(document)

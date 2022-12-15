@@ -133,6 +133,36 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 
 
 # noinspection PyPep8Naming
+def test_get_documents_of_run_dbExistsAndContainsRun_returnDocuments(insert_test_data_orbis):
+    run_id = OrbisService().get_runs()[0]._id
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+    assert documents[0].content == 'Text, das ist ein Beispiel'
+
+
+# noinspection PyPep8Naming
+def test_get_documents_of_run_dbExistsAndContainsMultipleRuns_returnDocumentsOfCorrectRun(
+        insert_test_data_orbis):
+    run_id = OrbisService().get_runs()[0]._id
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+
+    OrbisService().add_run(
+        Run(
+            'run2', 'run2', Corpus('corpus2', [AnnotationType('annotation-type1')]),
+            {Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')]):
+                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                             Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]}))
+
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+    assert documents[0].content == 'Text, das ist ein Beispiel'
+
+
+# noinspection PyPep8Naming
 def test_get_corpora_dbExistsAndContainsCorpus_returnsCorpus(insert_test_data_orbis):
     corpora = OrbisService().get_corpora()
 

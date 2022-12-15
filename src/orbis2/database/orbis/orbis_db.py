@@ -219,6 +219,27 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
         return None
 
+    def get_documents_of_run(self, run_id: int) -> Union[List[DocumentDao], None]:
+        """
+        Get all documents for a given run from database
+
+        Args:
+            run_id: id of the run for which the documents are looked up
+
+        Returns: A list of document objects or None if no document exists for this corpus in the database
+        """
+        if documents := self.try_catch(
+                lambda: self.session.query(DocumentDao).where(and_(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id,
+                )).all(),
+                f'Documents for run request with run id: {run_id} failed', False
+        ):
+            return documents
+        logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
+        return None
+
+
     def get_annotations(self) -> Union[List[AnnotationDao], None]:
         """
         Get all annotations from database
