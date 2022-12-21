@@ -5,6 +5,7 @@ from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
+from orbis2.model.run import Run
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
@@ -109,6 +110,43 @@ class OrbisDb(SqlDb):
         logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
         return None
 
+    def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[Run], None]:
+        """
+        Get all run names with a given corpus_id from database
+
+        Args:
+            corpus_id:
+
+        Returns: A list of run names or None if no according run exists in the database
+        """
+        try:
+            results = self.session.query(RunDao.run_id, RunDao.name).where(RunDao.corpus_id == corpus_id).all()
+            if len(results) > 0:
+                return [RunDao(run_id=result.run_id, name=result.name) for result in results]
+            logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
+            return None
+        except SQLAlchemyError as e:
+            logging.warning(f'Run names by corpus id request with corpus id: {corpus_id} failed.')
+            logging.debug(f'the following exception occurred: {e.__str__()}')
+            return None
+
+    def get_run_names(self) -> Union[List[RunDao], None]:
+        """
+        Get all run names from database
+
+        Returns: A list of all run names or None if no run exists
+        """
+        try:
+            results = self.session.query(RunDao.run_id, RunDao.name).all()
+            if len(results) > 0:
+                return [RunDao(run_id=result.run_id, name=result.name) for result in results]
+            logging.debug('There are no run entries in orbis database.')
+            return None
+        except SQLAlchemyError as e:
+            logging.warning('All run names request failed.')
+            logging.debug(f'the following exception occurred: {e.__str__()}')
+            return None
+
     def get_corpora(self) -> Union[List[CorpusDao], None]:
         """
         Get all corpora from database
@@ -179,6 +217,26 @@ class OrbisDb(SqlDb):
         ):
             return documents
         logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
+        return None
+
+    def get_documents_of_run(self, run_id: int) -> Union[List[DocumentDao], None]:
+        """
+        Get all documents for a given run from database
+
+        Args:
+            run_id: id of the run for which the documents are looked up
+
+        Returns: A list of document objects or None if no document exists for this corpus in the database
+        """
+        if documents := self.try_catch(
+                lambda: self.session.query(DocumentDao).where(and_(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id,
+                )).all(),
+                f'Documents for run request with run id: {run_id} failed', False
+        ):
+            return documents
+        logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
         return None
 
     def get_annotations(self) -> Union[List[AnnotationDao], None]:

@@ -133,6 +133,36 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 
 
 # noinspection PyPep8Naming
+def test_get_documents_of_run_dbExistsAndContainsRun_returnDocuments(insert_test_data_orbis):
+    run_id = OrbisService().get_runs()[0]._id
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+    assert documents[0].content == 'Text, das ist ein Beispiel'
+
+
+# noinspection PyPep8Naming
+def test_get_documents_of_run_dbExistsAndContainsMultipleRuns_returnDocumentsOfCorrectRun(
+        insert_test_data_orbis):
+    run_id = OrbisService().get_runs()[0]._id
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+
+    OrbisService().add_run(
+        Run(
+            'run2', 'run2', Corpus('corpus2', [AnnotationType('annotation-type1')]),
+            {Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')]):
+                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                             Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]}))
+
+    documents = OrbisService().get_documents_of_run(run_id)
+
+    assert len(documents) == 1
+    assert documents[0].content == 'Text, das ist ein Beispiel'
+
+
+# noinspection PyPep8Naming
 def test_get_corpora_dbExistsAndContainsCorpus_returnsCorpus(insert_test_data_orbis):
     corpora = OrbisService().get_corpora()
 
@@ -630,6 +660,23 @@ def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdate
     assert updated_run_on_db.description == run.description
     assert updated_run_on_db.corpus == run.corpus
     assert updated_run_on_db.parents == run.parents
+
+
+# noinspection PyPep8Naming
+def test_get_run_names_defaultDbData_correctRunWithNamesAndId(insert_test_data_orbis):
+    all_runs = OrbisService().get_run_names()
+    assert len(all_runs) == 1
+    assert all_runs[0].name == 'run1'
+    assert isinstance(all_runs[0], Run)
+
+
+# noinspection PyPep8Naming
+def test_get_run_names_defaultDbData_correctRunWithNamesAndIdByCorpusId(insert_test_data_orbis):
+    service = OrbisService()
+    runs_by_corpus_id = service.get_run_names((service.get_corpora()[0])._id)
+    assert len(runs_by_corpus_id) == 1
+    assert runs_by_corpus_id[0].name == 'run1'
+    assert isinstance(runs_by_corpus_id[0], Run)
 
 # TODO, anf 06.12.2022: test whether entries are deleted when there are no more references to it
 #  ex.: Document contains Annotation, this Annotation is changed and save -> in fact a new Annotation is created,
