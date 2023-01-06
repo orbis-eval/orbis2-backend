@@ -60,8 +60,7 @@ class NifFormat(CorpusFormat):
                                    start_indices=NifFormat.get_annotation_int(g, annotation_url,
                                                                               NIF_NAMESPACE.beginIndex),
                                    end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
-                                   metadata=[Metadata(key='Knowledge Base', value=v)
-                                             for v in metadata] if metadata else None,
+                                   metadata=[Metadata(key='Knowledge Base', value=metadata)] if metadata else None,
                                    annotation_type=ENTITY_ANNOTATION_TYPE,
                                    annotator=ANNOTATOR
                                    )
