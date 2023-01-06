@@ -68,8 +68,8 @@ class NifFormat(CorpusFormat):
         return document_annotations
 
     @staticmethod
-    def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal, scalar: bool = True) -> \
-            Union[None | str | List[str]]:
+    def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal,
+                            scalar: bool = True) -> Union[None, str, List[str]]:
         res = [str(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))]
         if len(res):
             return res[0] if scalar else res
