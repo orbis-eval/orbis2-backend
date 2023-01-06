@@ -1,6 +1,8 @@
-import json
-from typing import List, Dict
+from typing import List, Dict, Union, Tuple
+
 from rdflib import Namespace, Graph
+from rdflib.plugins.parsers.notation3 import BadSyntax
+from rdflib.term import Literal, Node
 
 from orbis2.corpus_import.format import CorpusFormat
 from orbis2.model.annotation import Annotation
@@ -10,11 +12,14 @@ from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
 from orbis2.model.role import Role
 
-SEGMENT_TYPE_PREFIX = 'segment/'
-
 ANNOTATOR = Annotator(name='CorpusImporter', roles=[Role(name='CorpusImporter')])
+ENTITY_ANNOTATION_TYPE = AnnotationType(name='Entity')
 
-class CareerCoachFormat(CorpusFormat):
+NIF_NAMESPACE = Namespace("http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#")
+ITS_RDF_NAMESPACE = Namespace("http://www.w3.org/2005/11/its/rdf#")
+
+
+class NifFormat(CorpusFormat):
     """
     CorpusFormat used to support imports from the CareerCoach corpus.
     """
@@ -22,13 +27,10 @@ class CareerCoachFormat(CorpusFormat):
     @staticmethod
     def is_supported(document_list: List[str], partition: str):
         try:
-            doc = json.loads(document_list[0])
-        except json.decoder.JSONDecodeError:
+            g = Graph()
+            g.parse(data=document_list[0], format='turtle')
+        except BadSyntax:
             return False
-
-        for key in 'text', partition:
-            if key not in doc:
-                return False
 
         return True
 
@@ -39,40 +41,40 @@ class CareerCoachFormat(CorpusFormat):
         Return:
             A dictionary of documents and corresponding annotations for import.
         """
-        nif_namespace = Namespace("http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#")
-        its_rdf_namespace = Namespace("http://www.w3.org/2005/11/its/rdf#")
-
         document_annotations = {}
-        for doc in document_list:
+        for nif_document in document_list:
             g = Graph()
-            g.parse(data=doc, format='turtle')
+            g.parse(data=nif_document, format='turtle')
 
-            
-
-            for doc in map(json.loads, document_list):
-                annotations = []
-                document_annotations[Document(content=doc['text'], key=doc['url'])] = annotations
-                for segment_name, annotation in segment_generator(doc[partition]):
-                    if 'type' in annotation:
-                        annotation_type = annotation['type']
-                    elif 'entity_type' in annotation:
-                        annotation_type = annotation['entity_type']
-                    else:
-                        annotation_type = SEGMENT_TYPE_PREFIX + '/' + segment_name
-
-                    if annotation_type not in invalid_annotation_types:
-                        annotations.append(
-                            Annotation(key=annotation['key'] if 'key' in annotation and
-                                                                annotation_type != 'proposal' else None,
-                                       surface_forms=annotation['phrase'] if 'phrase' in annotation else annotation[
-                                           'surface_form'],
-                                       start_indices=annotation['start'],
-                                       end_indices=annotation['end'],
-                                       annotation_type=AnnotationType(get_type_or_proposed_type(annotation)),
-                                       metadata=(Metadata(key="segment", value=segment_name),),
-                                       annotator=ANNOTATOR)
-                        )
+            for resource, _, value in g.triples((None, NIF_NAMESPACE.isString, None)):
+                print(type(value))
+                document_annotations[Document(content=str(value), key=str(resource))] = [
+                    Annotation(key=NifFormat.get_annotation_prop(g, annotation_url, ITS_RDF_NAMESPACE.taIdentRef),
+                               surface_forms=NifFormat.get_annotation_prop(g, annotation_url, NIF_NAMESPACE.anchorOf,
+                                                                           scalar=False),
+                               start_indices=NifFormat.get_annotation_int(g, annotation_url,
+                                                                          NIF_NAMESPACE.beginIndex),
+                               end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
+                               metadata=[Metadata(key='Knowledge Base',
+                                                  value=NifFormat.get_annotation_prop(g, annotation_url,
+                                                                                      ITS_RDF_NAMESPACE.taSource))],
+                               annotation_type=ENTITY_ANNOTATION_TYPE,
+                               annotator=ANNOTATOR
+                               )
+                    for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None))
+                ]
+        print(document_annotations)
         return document_annotations
+
+    @staticmethod
+    def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal, scalar: bool = True) -> \
+            Union[str | List[str]]:
+        res = [str(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))]
+        return res[0] if scalar else res
+
+    @staticmethod
+    def get_annotation_int(graph: Graph, annotation_url: Node, rdf_property: Literal) -> Tuple[int, ...]:
+        return tuple([int(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))])
 
     @staticmethod
     def get_document_content(document_list: List[str]) -> List[Document]:
