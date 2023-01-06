@@ -35,7 +35,7 @@ class NifFormat(CorpusFormat):
         return True
 
     @staticmethod
-    def get_document_annotations(document_list: List[str], invalid_annotation_types: List[str]) \
+    def get_document_annotations(document_list: List[str], invalid_annotation_types: List[str], partition=None) \
             -> Dict[Document, List[Annotation]]:
         """
         Return:
@@ -47,30 +47,34 @@ class NifFormat(CorpusFormat):
             g.parse(data=nif_document, format='turtle')
 
             for resource, _, value in g.triples((None, NIF_NAMESPACE.isString, None)):
-                print(type(value))
-                document_annotations[Document(content=str(value), key=str(resource))] = [
-                    Annotation(key=NifFormat.get_annotation_prop(g, annotation_url, ITS_RDF_NAMESPACE.taIdentRef),
-                               surface_forms=NifFormat.get_annotation_prop(g, annotation_url, NIF_NAMESPACE.anchorOf,
-                                                                           scalar=False),
-                               start_indices=NifFormat.get_annotation_int(g, annotation_url,
-                                                                          NIF_NAMESPACE.beginIndex),
-                               end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
-                               metadata=[Metadata(key='Knowledge Base',
-                                                  value=NifFormat.get_annotation_prop(g, annotation_url,
-                                                                                      ITS_RDF_NAMESPACE.taSource))],
-                               annotation_type=ENTITY_ANNOTATION_TYPE,
-                               annotator=ANNOTATOR
-                               )
-                    for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None))
-                ]
-        print(document_annotations)
+                annotation = []
+                document_annotations[Document(content=str(value), key=str(resource))] = annotation
+                for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None)):
+                    metadata = NifFormat.get_annotation_prop(g, annotation_url, ITS_RDF_NAMESPACE.taSource)
+                    annotation.append(
+                        Annotation(key=NifFormat.get_annotation_prop(g, annotation_url,
+                                                                     ITS_RDF_NAMESPACE.taIdentRef),
+                                   surface_forms=NifFormat.get_annotation_prop(g, annotation_url,
+                                                                               NIF_NAMESPACE.anchorOf,
+                                                                               scalar=False),
+                                   start_indices=NifFormat.get_annotation_int(g, annotation_url,
+                                                                              NIF_NAMESPACE.beginIndex),
+                                   end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
+                                   metadata=[Metadata(key='Knowledge Base', value=v)
+                                             for v in metadata] if metadata else None,
+                                   annotation_type=ENTITY_ANNOTATION_TYPE,
+                                   annotator=ANNOTATOR
+                                   )
+                    )
         return document_annotations
 
     @staticmethod
     def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal, scalar: bool = True) -> \
-            Union[str | List[str]]:
+            Union[None | str | List[str]]:
         res = [str(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))]
-        return res[0] if scalar else res
+        if len(res):
+            return res[0] if scalar else res
+        return None
 
     @staticmethod
     def get_annotation_int(graph: Graph, annotation_url: Node, rdf_property: Literal) -> Tuple[int, ...]:

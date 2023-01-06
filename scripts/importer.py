@@ -40,19 +40,19 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
         raise ValueError("Unsupported corpus format.")
 
     # create run for serialization in the database
-    document_annotations = CareerCoachFormat.get_document_annotations(document_list,
-                                                                      invalid_annotation_types=invalid_annotation_types,
-                                                                      partition=corpus_partition)
+    document_annotations = import_format.get_document_annotations(document_list,
+                                                                  invalid_annotation_types=invalid_annotation_types,
+                                                                  partition=corpus_partition)
 
     # filter the annotations based on Annotations specified in a second corpus.
     if careercoach_filter:
         filter_documents = [p.open().read() for p in Path(careercoach_filter).rglob('*.json') if p.is_file()]
-        document_segments = CareerCoachFormat.get_document_annotations(
+        document_segments = import_format.get_document_annotations(
             filter_documents, invalid_annotation_types=invalid_annotation_types,
             partition='gold_standard_annotation_segmentation')
         document_annotations = append_annotations_with_segments(document_annotations, document_segments)
 
-    supported_annotation_types = CareerCoachFormat.get_supported_annotation_types(document_annotations)
+    supported_annotation_types = import_format.get_supported_annotation_types(document_annotations)
     OrbisService().add_run(Run(name=run_name, description=run_description,
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
                                document_annotations=document_annotations))
