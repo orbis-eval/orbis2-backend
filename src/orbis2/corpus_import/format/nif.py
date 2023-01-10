@@ -47,12 +47,10 @@ class NifFormat(CorpusFormat):
             g.parse(data=nif_document, format='turtle')
 
             for resource, _, value in g.triples((None, NIF_NAMESPACE.isString, None)):
-                annotation = []
                 source_url = next((source_url for _, _, source_url in g.triples((resource, NIF_NAMESPACE.sourceUrl,
                                                                                  None))), resource)
-                document_annotations[Document(content=str(value), key=str(source_url))] = annotation
-                for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None)):
-                    annotation.append(
+                print(source_url)
+                document_annotations[Document(content=str(value), key=str(source_url))] = [
                         Annotation(key=NifFormat.get_annotation_prop(g, annotation_url,
                                                                      ITS_RDF_NAMESPACE.taIdentRef)[0],
                                    surface_forms=NifFormat.get_annotation_prop(g, annotation_url,
@@ -66,7 +64,11 @@ class NifFormat(CorpusFormat):
                                    annotation_type=ENTITY_ANNOTATION_TYPE,
                                    annotator=ANNOTATOR
                                    )
-                    )
+                    for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, source_url))]
+        for document, annotations in document_annotations.items():
+            print(document.content[:80], '->', len(annotations))
+
+        exit(0)
         return document_annotations
 
     @staticmethod
