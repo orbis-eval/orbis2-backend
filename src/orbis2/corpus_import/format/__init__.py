@@ -32,11 +32,14 @@ class CorpusFormat:
         raise NotImplementedError
 
     @staticmethod
-    def get_document_annotations(document_list: List[str]) -> Dict[Document, List[Annotation]]:
+    def get_document_annotations(document_list: List[str], invalid_annotation_types: List[str], partition=None) \
+            -> Dict[Document, List[Annotation]]:
         """
         Extract the corpus annotations.
 
         :param document_list: A list of the corpus documents and annotations.
+        :param invalid_annotation_types: An optional list of annotation types to ignore.
+        :param partition: An optional corpus partition to import.
         :return: A dictionary that maps document_ids to the corresponding list
          of annotations
         """

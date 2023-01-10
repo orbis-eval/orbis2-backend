@@ -1,4 +1,4 @@
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Tuple
 
 from rdflib import Namespace, Graph
 from rdflib.plugins.parsers.notation3 import BadSyntax
@@ -50,17 +50,17 @@ class NifFormat(CorpusFormat):
                 annotation = []
                 document_annotations[Document(content=str(value), key=str(resource))] = annotation
                 for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None)):
-                    metadata = NifFormat.get_annotation_prop(g, annotation_url, ITS_RDF_NAMESPACE.taSource)
                     annotation.append(
                         Annotation(key=NifFormat.get_annotation_prop(g, annotation_url,
-                                                                     ITS_RDF_NAMESPACE.taIdentRef),
+                                                                     ITS_RDF_NAMESPACE.taIdentRef)[0],
                                    surface_forms=NifFormat.get_annotation_prop(g, annotation_url,
-                                                                               NIF_NAMESPACE.anchorOf,
-                                                                               scalar=False),
+                                                                               NIF_NAMESPACE.anchorOf),
                                    start_indices=NifFormat.get_annotation_int(g, annotation_url,
                                                                               NIF_NAMESPACE.beginIndex),
                                    end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
-                                   metadata=[Metadata(key='Knowledge Base', value=metadata)] if metadata else None,
+                                   metadata=[Metadata(key='Knowledge Base', value=metadata)
+                                             for metadata in NifFormat.get_annotation_prop(g, annotation_url,
+                                                                                           ITS_RDF_NAMESPACE.taSource)],
                                    annotation_type=ENTITY_ANNOTATION_TYPE,
                                    annotator=ANNOTATOR
                                    )
@@ -68,16 +68,12 @@ class NifFormat(CorpusFormat):
         return document_annotations
 
     @staticmethod
-    def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal,
-                            scalar: bool = True) -> Union[None, str, List[str]]:
-        res = [str(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))]
-        if len(res):
-            return res[0] if scalar else res
-        return None
+    def get_annotation_prop(graph: Graph, annotation_url: Node, rdf_property: Literal) -> Tuple[str]:
+        return tuple([str(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))])
 
     @staticmethod
     def get_annotation_int(graph: Graph, annotation_url: Node, rdf_property: Literal) -> Tuple[int, ...]:
-        return tuple([int(value) for _, _, value in graph.triples((annotation_url, rdf_property, None))])
+        return tuple([int(str(value)) for _, _, value in graph.triples((annotation_url, rdf_property, None))])
 
     @staticmethod
     def get_document_content(document_list: List[str]) -> List[Document]:
