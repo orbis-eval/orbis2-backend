@@ -13,7 +13,7 @@ from orbis2.model.metadata import Metadata
 from orbis2.model.role import Role
 
 ANNOTATOR = Annotator(name='CorpusImporter', roles=[Role(name='CorpusImporter')])
-ENTITY_ANNOTATION_TYPE = AnnotationType(name='Entity')
+ENTITY_ANNOTATION_TYPE = AnnotationType(name='https://www.w3.org/2002/07/owl#Thing')
 
 NIF_NAMESPACE = Namespace("http://persistence.uni-leipzig.org/nlp2rdf/ontologies/nif-core#")
 ITS_RDF_NAMESPACE = Namespace("http://www.w3.org/2005/11/its/rdf#")
@@ -48,7 +48,9 @@ class NifFormat(CorpusFormat):
 
             for resource, _, value in g.triples((None, NIF_NAMESPACE.isString, None)):
                 annotation = []
-                document_annotations[Document(content=str(value), key=str(resource))] = annotation
+                source_url = next((source_url for _, _, source_url in g.triples((resource, NIF_NAMESPACE.sourceUrl,
+                                                                                 None))), resource)
+                document_annotations[Document(content=str(value), key=str(source_url))] = annotation
                 for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, None)):
                     annotation.append(
                         Annotation(key=NifFormat.get_annotation_prop(g, annotation_url,
@@ -58,7 +60,7 @@ class NifFormat(CorpusFormat):
                                    start_indices=NifFormat.get_annotation_int(g, annotation_url,
                                                                               NIF_NAMESPACE.beginIndex),
                                    end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
-                                   metadata=[Metadata(key='Knowledge Base', value=metadata)
+                                   metadata=[Metadata(key=ITS_RDF_NAMESPACE.taSource, value=metadata)
                                              for metadata in NifFormat.get_annotation_prop(g, annotation_url,
                                                                                            ITS_RDF_NAMESPACE.taSource)],
                                    annotation_type=ENTITY_ANNOTATION_TYPE,

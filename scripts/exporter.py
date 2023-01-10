@@ -4,12 +4,14 @@ from pathlib import Path
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.config.corpus_export.careercoach import CareerCoachExportFormat
+from orbis2.config.corpus_export.nif import NifExportFormat
 from orbis2.model.run import Run
 
 ExportFormat = namedtuple('ExportFormat', 'exporter description')
 
 SUPPORTED_EXPORT_FORMATS = {
-    'careercoach2022': ExportFormat(CareerCoachExportFormat, 'The CareerCoach 2022 export format.')
+    'careercoach2022': ExportFormat(CareerCoachExportFormat, 'The CareerCoach 2022 export format.'),
+    'nif': ExportFormat(NifExportFormat, 'The NLP Interchange Format (NIF) 2.0'),
 }
 
 
@@ -22,7 +24,7 @@ def export_documents(export_run: Run, export_directory: Path, export_format: Exp
         export_directory: The export directory.
         export_format: The
     """
-    export_format.exporter.export(export_run, export_directory)
+    export_format.exporter().export(export_run, export_directory)
 
 
 if __name__ == '__main__':
@@ -43,8 +45,5 @@ if __name__ == '__main__':
     if not (run := OrbisService().get_run_by_name(run_name=args.run_name)):
         print(f'Unknown run with name {args.run_name}')
         exit(-1)
-
-    if not corpus_directory.exists():
-        corpus_directory.mkdir(parents=True)
 
     export_documents(run, corpus_directory, export_format=export_format)
