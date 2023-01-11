@@ -1,4 +1,4 @@
-import logging.config
+import logging
 import sys
 import threading
 from typing import List
@@ -22,7 +22,6 @@ sys.path.insert(0, str(PROJECT_DIR / 'src'))
 LOGGING_DIR = PROJECT_DIR / 'log'
 LOGGING_DIR.mkdir(exist_ok=True)
 logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_loggers=False)
-logger = logging.getLogger(__name__)
 
 ORBIS_SERVICE_LAZY_INIT_LOCK = threading.Lock()
 DOCUMENTS_LAZY_INIT_LOCK = threading.Lock()
