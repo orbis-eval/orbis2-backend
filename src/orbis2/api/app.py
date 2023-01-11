@@ -22,7 +22,7 @@ sys.path.insert(0, str(PROJECT_DIR / 'src' / 'orbis2'))
 
 LOGGING_DIR = PROJECT_DIR / 'log'
 LOGGING_DIR.mkdir(exist_ok=True)
-logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_loggers=False)
+# logging.config.fileConfig(AppConfig.get_logging_config_path(), disable_existing_loggers=False)
 
 ORBIS_SERVICE_LAZY_INIT_LOCK = threading.Lock()
 DOCUMENTS_LAZY_INIT_LOCK = threading.Lock()
