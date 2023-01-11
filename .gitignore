@@ -17,3 +17,6 @@ wandb/*
 
 # env config
 env.sh
+
+# egg files
+src/orbis2.egg/

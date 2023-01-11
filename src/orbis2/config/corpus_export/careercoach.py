@@ -62,9 +62,11 @@ class CareerCoachExportFormat:
     """
     CorpusFormat used to support imports from the CareerCoach corpus.
     """
-
     @staticmethod
     def export(run: Run, path: Path):
+        if not path.exists():
+            path.mkdir(parents=True)
+
         for document, annotations in run.document_annotations.items():
             with path.joinpath(get_export_doc_name(document)).open('w') as f:
                 export_doc = {

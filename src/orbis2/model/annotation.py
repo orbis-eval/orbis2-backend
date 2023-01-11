@@ -82,7 +82,7 @@ class Annotation(BaseModel):
                                 ).__str__())
 
     def __str__(self):
-        return f'Annotation({self.surface_forms}{self.start_indices}, {self.end_indices})'
+        return f'Annotation({self.surface_forms}{self.start_indices}, {self.end_indices}, {self.annotation_type})'
 
     def __repr__(self):
         return self.__str__()
