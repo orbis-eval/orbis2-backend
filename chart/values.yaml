@@ -1,0 +1,23 @@
+image:
+  repository: davos.fhgr.ch/nlp/Orbis2/obris2-backend
+  tag: 1.0.0
+  pullPolicy: Always
+
+imagePullSecrets: [ name: regcred ]
+nameOverride: ""
+fullnameOverride: ""
+
+controller:
+  enabled: true
+  type: deployment
+  replicas: 1
+
+service:
+  main:
+    type: ClusterIP
+    ports:
+      http:
+        enabled: true
+        port: 63012
+        protocol: HTTP
+        targetPort: 63012
