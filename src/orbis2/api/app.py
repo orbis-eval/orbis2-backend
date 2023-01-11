@@ -1,4 +1,3 @@
-import logging
 import sys
 import threading
 from typing import List
@@ -8,7 +7,6 @@ from fastapi import FastAPI
 
 from orbis2.model.corpus import Corpus
 from orbis2.business_logic.orbis_service import OrbisService
-from orbis2.config.app_config import AppConfig
 from orbis2.metadata import __version__
 from pathlib import Path
 
