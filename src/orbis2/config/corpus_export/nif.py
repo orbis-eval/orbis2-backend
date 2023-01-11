@@ -1,8 +1,14 @@
-from pathlib import Path
-
 from rdflib import Namespace, Graph, Literal, URIRef
 from rdflib.namespace import RDF, XSD, OWL
+import json
+from itertools import groupby
+from pathlib import Path
+from typing import List, Dict
+from urllib.parse import urlparse
 
+from orbis2.corpus_import.format.careercoach import SEGMENT_TYPE_PREFIX
+from orbis2.model.annotation import Annotation
+from orbis2.model.document import Document
 from orbis2.model.run import Run
 
 ORBIS = Namespace('https://www.fhgr.ch/orbis2/2023/export/')
@@ -79,6 +85,7 @@ class NifExportFormat:
             self.g.add((collection_uri, NIF.hasContext, uri))
 
             # add annotations
+            print(uri)
             for annotation in annotations:
                 self.add_annotation(document_uri=uri, annotation=annotation)
 

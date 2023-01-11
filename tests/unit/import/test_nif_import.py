@@ -18,6 +18,8 @@ EXAMPLE_NIF = """
 
 nif:Context a owl:Class .
 nif:String a owl:Class .
+nif:ContextCollection a owl:Class .
+nif:RFC5147String a owl:Class .
 nif:anchorOf a owl:DatatypeProperty .
 nif:beginIndex a owl:DatatypeProperty .
 nif:endIndex a owl:DatatypeProperty .
