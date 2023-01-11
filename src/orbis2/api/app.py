@@ -18,6 +18,7 @@ from orbis2.model.run import Run
 PROJECT_DIR = Path(__file__).parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
 sys.path.insert(0, str(PROJECT_DIR / 'src'))
+sys.path.insert(0, str(PROJECT_DIR / 'src' / 'orbis2'))
 
 LOGGING_DIR = PROJECT_DIR / 'log'
 LOGGING_DIR.mkdir(exist_ok=True)
