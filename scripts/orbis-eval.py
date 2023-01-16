@@ -26,6 +26,7 @@ if __name__ == '__main__':
                         'priority). If specified, Orbis removes overlapping annotations from the evaluation based on '
                         'the annotation type\'s priority. Annotations of same priority are filtered based on the '
                         'annotation\'s length (i.e., longer annotations are preferred over shorter ones). ')
+    parser.add_argument('--serialize', help='Optional filename for serializing the evaluation results.')
     args = parser.parse_args()
 
     orbis = OrbisService()
@@ -48,5 +49,13 @@ if __name__ == '__main__':
 
         res = SUPPORTED_METRICS[metric].metric(*annotation_preprocessors).compute(reference, annotator)
         result.append(OrbisEvaluationResult(SUPPORTED_METRICS[metric].description, res))
+
+    if args.serialize:
+        with open(args.serialize, 'bw') as f:
+            from pickle import dump
+            dump({'reference': reference,
+                  'annotator': annotator,
+                  'metrics': result},
+                 f)
 
     print(MarkdownOutputFormatter().format_output(result))
