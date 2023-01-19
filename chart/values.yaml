@@ -21,3 +21,16 @@ service:
         port: 63012
         protocol: HTTP
         targetPort: 63012
+
+env:
+  DB_URL: postgresql.database
+  DB_USER:
+    valueFrom:
+      secretKeyRef:
+        name: postgresql-orbis2ng-credentials
+        key: postgresql_user
+  DB_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: postgresql-orbis2ng-credentials
+        key: postgresql_pwd
