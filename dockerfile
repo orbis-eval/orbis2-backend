@@ -9,7 +9,7 @@ RUN mkdir /src/config
 RUN mkdir /resources
 
 COPY ./src /src
-COPY ./config/logger_production.ini /config/logger.ini
+COPY ./config/logger.ini /config/logger.ini
 COPY requirements.txt setup.py ./
 WORKDIR .
 
