@@ -2,10 +2,6 @@
 
 import streamlit as st
 from annotated_text import annotated_text
-from annotated_text.util import get_annotated_html
-import seaborn as sns
-import matplotlib.pyplot as plt
-
 from pickle import load
 
 
@@ -19,7 +15,7 @@ def annnotate_document(document, document_annotations):
 
         annotated_content.append(prefix)
         annotated_content.append((text[annotation.start_indices[0]:annotation.end_indices[0]],
-                                       annotation.annotation_type.name))
+                                  annotation.annotation_type.name))
         content_idx = annotation.end_indices[0]
 
     return annotated_content
