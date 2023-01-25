@@ -19,7 +19,6 @@ class ExcelFormat:
 
         # formatting
         table_heading_format = workbook.add_format({'bold': True, 'bg_color': 'yellow'})
-        annotation_format = workbook.add_format({'italic': True, 'font_color': 'red'})
 
         # add table heading
         worksheet.merge_range('A1:C1', 'Document', table_heading_format)
