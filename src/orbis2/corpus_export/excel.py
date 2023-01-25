@@ -32,7 +32,7 @@ class ExcelFormat:
         worksheet.set_column(2, 1, 80)
         for row_num, (document, annotations) in enumerate(run.document_annotations.items(), start=2):
             # write document
-            worksheet.write(row_num, 1, hash(document))
+            worksheet.write(row_num, 0, hash(document))
             worksheet.write(row_num, 1, document.content)
             worksheet.write(row_num, 2, document.key)
 
