@@ -12,8 +12,14 @@ class ExcelFormat:
     CorpusFormat used to support imports from the CareerCoach corpus.
     """
 
-    def export(self, run: Run, path: Path):
+    def export(self, run: Run, path: Path) -> None:
+        """
+        Export the documents and annotations of the run to a file.
 
+        Args:
+            - run: the Run to export.
+            - path: Path of the exported file.
+        """
         workbook = xlsxwriter.Workbook(path)
         worksheet = workbook.add_worksheet('Text annotations')
 

@@ -64,6 +64,13 @@ class CareerCoachExportFormat:
     """
     @staticmethod
     def export(run: Run, path: Path):
+        """
+        Export the documents and annotations of the run to the given directory.
+
+        Args:
+            - run: the Run to export.
+            - path: Path to the export directory.
+        """
         if not path.exists():
             path.mkdir(parents=True)
 
