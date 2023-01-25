@@ -3,8 +3,8 @@ from collections import namedtuple
 from pathlib import Path
 
 from orbis2.business_logic.orbis_service import OrbisService
-from orbis2.config.corpus_export.careercoach import CareerCoachExportFormat
-from orbis2.config.corpus_export.nif import NifExportFormat
+from orbis2.corpus_export.careercoach import CareerCoachExportFormat
+from orbis2.corpus_export.nif import NifExportFormat
 from orbis2.model.run import Run
 
 ExportFormat = namedtuple('ExportFormat', 'exporter description')
