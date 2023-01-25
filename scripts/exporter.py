@@ -4,6 +4,7 @@ from pathlib import Path
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.corpus_export.careercoach import CareerCoachExportFormat
+from orbis2.corpus_export.excel import ExcelFormat
 from orbis2.corpus_export.nif import NifExportFormat
 from orbis2.model.run import Run
 
@@ -12,6 +13,7 @@ ExportFormat = namedtuple('ExportFormat', 'exporter description')
 SUPPORTED_EXPORT_FORMATS = {
     'careercoach2022': ExportFormat(CareerCoachExportFormat, 'The CareerCoach 2022 export format.'),
     'nif': ExportFormat(NifExportFormat, 'The NLP Interchange Format (NIF) 2.0'),
+    'excel': ExportFormat(ExcelFormat, 'Microsoft Excel (xslx)')
 }
 
 
