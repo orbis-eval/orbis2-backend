@@ -765,30 +765,30 @@ def test_get_run_names_defaultDbData_correctRunWithNamesAndIdByCorpusId(insert_t
 
 #noinspection PyPep8Naming
 def test_get_annotations_includingRunAndDocumentId_returnAnnotationsOfSpecificRunAndDocument(insert_test_data_orbis):
+    # TODO, anf 26.01.2023: run with two different documents but same annotation should add annotation
+    #  once to run1-document1-annotation1 and once to run1-document2-annotation1 combination but that doesn't work,
+    #  should it, is there a case like this?
     document_under_test = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
     run = Run(
         'run2', 'run2', Corpus('corpus1', [AnnotationType('annotation-type1')]),
         {
             Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
-                 Annotation('url', 'Beispiel', 26, 34, AnnotationType('annotation-type2'),
-                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
-                 ],
-            # document_under_test:
-            #     [
-            #         Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
-            #                    Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
-            #         Annotation('url', 'Beispiel', 26, 34, AnnotationType('annotation-type2'),
-            #                    Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
-            #     ]
+                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])],
+            document_under_test:
+                [
+                    Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                               Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
+                    Annotation('url', 'Beispiel', 26, 34, AnnotationType('annotation-type2'),
+                               Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
+                ]
         }
     )
     assert OrbisService().add_run(run)
     annotations = OrbisService().get_annotations(run._id, document_under_test._id)
     assert len(annotations) == 2
     assert annotations[0].surface_forms[0] == 'Text'
-    assert annotations[1].surface_forms[0] == 'Beispiel'
+    assert annotations[0].surface_forms[1] == 'Beispiel'
 
 
 # TODO, anf 06.12.2022: test whether entries are deleted when there are no more references to it
