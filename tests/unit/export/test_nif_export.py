@@ -2,7 +2,7 @@ from rdflib import Graph
 from tempfile import NamedTemporaryFile
 from pathlib import Path
 
-from orbis2.config.corpus_export.nif import NifExportFormat
+from orbis2.corpus_export.nif import NifExportFormat
 from orbis2.corpus_import.format.nif import ANNOTATOR, ENTITY_ANNOTATION_TYPE
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
