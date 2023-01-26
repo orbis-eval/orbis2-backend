@@ -5,6 +5,7 @@ from typing import List
 import uvicorn as uvicorn
 from fastapi import FastAPI
 
+from orbis2.model.annotation import Annotation
 from orbis2.model.corpus import Corpus
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.metadata import __version__
@@ -41,6 +42,11 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
+@app.get('/getAnnotations')
+def get_annotations(run_id: int = None, document_id: int = None) -> List[Annotation]:
+    return get_orbis_service().get_annotations(run_id, document_id)
+
+
 @app.get('/getDocuments')
 def get_documents(run_id: int = None, corpus_id: int = None) -> List[Document]:
     if run_id:
@@ -72,6 +78,13 @@ def get_corpora() -> List[Corpus]:
 @app.post('/addCorpus/')
 def add_corpus(corpus: Corpus) -> Corpus:
     return corpus
+
+@app.post('/addAnnotation')
+def add_annotation(annotation: Annotation) -> int:
+    print(annotation)
+    result = get_orbis_service().add_annotation_to_document(annotation)
+    print(result)
+    return result
 
 
 def get_app():

@@ -68,8 +68,12 @@ class OrbisService:
             return Document.from_document_dao(document)
         return None
 
-    def get_annotations(self) -> List[Annotation]:
-        if annotations := self.orbis_db.get_annotations():
+    def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
+        if run_id and document_id:
+            annotations = self.orbis_db.get_annotations_of_document_by_run_id(run_id, document_id)
+        else:
+            annotations = self.orbis_db.get_annotations()
+        if annotations:
             return Annotation.from_annotation_daos(annotations)
         return []
 
@@ -109,10 +113,10 @@ class OrbisService:
                 return False
         return True
 
-    def add_annotation_to_document(self, annotation: Annotation) -> bool:
+    def add_annotation_to_document(self, annotation: Annotation) -> int:
         if annotation:
             return self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao())
-        return False
+        return 0
 
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
         if annotation_type:

@@ -231,12 +231,36 @@ class OrbisDb(SqlDb):
         if documents := self.try_catch(
                 lambda: self.session.query(DocumentDao).where(and_(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
-                    RunHasDocumentDao.run_id == run_id,
+                    RunHasDocumentDao.run_id == run_id
                 )).all(),
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
         logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
+        return None
+
+    def get_annotations_of_document_by_run_id(self, run_id: int, document_id: int) -> Union[List[AnnotationDao], None]:
+        """
+        Get all annotations for a specific document of a specific run from database
+
+        Args:
+            run_id:
+            document_id:
+
+        Returns: A list of annotation objects or None if no according annotation exists in the database
+        """
+        results = self.try_catch(
+            lambda: self.session.query(AnnotationDao).where(and_(
+                AnnotationDao.annotation_id == DocumentHasAnnotationDao.annotation_id,
+                DocumentHasAnnotationDao.document_id == document_id,
+                DocumentHasAnnotationDao.run_id == run_id
+            )).all(),
+            'Get annotations of document by run id failed',
+            [])
+        if len(results) > 0:
+            return results
+        logging.debug(f'There are no annotation entries for run({run_id}) - document({document_id}) combination '
+                      f'in orbis database.')
         return None
 
     def get_annotations(self) -> Union[List[AnnotationDao], None]:
@@ -316,7 +340,7 @@ class OrbisDb(SqlDb):
         """
         return self.try_catch(lambda: self.session.merge(run), f'Adding the run {run} failed.') and self.commit()
 
-    def add_annotation_to_document(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
+    def add_annotation_to_document(self, document_has_annotation: DocumentHasAnnotationDao) -> int:
         """
         Add annotation to an existing document in orbis database.
 
@@ -325,8 +349,10 @@ class OrbisDb(SqlDb):
 
         Returns: True if it worked, false otherwise
         """
-        return self.try_catch(lambda: self.session.merge(document_has_annotation),
-                              f'Adding the annotation_document {document_has_annotation} failed.') and self.commit()
+        if self.try_catch(lambda: self.session.merge(document_has_annotation),
+                          f'Adding the annotation_document {document_has_annotation} failed.') and self.commit():
+            return document_has_annotation.annotation_id
+        return 0
 
     def add_annotation_type(self, annotation_type: AnnotationTypeDao) -> bool:
         """

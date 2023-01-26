@@ -762,6 +762,35 @@ def test_get_run_names_defaultDbData_correctRunWithNamesAndIdByCorpusId(insert_t
     assert runs_by_corpus_id[0].name == 'run1'
     assert isinstance(runs_by_corpus_id[0], Run)
 
+
+#noinspection PyPep8Naming
+def test_get_annotations_includingRunAndDocumentId_returnAnnotationsOfSpecificRunAndDocument(insert_test_data_orbis):
+    document_under_test = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
+    run = Run(
+        'run2', 'run2', Corpus('corpus1', [AnnotationType('annotation-type1')]),
+        {
+            Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+                [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
+                 Annotation('url', 'Beispiel', 26, 34, AnnotationType('annotation-type2'),
+                            Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
+                 ],
+            # document_under_test:
+            #     [
+            #         Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+            #                    Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
+            #         Annotation('url', 'Beispiel', 26, 34, AnnotationType('annotation-type2'),
+            #                    Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])
+            #     ]
+        }
+    )
+    assert OrbisService().add_run(run)
+    annotations = OrbisService().get_annotations(run._id, document_under_test._id)
+    assert len(annotations) == 2
+    assert annotations[0].surface_forms[0] == 'Text'
+    assert annotations[1].surface_forms[0] == 'Beispiel'
+
+
 # TODO, anf 06.12.2022: test whether entries are deleted when there are no more references to it
 #  ex.: Document contains Annotation, this Annotation is changed and save -> in fact a new Annotation is created,
 #  but the old one must be deleted if no other Document references this Annotation
