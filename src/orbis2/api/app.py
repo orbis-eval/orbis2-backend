@@ -79,6 +79,7 @@ def get_corpora() -> List[Corpus]:
 def add_corpus(corpus: Corpus) -> Corpus:
     return corpus
 
+
 @app.post('/addAnnotation')
 def add_annotation(annotation: Annotation) -> int:
     print(annotation)
