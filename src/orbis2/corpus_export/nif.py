@@ -68,6 +68,13 @@ class NifExportFormat:
             self.g.add((annotation_uri, URIRef(metadata.key), Literal(metadata.value)))
 
     def export(self, run: Run, path: Path):
+        """
+        Export the documents and annotations of the run to a turtle file.
+
+        Args:
+            - run: the Run to export.
+            - path: Path of the exported file.
+        """
         collection_uri = URIRef(ORBIS.term(f'{run.name}'))
         self.g.add((collection_uri, RDF.type, NIF.ContextCollection))
         for document, annotations in run.document_annotations.items():
