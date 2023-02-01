@@ -211,6 +211,7 @@ def test_remove_annotation_from_document_annotationIsNotOrphanAfterwards_annotat
                ],
                corpus=CorpusDao(corpus_id=1, name='corpus1'))
     )
+    orbis_db.commit()
 
     assert len(orbis_db.get_annotations()) == 2
     assert len(orbis_db.get_metadata()) == 1
