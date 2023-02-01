@@ -1,5 +1,4 @@
 import logging
-from sqlalchemy import and_
 from typing import Union, List, Callable
 
 from sqlalchemy.exc import SQLAlchemyError
