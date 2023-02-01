@@ -788,6 +788,18 @@ def test_get_annotations_includingRunAndDocumentId_returnAnnotationsOfSpecificRu
     assert annotations[1].surface_forms[0] == 'das'
 
 
+#noinspection PyPep8Naming
+def test_remove_annotation_from_document_removeAnnotationFromExistingDocument_documentContainsNoMoreAnnotations(
+        insert_test_data_orbis):
+    run = OrbisService().get_runs()[0]
+    document = list(run.document_annotations.keys())[0]
+    annotation = run.document_annotations[document][0]
+
+    assert annotation
+    assert OrbisService().remove_annotation_from_document(annotation)
+    assert len(OrbisService().get_annotations()) == 0
+
+
 # TODO, anf 26.01.2023: run with two different documents but same annotation should add annotation
 #  once to run1-document1-annotation1 and once to run1-document2-annotation1 combination but that doesn't work,
 #  should it, is there a case like this?

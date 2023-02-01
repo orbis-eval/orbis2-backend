@@ -3,7 +3,7 @@ import threading
 from typing import List
 
 import uvicorn as uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 
 from orbis2.model.annotation import Annotation
 from orbis2.model.corpus import Corpus
@@ -86,6 +86,13 @@ def add_annotation(annotation: Annotation) -> int:
     result = get_orbis_service().add_annotation_to_document(annotation)
     print(result)
     return result
+
+@app.delete('/removeAnnotationFromDocument', status_code=200)
+def remove_annotation_from_document(annotation: Annotation, response: Response):
+    if get_orbis_service().remove_annotation_from_document(annotation):
+        return
+    response.status_code = status.HTTP_400_BAD_REQUEST
+    return
 
 
 def get_app():

@@ -130,3 +130,8 @@ class OrbisService:
             if not self.add_annotation_type(annotation_type):
                 return False
         return True
+
+    def remove_annotation_from_document(self, annotation: Annotation) -> bool:
+        if annotation:
+            return self.orbis_db.remove_annotation_from_document(annotation.to_document_annotation_dao())
+        return False
