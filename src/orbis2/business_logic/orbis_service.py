@@ -70,11 +70,18 @@ class OrbisService:
 
     def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
         if run_id and document_id:
-            annotations = self.orbis_db.get_annotations_of_document_by_run_id(run_id, document_id)
+            if document_has_annotations := self.orbis_db.get_annotations_of_document_by_run_id(run_id, document_id):
+                return Annotation.from_document_has_annotations(document_has_annotations)
         else:
-            annotations = self.orbis_db.get_annotations()
-        if annotations:
-            return Annotation.from_annotation_daos(annotations)
+            if annotations := self.orbis_db.get_annotations():
+                return Annotation.from_annotation_daos(annotations, run_id, document_id)
+        return []
+
+    def get_annotation(self, run_id: int, document_id: int, annotation_id: int) -> Union[Annotation, None]:
+        if run_id and document_id and annotation_id:
+            if document_has_annotations := self.orbis_db.get_annotation_of_document_by_run_id(run_id, document_id,
+                                                                                              annotation_id):
+                return Annotation.from_document_has_annotation(document_has_annotations)
         return []
 
     def get_corpora(self) -> List[Corpus]:
@@ -113,10 +120,11 @@ class OrbisService:
                 return False
         return True
 
-    def add_annotation_to_document(self, annotation: Annotation) -> int:
+    def add_annotation_to_document(self, annotation: Annotation) -> Union[Annotation, None]:
         if annotation:
-            return self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao())
-        return 0
+            if annotation_id := self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao()):
+                return self.get_annotation(annotation.run_id, annotation.document_id, annotation_id)
+        return None
 
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
         if annotation_type:

@@ -455,7 +455,7 @@ def test_add_run_runHasParent_childIsReferencedInParent(insert_test_data_orbis):
 
 
 # noinspection PyPep8Naming
-def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_returnFalse(insert_test_data_orbis):
+def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_returnNone(insert_test_data_orbis):
     run = OrbisService().get_runs()[0]
     run_id = run._id
     document_id = list(run.document_annotations.keys())[0]._id
@@ -466,7 +466,7 @@ def test_add_annotation_to_document_surfaceFormLenDiffersFromStartIndicesLen_ret
 
 
 # noinspection PyPep8Naming
-def test_add_annotation_to_document_surfaceFormLenDiffersFromEndIndicesLen_returnFalse(insert_test_data_orbis):
+def test_add_annotation_to_document_surfaceFormLenDiffersFromEndIndicesLen_returnNone(insert_test_data_orbis):
     run = OrbisService().get_runs()[0]
     run_id = run._id
     document_id = list(run.document_annotations.keys())[0]._id
@@ -477,7 +477,7 @@ def test_add_annotation_to_document_surfaceFormLenDiffersFromEndIndicesLen_retur
 
 
 # noinspection PyPep8Naming
-def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(insert_test_data_orbis):
+def test_add_annotation_to_document_annotationIsMissingDocumentId_returnNone(insert_test_data_orbis):
     db_run = OrbisService().get_runs()[0]
     # contains only one document
     assert len(list(db_run.document_annotations.keys())) == 1
@@ -494,7 +494,7 @@ def test_add_annotation_to_document_annotationIsMissingDocumentId_returnFalse(in
 
 
 # noinspection PyPep8Naming
-def test_add_annotation_to_document_annotationIsMissingRunId_returnFalse(insert_test_data_orbis):
+def test_add_annotation_to_document_annotationIsMissingRunId_returnNone(insert_test_data_orbis):
     db_run = OrbisService().get_runs()[0]
     # contains only one document
     assert len(list(db_run.document_annotations.keys())) == 1
@@ -521,9 +521,12 @@ def test_add_annotation_to_document_addNewAnnotationToExistingDocument_existingD
 
     run_id = db_run._id
     document_id = list(db_run.document_annotations.keys())[0]._id
-    assert OrbisService().add_annotation_to_document(Annotation('', 'something', 0, 9,
-                                                                AnnotationType('annotation_type1'),
-                                                                Annotator('Andreas', []), run_id, document_id))
+    added_annotation = OrbisService().add_annotation_to_document(Annotation(
+        '', 'something', 0, 9, AnnotationType('annotation_type1'), Annotator('Andreas', []), run_id, document_id))
+
+    assert added_annotation
+    # added annotation contains now a timestamp
+    assert added_annotation.timestamp is not None
     db_run = OrbisService().get_run(run_id)
     # contains only one document
     assert len(list(db_run.document_annotations.keys())) == 1
@@ -785,7 +788,13 @@ def test_get_annotations_includingRunAndDocumentId_returnAnnotationsOfSpecificRu
     annotations = OrbisService().get_annotations(run._id, document_under_test._id)
     assert len(annotations) == 2
     assert annotations[0].surface_forms[0] == 'Beispiel'
+    assert annotations[0].run_id is not None
+    assert annotations[0].document_id is not None
+    assert annotations[0].timestamp is not None
     assert annotations[1].surface_forms[0] == 'das'
+    assert annotations[1].run_id is not None
+    assert annotations[1].document_id is not None
+    assert annotations[1].timestamp is not None
 
 
 #noinspection PyPep8Naming

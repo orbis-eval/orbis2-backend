@@ -1,4 +1,5 @@
 import logging
+from sqlalchemy import and_
 from typing import Union, List, Callable
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -240,7 +241,8 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
         return None
 
-    def get_annotations_of_document_by_run_id(self, run_id: int, document_id: int) -> Union[List[AnnotationDao], None]:
+    def get_annotations_of_document_by_run_id(self, run_id: int,
+                                              document_id: int) -> Union[List[DocumentHasAnnotationDao], None]:
         """
         Get all annotations for a specific document of a specific run from database
 
@@ -248,11 +250,10 @@ class OrbisDb(SqlDb):
             run_id:
             document_id:
 
-        Returns: A list of annotation objects or None if no according annotation exists in the database
+        Returns: A list of document annotation objects or None if no according annotation exists in the database
         """
         results = self.try_catch(
-            lambda: self.session.query(AnnotationDao).where(
-                AnnotationDao.annotation_id == DocumentHasAnnotationDao.annotation_id,
+            lambda: self.session.query(DocumentHasAnnotationDao).where(
                 DocumentHasAnnotationDao.document_id == document_id,
                 DocumentHasAnnotationDao.run_id == run_id
             ).all(),
@@ -262,6 +263,33 @@ class OrbisDb(SqlDb):
             return results
         logging.debug(f'There are no annotation entries for run({run_id}) - document({document_id}) combination '
                       f'in orbis database.')
+        return None
+
+    def get_annotation_of_document_by_run_id(self, run_id: int,
+                                             document_id: int,
+                                             annotation_id: int) -> Union[DocumentHasAnnotationDao, None]:
+        """
+        Get specific annotation by id for a specific document of a specific run from database
+
+        Args:
+            run_id:
+            document_id:
+            annotation_id:
+
+        Returns: A single document annotation object or None if no or multiple annotation exists in the database
+        """
+        if annotation := self.try_catch(
+            lambda: self.session.query(DocumentHasAnnotationDao).where(
+                DocumentHasAnnotationDao.annotation_id == annotation_id,
+                DocumentHasAnnotationDao.document_id == document_id,
+                DocumentHasAnnotationDao.run_id == run_id
+            ).first(),
+            'Get annotation of document by run id failed',
+            None):
+            if annotation:
+                return annotation
+        logging.debug(f'There is no annotation entry (id {annotation_id}) for run({run_id}) - document({document_id}) '
+                      f'combination in orbis database.')
         return None
 
     def get_annotations(self) -> Union[List[AnnotationDao], None]:

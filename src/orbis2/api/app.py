@@ -81,11 +81,8 @@ def add_corpus(corpus: Corpus) -> Corpus:
 
 
 @app.post('/addAnnotation')
-def add_annotation(annotation: Annotation) -> int:
-    print(annotation)
-    result = get_orbis_service().add_annotation_to_document(annotation)
-    print(result)
-    return result
+def add_annotation(annotation: Annotation) -> Annotation:
+    return get_orbis_service().add_annotation_to_document(annotation)
 
 
 @app.delete('/removeAnnotationFromDocument', status_code=200)
