@@ -51,7 +51,7 @@ class SqlDb:
         except SQLAlchemyError as e:
             logging.error(f'Session could not be closed, exception: {e.__str__()}')
 
-    def commit(self):
+    def commit(self) -> bool:
         """
         Database commit, necessary after data insert.
 

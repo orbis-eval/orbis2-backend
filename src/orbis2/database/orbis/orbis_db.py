@@ -5,6 +5,8 @@ from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
+from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
+from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.model.run import Run
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -280,6 +282,19 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def get_annotation(self, annotation_id: int) -> Union[AnnotationDao, None]:
+        """
+        Get annotation from database.
+
+        Args:
+         annotation_id:
+
+        Returns: A single annotation object or None if zero or multiple runs exists in the database
+        """
+        return self.try_catch(
+            lambda: self.session.query(AnnotationDao).get(annotation_id),
+            f'Run request with run id: {annotation_id} failed', None)
+
     def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
         """
         Get all annotation types from database
@@ -311,6 +326,18 @@ class OrbisDb(SqlDb):
         except SQLAlchemyError as e:
             logging.warning('All metadata request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')
+
+    def get_metadata_by_id(self, metadata_id: int) -> Union[MetadataDao, None]:
+        """
+        Get metadata from database
+
+        Args:
+            metadata_id:
+
+        Returns: A single object of metadata or None if no or multiple metadata exists in the database
+        """
+        return self.try_catch(lambda: self.session.query(MetadataDao).get(metadata_id),
+                              f'No metadata with id: {metadata_id} found in orbis database.', None)
 
     def get_annotators(self) -> Union[List[AnnotatorDao], None]:
         """
@@ -365,6 +392,44 @@ class OrbisDb(SqlDb):
         """
         return self.try_catch(lambda: self.session.merge(annotation_type),
                               f'Adding annotation type {annotation_type} failed.') and self.commit()
+
+    def remove_orphan_metadata(self, metadata_id: int) -> bool:
+        """
+        Delete metadata given by its id if it is orphan
+        (meaning no document nor annotation has a relationship to the metadata)
+
+        Args:
+         metadata_id:
+
+        Returns: True if metadata is orphan and could be deleted, false otherwise
+        """
+        if (self.session.query(annotation_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0 and
+                self.session.query(document_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0):
+            if metadata := self.get_metadata_by_id(metadata_id):
+                return (self.try_catch(lambda: not self.session.delete(metadata),
+                                       f'Metadata with id {metadata_id} could not be removed from orbis db.')
+                        and self.commit())
+        return False
+
+    def remove_annotation(self, annotation_id: int) -> bool:
+        """
+        Remove Annotation from database, relationship to its metadata is also removed, if a metadata is then an orphan
+        it will be deleted.
+
+        Args:
+            annotation_id:
+
+        Returns: True if everything worked correctly, false otherwise
+        """
+        if annotation := self.get_annotation(annotation_id):
+            if (self.try_catch(lambda: not self.session.delete(annotation),
+                               f'Annotation with id {annotation_id} could not be removed from orbis db.') and self.commit()):
+                for meta_data in annotation.meta_data:
+                    if self.remove_orphan_metadata(meta_data.metadata_id):
+                        self.commit()
+                return True
+        return False
+
 
     @staticmethod
     def try_catch(method_to_call: Callable[[], any], error_message, default_return_value: any = False) -> any:
