@@ -449,7 +449,7 @@ class OrbisDb(SqlDb):
                                f'Annotation with id {annotation_id} could not be removed from orbis db.') and self.commit()):
                 if any([self.remove_metadata(meta_data.metadata_id)
                         for meta_data in annotation.meta_data if self.metadata_is_orphan(meta_data.metadata_id)]):
-                    self.commit()
+                    return self.commit()
                 return True
         return False
 
@@ -469,7 +469,7 @@ class OrbisDb(SqlDb):
                            f'Removing the annotation_document {document_has_annotation} failed.') and self.commit()):
             if (self.annotation_is_orphan(document_has_annotation.annotation_id)
                     and self.remove_annotation(document_has_annotation.annotation_id)):
-                self.commit()
+                return self.commit()
             return True
         return False
 
