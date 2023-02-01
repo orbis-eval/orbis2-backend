@@ -170,7 +170,7 @@ def test_remove_annotation_from_document_annotationIsOrphanAfterwards_annotation
 # noinspection PyPep8Naming
 def test_remove_annotation_from_document_annotationIsNotOrphanAfterwards_annotationIsNotRemoved(clear_test_data_orbis):
     orbis_db = OrbisDb()
-    result = orbis_db.session.merge(
+    orbis_db.session.merge(
         RunDao(run_id=1, name='run1', description='run1',
                run_has_documents=[
                    RunHasDocumentDao(
@@ -211,7 +211,6 @@ def test_remove_annotation_from_document_annotationIsNotOrphanAfterwards_annotat
                ],
                corpus=CorpusDao(corpus_id=1, name='corpus1'))
     )
-    result = orbis_db.commit()
 
     assert len(orbis_db.get_annotations()) == 2
     assert len(orbis_db.get_metadata()) == 1
