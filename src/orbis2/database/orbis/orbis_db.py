@@ -405,6 +405,20 @@ class OrbisDb(SqlDb):
         return (self.session.query(annotation_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0 and
                 self.session.query(document_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0)
 
+    def annotation_is_orphan(self, annotation_id: int) -> bool:
+        """
+        Checks if annotation given by its id an orphan
+        (meaning no it's not linked to any document)
+
+        Args:
+            annotation_id:
+
+        Returns: True if annotation is an orphan, false otherwise
+        """
+        return self.session.query(DocumentHasAnnotationDao).where(
+            DocumentHasAnnotationDao.annotation_id == annotation_id
+        ).count() == 0
+
     def remove_metadata(self, metadata_id: int) -> bool:
         """
         Removes metadata from orbis database by its id
@@ -437,6 +451,26 @@ class OrbisDb(SqlDb):
                         for meta_data in annotation.meta_data if self.metadata_is_orphan(meta_data.metadata_id)]):
                     self.commit()
                 return True
+        return False
+
+    def remove_annotation_from_document(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
+        """
+        Delete annotation from an existing document in orbis database, further remove the annotation if it's an orphan.
+
+        Args:
+            document_has_annotation:
+
+        Returns: True if it worked, false otherwise
+        """
+        if (self.try_catch(lambda: self.session.query(DocumentHasAnnotationDao).where(
+                DocumentHasAnnotationDao.run_id == document_has_annotation.run_id,
+                DocumentHasAnnotationDao.document_id == document_has_annotation.document_id,
+                DocumentHasAnnotationDao.annotation_id == document_has_annotation.annotation_id).delete(),
+                           f'Removing the annotation_document {document_has_annotation} failed.') and self.commit()):
+            if (self.annotation_is_orphan(document_has_annotation.annotation_id)
+                    and self.remove_annotation(document_has_annotation.annotation_id)):
+                self.commit()
+            return True
         return False
 
     @staticmethod
