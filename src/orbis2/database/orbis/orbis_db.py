@@ -446,7 +446,8 @@ class OrbisDb(SqlDb):
         """
         if annotation := self.get_annotation(annotation_id):
             if (self.try_catch(lambda: not self.session.delete(annotation),
-                               f'Annotation with id {annotation_id} could not be removed from orbis db.') and self.commit()):
+                               f'Annotation with id {annotation_id} could not be removed from orbis db.')
+                    and self.commit()):
                 if any([self.remove_metadata(meta_data.metadata_id)
                         for meta_data in annotation.meta_data if self.metadata_is_orphan(meta_data.metadata_id)]):
                     return self.commit()

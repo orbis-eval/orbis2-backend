@@ -87,6 +87,7 @@ def add_annotation(annotation: Annotation) -> int:
     print(result)
     return result
 
+
 @app.delete('/removeAnnotationFromDocument', status_code=200)
 def remove_annotation_from_document(annotation: Annotation, response: Response):
     if get_orbis_service().remove_annotation_from_document(annotation):
