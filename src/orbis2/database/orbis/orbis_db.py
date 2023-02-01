@@ -1,7 +1,6 @@
 import logging
 from typing import Union, List, Callable
 
-from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -210,11 +209,11 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao).where(and_(
+                lambda: self.session.query(DocumentDao).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == RunDao.run_id,
                     RunDao.corpus_id == corpus_id
-                )).all(),
+                ).all(),
                 f'Documents for corpus request with corpus id: {corpus_id} failed', False
         ):
             return documents
@@ -231,10 +230,10 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao).where(and_(
+                lambda: self.session.query(DocumentDao).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == run_id
-                )).all(),
+                ).all(),
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
@@ -252,11 +251,11 @@ class OrbisDb(SqlDb):
         Returns: A list of annotation objects or None if no according annotation exists in the database
         """
         results = self.try_catch(
-            lambda: self.session.query(AnnotationDao).where(and_(
+            lambda: self.session.query(AnnotationDao).where(
                 AnnotationDao.annotation_id == DocumentHasAnnotationDao.annotation_id,
                 DocumentHasAnnotationDao.document_id == document_id,
                 DocumentHasAnnotationDao.run_id == run_id
-            )).all(),
+            ).all(),
             'Get annotations of document by run id failed',
             [])
         if len(results) > 0:
@@ -439,7 +438,6 @@ class OrbisDb(SqlDb):
                     self.commit()
                 return True
         return False
-
 
     @staticmethod
     def try_catch(method_to_call: Callable[[], any], error_message, default_return_value: any = False) -> any:
