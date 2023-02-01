@@ -106,7 +106,7 @@ class Annotation(BaseModel):
     @classmethod
     def from_document_has_annotation(cls, document_annotation_dao: DocumentHasAnnotationDao) -> 'Annotation':
         return cls.from_annotation_dao(document_annotation_dao.annotation, document_annotation_dao.run_id,
-                                        document_annotation_dao.document_id, document_annotation_dao.timestamp)
+                                       document_annotation_dao.document_id, document_annotation_dao.timestamp)
 
     @classmethod
     def from_document_has_annotations(cls, document_has_annotations: [DocumentHasAnnotationDao]) -> ['Annotation']:

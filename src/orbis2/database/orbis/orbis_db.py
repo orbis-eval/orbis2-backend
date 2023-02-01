@@ -279,13 +279,12 @@ class OrbisDb(SqlDb):
         Returns: A single document annotation object or None if no or multiple annotation exists in the database
         """
         if annotation := self.try_catch(
-            lambda: self.session.query(DocumentHasAnnotationDao).where(
-                DocumentHasAnnotationDao.annotation_id == annotation_id,
-                DocumentHasAnnotationDao.document_id == document_id,
-                DocumentHasAnnotationDao.run_id == run_id
-            ).first(),
-            'Get annotation of document by run id failed',
-            None):
+                lambda: self.session.query(DocumentHasAnnotationDao).where(
+                    DocumentHasAnnotationDao.annotation_id == annotation_id,
+                    DocumentHasAnnotationDao.document_id == document_id,
+                    DocumentHasAnnotationDao.run_id == run_id
+                ).first(),
+                'Get annotation of document by run id failed', None):
             if annotation:
                 return annotation
         logging.debug(f'There is no annotation entry (id {annotation_id}) for run({run_id}) - document({document_id}) '
