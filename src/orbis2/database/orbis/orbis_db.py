@@ -393,22 +393,32 @@ class OrbisDb(SqlDb):
         return self.try_catch(lambda: self.session.merge(annotation_type),
                               f'Adding annotation type {annotation_type} failed.') and self.commit()
 
-    def remove_orphan_metadata(self, metadata_id: int) -> bool:
+    def metadata_is_orphan(self, metadata_id: int) -> bool:
         """
-        Delete metadata given by its id if it is orphan
+        Checks if metadata given by its id an orphan
         (meaning no document nor annotation has a relationship to the metadata)
 
         Args:
-         metadata_id:
+            metadata_id:
 
-        Returns: True if metadata is orphan and could be deleted, false otherwise
+        Returns: True if metadata is an orphan, false otherwise
         """
-        if (self.session.query(annotation_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0 and
-                self.session.query(document_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0):
-            if metadata := self.get_metadata_by_id(metadata_id):
-                return (self.try_catch(lambda: not self.session.delete(metadata),
-                                       f'Metadata with id {metadata_id} could not be removed from orbis db.')
-                        and self.commit())
+        return (self.session.query(annotation_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0 and
+                self.session.query(document_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0)
+
+    def remove_metadata(self, metadata_id: int) -> bool:
+        """
+        Removes metadata from orbis database by its id
+
+        Args:
+            metadata_id:
+
+        Returns: True if entry could be removed from orbis database, false otherwise
+        """
+        if metadata := self.get_metadata_by_id(metadata_id):
+            return (self.try_catch(lambda: not self.session.delete(metadata),
+                                   f'Metadata with id {metadata_id} could not be removed from orbis db.')
+                    and self.commit())
         return False
 
     def remove_annotation(self, annotation_id: int) -> bool:
@@ -424,9 +434,9 @@ class OrbisDb(SqlDb):
         if annotation := self.get_annotation(annotation_id):
             if (self.try_catch(lambda: not self.session.delete(annotation),
                                f'Annotation with id {annotation_id} could not be removed from orbis db.') and self.commit()):
-                for meta_data in annotation.meta_data:
-                    if self.remove_orphan_metadata(meta_data.metadata_id):
-                        self.commit()
+                if any([self.remove_metadata(meta_data.metadata_id)
+                        for meta_data in annotation.meta_data if self.metadata_is_orphan(meta_data.metadata_id)]):
+                    self.commit()
                 return True
         return False
 

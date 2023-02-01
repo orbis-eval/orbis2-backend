@@ -35,7 +35,8 @@ def test_remove_annotation_annotationContainsOrphanMetadata_relationShipAndMetad
 
 
 # noinspection PyPep8Naming
-def test_remove_annotation_annotationContainsNoneOrphanMetadata_onlyRelationShipButNotMetadataIsRemoved(clear_test_data_orbis):
+def test_remove_annotation_annotationContainsMetadataSameMetadataAsOther_onlyRelationShipButNotMetadataIsRemoved(
+        clear_test_data_orbis):
     orbis_db = OrbisDb()
     orbis_db.session.merge(AnnotationDao(
         annotation_id=1, key='annotation-key', surface_forms=['Text'], start_indices=[0], end_indices=[4],
@@ -46,6 +47,91 @@ def test_remove_annotation_annotationContainsNoneOrphanMetadata_onlyRelationShip
         ), meta_data=[MetadataDao(
             metadata_id=1111, key='key1111', value='value1111'
         )]
+    ))
+    orbis_db.commit()
+    orbis_db.session.merge(AnnotationDao(
+        annotation_id=2, key='annotation-key2', surface_forms=['Texts'], start_indices=[0], end_indices=[5],
+        annotation_type=AnnotationTypeDao(
+            type_id=11, name='type11'
+        ), annotator=AnnotatorDao(
+            annotator_id=111, name='Annotator111', roles=[]
+        ), meta_data=[MetadataDao(
+            metadata_id=1111, key='key1111', value='value1111'
+        )]
+    ))
+    orbis_db.commit()
+
+    assert orbis_db.remove_annotation(1)
+    assert len(orbis_db.get_metadata()) == 1
+
+
+# noinspection PyPep8Naming
+def test_remove_annotation_annotationContainsNoneOrphanMetadata_onlyRelationShipButNotMetadataIsRemoved(
+        clear_test_data_orbis):
+    orbis_db = OrbisDb()
+    orbis_db.session.merge(AnnotationDao(
+        annotation_id=1, key='annotation-key', surface_forms=['Text'], start_indices=[0], end_indices=[4],
+        annotation_type=AnnotationTypeDao(
+            type_id=11, name='type11'
+        ), annotator=AnnotatorDao(
+            annotator_id=111, name='Annotator111', roles=[]
+        ), meta_data=[MetadataDao(
+            metadata_id=1111, key='key1111', value='value1111'
+        )]
+    ))
+    orbis_db.commit()
+    orbis_db.session.merge(DocumentDao(document_id=1, content='Text 1234', key='key1', meta_data=[MetadataDao(
+            metadata_id=1111, key='key1111', value='value1111'
+        )]))
+    orbis_db.commit()
+
+    assert orbis_db.remove_annotation(1)
+    assert len(orbis_db.get_metadata()) == 1
+
+
+# noinspection PyPep8Naming
+def test_remove_annotation_annotationContainsTwoOrphanMetadata_relationShipAndAllMetadataAreRemoved(
+        clear_test_data_orbis):
+    orbis_db = OrbisDb()
+    orbis_db.session.merge(AnnotationDao(
+        annotation_id=1, key='annotation-key', surface_forms=['Text'], start_indices=[0], end_indices=[4],
+        annotation_type=AnnotationTypeDao(
+            type_id=11, name='type11'
+        ), annotator=AnnotatorDao(
+            annotator_id=111, name='Annotator111', roles=[]
+        ), meta_data=[
+            MetadataDao(
+                metadata_id=1111, key='key1111', value='value1111'
+            ),
+            MetadataDao(
+                metadata_id=1112, key='key1112', value='value1112'
+            )
+        ]
+    ))
+    orbis_db.commit()
+
+    assert orbis_db.remove_annotation(1)
+    assert not orbis_db.get_metadata()
+
+
+# noinspection PyPep8Naming
+def test_remove_annotation_annotationContainsOneOrphanMetadata_bothRelationShipAndOnlyOneMetadataIsRemoved(
+        clear_test_data_orbis):
+    orbis_db = OrbisDb()
+    orbis_db.session.merge(AnnotationDao(
+        annotation_id=1, key='annotation-key', surface_forms=['Text'], start_indices=[0], end_indices=[4],
+        annotation_type=AnnotationTypeDao(
+            type_id=11, name='type11'
+        ), annotator=AnnotatorDao(
+            annotator_id=111, name='Annotator111', roles=[]
+        ), meta_data=[
+            MetadataDao(
+                metadata_id=1111, key='key1111', value='value1111'
+            ),
+            MetadataDao(
+                metadata_id=1112, key='key1112', value='value1112'
+            )
+        ]
     ))
     orbis_db.commit()
     orbis_db.session.merge(DocumentDao(document_id=1, content='Text 1234', key='key1', meta_data=[MetadataDao(
