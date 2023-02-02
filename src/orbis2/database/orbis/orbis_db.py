@@ -284,8 +284,7 @@ class OrbisDb(SqlDb):
                     DocumentHasAnnotationDao.run_id == run_id
                 ).first(),
                 'Get annotation of document by run id failed', None):
-            if annotation:
-                return annotation
+            return annotation
         logging.debug(f'There is no annotation entry (id {annotation_id}) for run({run_id}) - document({document_id}) '
                       f'combination in orbis database.')
         return None

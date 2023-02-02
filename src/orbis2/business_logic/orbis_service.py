@@ -82,7 +82,7 @@ class OrbisService:
             if document_has_annotations := self.orbis_db.get_annotation_of_document_by_run_id(run_id, document_id,
                                                                                               annotation_id):
                 return Annotation.from_document_has_annotation(document_has_annotations)
-        return []
+        return None
 
     def get_corpora(self) -> List[Corpus]:
         if corpora := self.orbis_db.get_corpora():
