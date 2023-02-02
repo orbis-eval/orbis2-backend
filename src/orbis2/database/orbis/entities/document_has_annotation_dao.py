@@ -12,8 +12,11 @@ class DocumentHasAnnotationDao(OrbisBase):
 
     run_id = Column(BigInteger, primary_key=True)
     document_id = Column(BigInteger, primary_key=True)
+    # cascading in table_args removes entries from this table, when entries (run_id, document_id) from parent table
+    # (run_has_document) get deleted
     __table_args__ = (ForeignKeyConstraint((run_id, document_id),
-                                           [RunHasDocumentDao.run_id, RunHasDocumentDao.document_id]),
+                                           [RunHasDocumentDao.run_id, RunHasDocumentDao.document_id],
+                                           onupdate='CASCADE', ondelete='CASCADE'),
                       {})
     annotation_id = Column(ForeignKey(AnnotationDao.annotation_id), primary_key=True)
     annotation = relationship(AnnotationDao)
