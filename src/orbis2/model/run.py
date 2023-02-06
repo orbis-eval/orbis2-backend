@@ -28,7 +28,6 @@ class Run(BaseModel):
         self.name = name
         self.description = description
         self.corpus = corpus
-        # TODO, anf 16.11.2022: maybe change to dict[document_id, (Document, [Annotation])] ?? for faster access by id
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
 

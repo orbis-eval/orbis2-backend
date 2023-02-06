@@ -12,7 +12,6 @@ class RunDao(OrbisBase):
     run_id = Column(BigInteger, Sequence('run_id_seq'), primary_key=True)
     name = Column(VARCHAR(40), nullable=False, unique=True)
     description = Column(Text)
-    # TODO, anf 17.11.2022: check correct cascade usage
     run_has_documents = relationship('RunHasDocumentDao',
                                      cascade='save-update, merge, delete, delete-orphan')
     corpus_id = Column(ForeignKey(CorpusDao.corpus_id), nullable=False)

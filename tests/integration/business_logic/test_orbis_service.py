@@ -835,9 +835,3 @@ def test_remove_annotation_from_document_removeAnnotationFromExistingDocument_do
 #     assert len(annotations) == 2
 #     assert annotations[0].surface_forms[0] == 'Text'
 #     assert annotations[1].surface_forms[0] == 'Beispiel'
-
-
-# TODO, anf 06.12.2022: test whether entries are deleted when there are no more references to it
-#  ex.: Document contains Annotation, this Annotation is changed and save -> in fact a new Annotation is created,
-#  but the old one must be deleted if no other Document references this Annotation
-#  (but it must not be deleted if another Document still references it)

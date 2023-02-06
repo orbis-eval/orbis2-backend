@@ -12,7 +12,6 @@ class RunHasDocumentDao(OrbisBase):
     run_id = Column(ForeignKey(RunDao.run_id), primary_key=True)
     document_id = Column(ForeignKey(DocumentDao.document_id), primary_key=True)
     document = relationship(DocumentDao)
-    # TODO, anf 17.11.2022: check correct cascade usage
     document_has_annotations = relationship('DocumentHasAnnotationDao',
                                             cascade='save-update, merge, delete, delete-orphan')
     done = Column(Boolean)
