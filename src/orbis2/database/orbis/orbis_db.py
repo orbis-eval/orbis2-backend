@@ -212,8 +212,7 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao)
-                        .filter(
+                lambda: self.session.query(DocumentDao).filter(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == RunDao.run_id,
                     RunDao.corpus_id == corpus_id
