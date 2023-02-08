@@ -48,11 +48,12 @@ def get_annotations(run_id: int = None, document_id: int = None) -> List[Annotat
 
 
 @app.get('/getDocuments')
-def get_documents(run_id: int = None, corpus_id: int = None) -> List[Document]:
+def get_documents(run_id: int = None, corpus_id: int = None, page_size: int = None, skip: int = 0) -> List[Document]:
     if run_id:
+        # TODO, anf 08.02.2023: implement pagination also for get docs of run
         return get_orbis_service().get_documents_of_run(run_id)
     if corpus_id:
-        return get_orbis_service().get_documents_of_corpus(corpus_id)
+        return get_orbis_service().get_documents_of_corpus(corpus_id, page_size, skip)
     return get_orbis_service().get_documents()
 
 

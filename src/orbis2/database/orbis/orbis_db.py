@@ -199,21 +199,25 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def get_documents_of_corpus(self, corpus_id: int) -> Union[List[DocumentDao], None]:
+    def get_documents_of_corpus(self, corpus_id: int,
+                                page_size: int = None, skip: int = 0) -> Union[List[DocumentDao], None]:
         """
         Get all documents for a given corpus from database
 
         Args:
             corpus_id: id of the corpus for which the documents are looked up
+            page_size: defines how many documents should be loaded, if None all documents are loaded
+            skip: defines how many documents should be skipped
 
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao).where(
+                lambda: self.session.query(DocumentDao)
+                        .filter(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == RunDao.run_id,
                     RunDao.corpus_id == corpus_id
-                ).all(),
+                ).limit(page_size).offset(skip).all(),
                 f'Documents for corpus request with corpus id: {corpus_id} failed', False
         ):
             return documents
