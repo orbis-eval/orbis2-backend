@@ -23,8 +23,8 @@ def get_type_or_proposed_type(annotation: Annotation) -> str:
     if 'type' not in annotation:
         return 'page-segment'
 
-    return annotation.key.split('#')[1].split("/")[0] if annotation.annotation_type == 'proposal' else \
-        annotation.annotation_type
+    return annotation['key'].split('#')[1].split("/")[0] if annotation['type'] == 'proposal' else \
+        annotation['type']
 
 
 class CareerCoachFormat(CorpusFormat):
