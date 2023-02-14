@@ -57,6 +57,7 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert type(annotation.annotator) is Annotator
     assert annotation.annotator._id > 0
     assert annotation.annotator.name == 'Andreas'
+    assert annotation.annotator.password == hash('test1234')
 
     assert len(annotation.annotator.roles) == 1
     role = annotation.annotator.roles[0]

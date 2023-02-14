@@ -12,15 +12,17 @@ from orbis2.model.role import Role
 class Annotator(BaseModel):
     name: str
     roles: List[Role]
+    password: int
     _id: int
 
-    def __init__(self, name: str, roles: List[Role], _id: int = 0):
+    def __init__(self, name: str, roles: List[Role], password: int = hash(''), _id: int = 0):
         """
         CONSTRUCTOR
 
         """
         self.name = name
         self.roles = roles
+        self.password = password
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -32,7 +34,7 @@ class Annotator(BaseModel):
 
     @classmethod
     def from_annotator_dao(cls, annotator_dao: AnnotatorDao) -> 'Annotator':
-        annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles))
+        annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles), annotator_dao.password)
         return annotator
 
     @classmethod
@@ -40,7 +42,8 @@ class Annotator(BaseModel):
         return [cls.from_annotator_dao(annotator_dao) for annotator_dao in annotator_daos]
 
     def to_dao(self) -> AnnotatorDao:
-        return AnnotatorDao(annotator_id=self._id, name=self.name, roles=Role.to_role_daos(self.roles))
+        return AnnotatorDao(annotator_id=self._id, name=self.name, password=self.password,
+                            roles=Role.to_role_daos(self.roles))
 
     def copy(self) -> 'Annotator':
-        return Annotator(self.name, [role.copy() for role in self.roles])
+        return Annotator(self.name, [role.copy() for role in self.roles], self.password)
