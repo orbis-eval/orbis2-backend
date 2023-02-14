@@ -15,13 +15,15 @@ class Annotator(BaseModel):
     password: int
     _id: int
 
-    def __init__(self, name: str, roles: List[Role], password: int = hash(''), _id: int = 0):
+    def __init__(self, name: str, roles: List[Role], password: int = None, _id: int = 0):
         """
         CONSTRUCTOR
 
         """
         self.name = name
         self.roles = roles
+        if not password:
+            password = hash('')
         self.password = password
 
     def __hash__(self):
