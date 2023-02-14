@@ -1,3 +1,5 @@
+from xxhash import xxh32_hexdigest
+
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
@@ -57,7 +59,7 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert type(annotation.annotator) is Annotator
     assert annotation.annotator._id > 0
     assert annotation.annotator.name == 'Andreas'
-    assert annotation.annotator.password == hash('test1234')
+    assert annotation.annotator.password == xxh32_hexdigest('test1234')
 
     assert len(annotation.annotator.roles) == 1
     role = annotation.annotator.roles[0]

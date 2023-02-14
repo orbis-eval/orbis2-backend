@@ -1,5 +1,6 @@
 import os
 import pytest as pytest
+from xxhash import xxh32_hexdigest
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.database.orbis.orbis_db import OrbisDb
@@ -31,5 +32,5 @@ def insert_test_data_orbis(clear_test_data_orbis):
         'run1', 'run1', Corpus('corpus1', [AnnotationType('annotation-type1')]),
         {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
          [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                     Annotator('Andreas', [Role('admin')], hash('test1234')), metadata=[Metadata('key2', 'value2')])]})
+                     Annotator('Andreas', [Role('admin')], xxh32_hexdigest('test1234')), metadata=[Metadata('key2', 'value2')])]})
     assert OrbisService().add_run(run)
