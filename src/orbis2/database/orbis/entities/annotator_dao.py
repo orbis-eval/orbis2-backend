@@ -10,5 +10,5 @@ class AnnotatorDao(OrbisBase):
 
     annotator_id = Column(BigInteger, Sequence('annotator_id_seq'), primary_key=True)
     name = Column(VARCHAR(40), nullable=False)
-    password = Column(BigInteger)
+    password = Column(VARCHAR(50))
     roles = relationship('RoleDao', secondary=annotator_has_role_table)

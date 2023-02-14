@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 
-from xxhash import xxh32_intdigest
+from xxhash import xxh32_intdigest, xxh32_hexdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
 from orbis2.model.base_model import BaseModel
@@ -12,10 +12,10 @@ from orbis2.model.role import Role
 class Annotator(BaseModel):
     name: str
     roles: List[Role]
-    password: int
+    password: str
     _id: int
 
-    def __init__(self, name: str, roles: List[Role], password: int = None, _id: int = 0):
+    def __init__(self, name: str, roles: List[Role], password: str = None, _id: int = 0):
         """
         CONSTRUCTOR
 
@@ -23,7 +23,7 @@ class Annotator(BaseModel):
         self.name = name
         self.roles = roles
         if not password:
-            password = hash('')
+            password = xxh32_hexdigest('')
         self.password = password
 
     def __hash__(self):
