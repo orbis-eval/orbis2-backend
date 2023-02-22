@@ -20,3 +20,8 @@ env.sh
 
 # egg files
 src/orbis2.egg/
+src/orbis2_backend.egg-info/
+
+# ci
+.coverage
+.tox/
