@@ -33,16 +33,16 @@ class F1Metric(AbstractMetric):
             annotations = preprocessor.preprocess(annotations)
         return annotations
 
-    def compute(self, reference: Dict[Document, List[Annotation]], annotator: Dict[Document, List[Annotation]]) -> \
-            F1Result:
+    def compute(self, eval_runs: List[Dict[Document, List[Annotation]]]) -> F1Result:
         """
         Args:
-            reference: the gold standard annotations.
-            annotator: the predicted annotations provided by the annotator.
+            eval_runs: The runs to evaluate. The reference run is always on the first position, the run to evaluate on
+                       the second one.
 
         Return:
             The metrics provided by the given Metric and their corresponding values.
         """
+        reference, annotator = eval_runs
         y_true_micro = []
         y_pred_micro = []
         if len(reference) != len(annotator):
