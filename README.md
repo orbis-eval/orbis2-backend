@@ -65,7 +65,11 @@ Export a run with all documents and annotations.
 Compare two runs using with two different metrics:
 
 ```bash
-./scripts/orbis-eval.py careercoach2022-entities.v1 careercoach2022-entities.v0 --metrics el_oF1
+./scripts/orbis-eval.py --reference careercoach2022-entities.v1 careercoach2022-entities.v0 --metrics el_oF1
 Results for metric 'er_oF1': Entity Classification: Precision, Recall and F1; overlapping matching.
     F1Result(mP=1.0, mR=0.5850606179116151, mF1=0.7382186035035776, MP=0.9636363636363636, MR=0.566183898888596, MF1=0.6802433858599718)
 ```
+
+Notes:
+- if the metric benchmarks against a gold standard, you need to use the `--reference` parameter to specify the gold standard run.
+- symmetric metrics such as the inter-rater-agreement may specify more than two runs (e.g., to compute the inter-rater-agreement for more than two raters).
