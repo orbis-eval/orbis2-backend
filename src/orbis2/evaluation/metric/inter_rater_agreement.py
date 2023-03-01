@@ -5,21 +5,28 @@ from warnings import warn
 
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.metric.abstract_metric import AbstractMetric
-from orbis2.evaluation.scorer import Scorer
+from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
 
+from statsmodels.stats import inter_rater as irr
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-InterRaterAgreementResult = namedtuple('F1Result', 'fleiss_kappa krippendorff_alpha fleiss_interpretation')
+InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'fleiss_kappa_micro fleiss_kappa_macro '
+                                                              'average_f1 fleiss_interpretation')
 
 
 class InterRaterAgreement(AbstractMetric):
     """
-            Compute different kinds of inter-rater-agreement between the given runs.
+    Compute different kinds of inter-rater-agreement between the given runs.
+
+    Note: there are different ways of doing this.
+    Compare: https://support.prodi.gy/t/proper-way-to-calculate-inter-annotator-agreement-for-spans-ner/5760/2
+    - Kappa: with inter-rater-agreement
+    - Average cross-wise F1
     """
 
-    def __init__(self, scorer: Scorer, *annotation_preprocessor: AnnotationPreprocessor):
+    def __init__(self, scorer: SymmetricScorer, *annotation_preprocessor: AnnotationPreprocessor):
         """
         Args:
             scorer: the used scorer.
@@ -42,43 +49,14 @@ class InterRaterAgreement(AbstractMetric):
         Return:
             The metrics provided by the given Metric and their corresponding values.
         """
+        fleiss_kappa = []
+        micro_rater_assessments = []
+        for doc in eval_runs[0]:
+            rater_assessments = self._scorer.score_annotation_list([self.apply_preprocessor(run[doc])
+                                                                    for run in eval_runs])
+            micro_rater_assessments.extend(rater_assessments)
+            fleiss_kappa.append(irr.fleiss_kappa(irr.aggregate_raters(micro_rater_assessments)))
 
-        # add to vector; whether to add determined by the scorer
-        # repeat this step => scores
-
-
-        reference, annotator = eval_runs
-        y_true_micro = []
-        y_pred_micro = []
-        if len(reference) != len(annotator):
-            warn(f'Reference corpus size ({len(reference)}) differs from the number of annotated documents '
-                 f'({len(annotator)}).')
-
-        f1 = []
-        p = []
-        r = []
-        for document, annotations in reference.items():
-            if document in annotator:
-                scoring = self._scorer.score_annotation_list(self.apply_preprocessor(annotations),
-                                                             self.apply_preprocessor(annotator[document]))
-            else:
-                warn(f'No annotations for document {document.key} found - ignoring document.')
-                continue
-
-            y_true = (len(scoring.tp) + len(scoring.fn)) * [1] + len(scoring.fp) * [0]
-            y_pred = (len(scoring.tp) * [1] + len(scoring.fn) * [0] + len(scoring.fp) * [1])
-            f1.append(f1_score(y_true, y_pred))
-            p.append(precision_score(y_true, y_pred))
-            r.append(recall_score(y_true, y_pred))
-
-            y_true_micro += y_true
-            y_pred_micro += y_pred
-
-        macro_p = mean(p)
-        macro_r = mean(r)
-        return F1Result(mP=precision_score(y_true_micro, y_pred_micro),
-                        mR=recall_score(y_true_micro, y_pred_micro),
-                        mF1=f1_score(y_true_micro, y_pred_micro),
-                        MP=macro_p,
-                        MR=macro_r,
-                        MF1=macro_r * macro_p * 2 / (macro_r + macro_p))
+        return InterRaterAgreementResult(fleiss_kappa_macro=mean(fleiss_kappa),
+                                         fleiss_kappa_micro=irr.fleiss_kappa(irr.aggregate_raters(
+                                             micro_rater_assessments)))
