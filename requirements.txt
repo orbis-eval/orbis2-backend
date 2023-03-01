@@ -14,3 +14,6 @@ seaborn~=0.12.2
 
 # export formats
 XlsxWriter~=3.0.7
+
+statsmodels~=0.13.5
+setuptools~=65.4.0

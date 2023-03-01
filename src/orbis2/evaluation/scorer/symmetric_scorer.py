@@ -22,7 +22,6 @@ class SymmetricScorer:
         self._scorer = lambda true, pred: scoring_operator(surface_scorer(
             true, pred), entity_scorer(true, pred))
 
-
     def get_unique_annotation_list(self, eval_runs_annotations: List[List[Annotation]]) -> List[Annotation]:
         """
         Return a list of unique annotations that is then used for computing the inter rater agreement.
@@ -48,7 +47,7 @@ class SymmetricScorer:
         # agree with the annotation.
         for current in unique_annotation_list:
             agreement_matrix.append([
-                1 if any((current, other) > 0. for other in run_annotation) else 0
+                1 if any(self._scorer(current, other) > 0. for other in run_annotation) else 0
                 for run_annotation in eval_runs_annotations
             ])
         return agreement_matrix

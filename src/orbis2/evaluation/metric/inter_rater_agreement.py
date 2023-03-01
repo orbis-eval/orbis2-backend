@@ -10,7 +10,6 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
 
 from statsmodels.stats import inter_rater as irr
-from sklearn.metrics import f1_score, precision_score, recall_score
 
 InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'fleiss_kappa_micro fleiss_kappa_macro '
                                                               'average_f1 fleiss_interpretation')
