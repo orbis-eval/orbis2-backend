@@ -30,11 +30,13 @@ def test_get_unique_annotation_list_exact_match():
                              scoring_operator=mul)
 
     # order does not change result
-    result = scorer.get_unique_annotation_list([ANNOTATOR1, ANNOTATOR2, ANNOTATOR3])
-
     reference = {a for a in chain(ANNOTATOR1, ANNOTATOR2, ANNOTATOR3)}
-
-    assert list(sorted(reference)) == list(sorted(result))
+    assert list(sorted(reference)) == list(sorted(scorer.get_unique_annotation_list([ANNOTATOR1, ANNOTATOR2,
+                                                                                     ANNOTATOR3])))
+    assert list(sorted(reference)) == list(sorted(scorer.get_unique_annotation_list([ANNOTATOR2, ANNOTATOR3,
+                                                                                     ANNOTATOR1])))
+    assert list(sorted(reference)) == list(sorted(scorer.get_unique_annotation_list([ANNOTATOR3, ANNOTATOR1,
+                                                                                     ANNOTATOR2])))
 
 # noinspection PyPep8Naming
 # def test_score_annotation_list_overlappingMatchScorer_returnsScorerResult():
