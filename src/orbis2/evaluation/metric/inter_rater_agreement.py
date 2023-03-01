@@ -5,21 +5,21 @@ from warnings import warn
 
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.metric.abstract_metric import AbstractMetric
-from orbis2.evaluation.scorer.asymmetric_scorer import AsymmetricScorer
+from orbis2.evaluation.scorer import Scorer
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
 
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-F1Result = namedtuple('F1Result', 'mP mR mF1 MP MR MF1')
+InterRaterAgreementResult = namedtuple('F1Result', 'fleiss_kappa krippendorff_alpha fleiss_interpretation')
 
 
-class F1Metric(AbstractMetric):
+class InterRaterAgreement(AbstractMetric):
     """
-            Compute P/R/F1 for the perfect match and same entity setting.
+            Compute different kinds of inter-rater-agreement between the given runs.
     """
 
-    def __init__(self, scorer: AsymmetricScorer, *annotation_preprocessor: AnnotationPreprocessor):
+    def __init__(self, scorer: Scorer, *annotation_preprocessor: AnnotationPreprocessor):
         """
         Args:
             scorer: the used scorer.
@@ -33,7 +33,7 @@ class F1Metric(AbstractMetric):
             annotations = preprocessor.preprocess(annotations)
         return annotations
 
-    def compute(self, eval_runs: List[Dict[Document, List[Annotation]]]) -> F1Result:
+    def compute(self, eval_runs: List[Dict[Document, List[Annotation]]]) -> InterRaterAgreementResult:
         """
         Args:
             eval_runs: The runs to evaluate. The reference run is always on the first position, the run to evaluate on
@@ -42,6 +42,11 @@ class F1Metric(AbstractMetric):
         Return:
             The metrics provided by the given Metric and their corresponding values.
         """
+
+        # add to vector; whether to add determined by the scorer
+        # repeat this step => scores
+
+
         reference, annotator = eval_runs
         y_true_micro = []
         y_pred_micro = []
