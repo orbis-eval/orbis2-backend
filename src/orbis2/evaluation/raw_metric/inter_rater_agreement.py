@@ -26,9 +26,6 @@ def kappa_metric(table):
     # assume fully ranked
     assert n_total == n_sub * n_rat
 
-    # marginal frequency  of categories
-    p_cat = table.sum(0) / n_total
-
     table2 = table * table
     p_rat = (table2.sum(1) - n_rat) / (n_rat * (n_rat - 1.))
     return p_rat.mean()
