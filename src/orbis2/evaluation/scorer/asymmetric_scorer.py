@@ -4,6 +4,7 @@ from itertools import takewhile
 from typing import List, Set
 from operator import mul
 
+from orbis2.evaluation.scorer import Scorer
 from orbis2.model.annotation import Annotation
 
 AnnotationMatch = namedtuple('AnnotationMatch', 'score true pred')
@@ -16,7 +17,7 @@ class ScorerResult:
     fn: Set[Annotation]
 
 
-class AsymmetricScorer:
+class AsymmetricScorer(Scorer):
 
     def __init__(self, surface_scorer, entity_scorer, scoring_operator=mul):
         """
@@ -28,8 +29,17 @@ class AsymmetricScorer:
             scoring_operator: Function used for combining the results from the
                 surface_matcher and entity_scorer.
         """
-        self._scorer = lambda true, pred: scoring_operator(surface_scorer(
-            true, pred), entity_scorer(true, pred))
+        self.scorer = lambda true, pred: scoring_operator(surface_scorer(
+             true, pred), entity_scorer(true, pred))
+
+    @staticmethod
+    def from_scorer(s: Scorer):
+        """
+        Return a SymmetricScorer with the same scoring rules as the provides one.
+        """
+        sc = AsymmetricScorer(None, None, None)
+        sc.scorer = s.scorer
+        return sc
 
     def score_annotation_list(self, true_annotations: List[Annotation],
                               pred_annotations: List[Annotation]) \
@@ -50,7 +60,7 @@ class AsymmetricScorer:
                 result.fp.add(p)
 
             # compute best match for overlap
-            matches = [AnnotationMatch(score=self._scorer(true, pred),
+            matches = [AnnotationMatch(score=self.scorer(true, pred),
                                        true=true, pred=pred)
                        for pred in takewhile(lambda pred, gold=true: pred.start_indices < gold.end_indices,
                                              pred_annotations)]

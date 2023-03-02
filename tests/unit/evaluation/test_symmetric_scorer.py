@@ -1,6 +1,5 @@
 from itertools import chain
 from operator import mul
-from typing import List, Set
 
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match
 from orbis2.model.annotation import get_mock_annotation as Annotation
@@ -37,21 +36,23 @@ def test_get_unique_annotation_list_exact_match():
                                                                                      ANNOTATOR1])))
     assert list(sorted(reference)) == list(sorted(scorer.get_unique_annotation_list([ANNOTATOR3, ANNOTATOR1,
                                                                                      ANNOTATOR2])))
+    assert len(list(sorted(scorer.get_unique_annotation_list([ANNOTATOR3, ANNOTATOR1,
+                                                              ANNOTATOR2])))) == 6
 
-# noinspection PyPep8Naming
-# def test_score_annotation_list_overlappingMatchScorer_returnsScorerResult():
-#     """
-#     Overlapping _scorer: the first match wins, even if it is not the best one.
-#     """
-#     scorer = AsymmetricScorer(surface_scorer=overlapping_match,
-#                               entity_scorer=lambda x, y: True,
-#                               scoring_operator=mul)
-#     result = scorer.score_annotation_list(true_annotations=TRUE,
-#                                           pred_annotations=PREDICTED)
-#     print(result)
-#     assert result.fp == {Annotation(1, 5),
-#                          Annotation(7, 14),
-#                          Annotation(8, 14)}
-#     assert _g(result.tp) == {Annotation(12, 14),
-#                              Annotation(22, 24)}
-#     assert result.fn == {Annotation(16, 18)}
+
+def test_get_rater_agreement_matrix():
+    """
+    Compares the computed rater_agreement_matrix with a reference one.
+    """
+    eval_runs = [ANNOTATOR1, ANNOTATOR2, ANNOTATOR3]
+    scorer = SymmetricScorer(surface_scorer=exact_match,
+                             entity_scorer=lambda x, y: True,
+                             scoring_operator=mul)
+    unique_annotation_list = scorer.get_unique_annotation_list(eval_runs)
+    rater_agreement_matrix = scorer.get_rater_agreement_matrix(unique_annotation_list, eval_runs)
+    assert rater_agreement_matrix == [[1, 0, 1],
+                                      [1, 0, 0],
+                                      [1, 0, 0],
+                                      [1, 1, 1],
+                                      [1, 1, 1],
+                                      [0, 1, 0]]

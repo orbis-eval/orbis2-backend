@@ -44,7 +44,7 @@ def test_score_annotation_list_exactMatchScorer_returnsScorerResult():
 # noinspection PyPep8Naming
 def test_score_annotation_list_overlappingMatchScorer_returnsScorerResult():
     """
-    Overlapping _scorer: the first match wins, even if it is not the best one.
+    Overlapping scorer: the first match wins, even if it is not the best one.
     """
     scorer = AsymmetricScorer(surface_scorer=overlapping_match,
                               entity_scorer=lambda x, y: True,

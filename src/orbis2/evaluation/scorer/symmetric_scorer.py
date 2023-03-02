@@ -1,13 +1,11 @@
-from collections import namedtuple
-from dataclasses import dataclass
-from itertools import takewhile
-from typing import List, Set
+from typing import List
 from operator import mul
 
+from orbis2.evaluation.scorer import Scorer
 from orbis2.model.annotation import Annotation
 
 
-class SymmetricScorer:
+class SymmetricScorer(Scorer):
 
     def __init__(self, surface_scorer, entity_scorer, scoring_operator=mul):
         """
@@ -19,8 +17,17 @@ class SymmetricScorer:
             scoring_operator: Function used for combining the results from the
                 surface_matcher and entity_scorer.
         """
-        self._scorer = lambda true, pred: scoring_operator(surface_scorer(
+        self.scorer = lambda true, pred: scoring_operator(surface_scorer(
             true, pred), entity_scorer(true, pred))
+
+    @staticmethod
+    def from_scorer(s: Scorer):
+        """
+        Return a SymmetricScorer with the same scoring rules as the provides one.
+        """
+        sc = SymmetricScorer(None, None, None)
+        sc.scorer = s.scorer
+        return sc
 
     def get_unique_annotation_list(self, eval_runs_annotations: List[List[Annotation]]) -> List[Annotation]:
         """
@@ -34,7 +41,7 @@ class SymmetricScorer:
             # determine for each current evaluation in of the evaluation run, whether it is already present in the
             # list of unique annotations.
             for current in eval_run_annotations:
-                if any((self._scorer(current, other) > 0. for other in unique_annotation_list)):
+                if any((self.scorer(current, other) > 0. for other in unique_annotation_list)):
                     continue
                 unique_annotation_list.append(current)
 
@@ -47,12 +54,12 @@ class SymmetricScorer:
         # agree with the annotation.
         for current in unique_annotation_list:
             agreement_matrix.append([
-                1 if any(self._scorer(current, other) > 0. for other in run_annotation) else 0
+                1 if any(self.scorer(current, other) > 0. for other in run_annotation) else 0
                 for run_annotation in eval_runs_annotations
             ])
         return agreement_matrix
 
-    def score_annotation_list(self, eval_runs_annotations: List[List[Annotation]]) -> List[Annotation]:
+    def score_annotation_list(self, eval_runs_annotations: List[List[Annotation]]) -> List[List[int]]:
         """
         Compute the evaluation scores based on the evaluation runs' annotations.
 
