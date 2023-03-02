@@ -3,15 +3,15 @@ from itertools import permutations
 from statistics import mean
 from typing import Dict, List, Tuple
 
+from statsmodels.stats import inter_rater as irr
+
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.metric.abstract_metric import AbstractMetric
-from orbis2.evaluation.metric.f1 import F1Result, F1Metric
+from orbis2.evaluation.metric.f1 import F1Metric
 from orbis2.evaluation.scorer.asymmetric_scorer import AsymmetricScorer
 from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
-
-from statsmodels.stats import inter_rater as irr
 
 InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'fleiss_kappa_micro fleiss_kappa_macro '
                                                               'average_macro_f1 average_micro_f1 '
@@ -57,10 +57,10 @@ class InterRaterAgreement(AbstractMetric):
             A tuple of macro and micro F1.
         """
         metric = F1Metric(scorer=AsymmetricScorer.from_scorer(self.scorer), *self._annotation_preprocessor)
-        f1_results = [metric.compute((reference, target)) for reference, target in permutations(eval_runs, 2)]
+        reference: Dict[Document, List[Annotation]]
+        target: Dict[Document, List[Annotation]]
+        f1_results = [metric.compute([reference, target]) for reference, target in permutations(eval_runs, 2)]
         return mean((m.mF1 for m in f1_results)), mean((m.MF1 for m in f1_results))
-
-
 
     def compute(self, eval_runs: List[Dict[Document, List[Annotation]]]) -> InterRaterAgreementResult:
         """

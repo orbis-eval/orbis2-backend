@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from typing import List
-from warnings import warn
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
@@ -87,8 +86,7 @@ if __name__ == '__main__':
         with open(args.serialize, 'bw') as f:
             from pickle import dump
 
-            dump({'reference': reference,
-                  'annotator': annotator,
+            dump({'eval_runs': eval_runs,
                   'metrics': result},
                  f)
 
