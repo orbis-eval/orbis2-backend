@@ -37,8 +37,8 @@ def test_inter_rater_agreement_computation():
     assert agreement < irr.compute([{1: ANNOTATOR2}, {1: ANNOTATOR3}, {1: ANNOTATOR2}])
 
     # approximation of the agreement score
-    assert agreement.fleiss_kappa_macro == approx(0.064935, abs=1E-06)
-    assert agreement.fleiss_kappa_micro == approx(0.064935, abs=1E-06)
+    assert agreement.kappa_macro == approx(0.555555, abs=1E-06)
+    assert agreement.kappa_micro == approx(0.555555, abs=1E-06)
 
     # approximation of the f1 score
     assert agreement.average_macro_f1 == approx(0.638888, abs=1E-06)

@@ -8,15 +8,14 @@ from statsmodels.stats import inter_rater as irr
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.metric.abstract_metric import AbstractMetric
 from orbis2.evaluation.metric.f1 import F1Metric
+from orbis2.evaluation.raw_metric.inter_rater_agreement import kappa_metric
 from orbis2.evaluation.scorer.asymmetric_scorer import AsymmetricScorer
 from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
 
-InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'fleiss_kappa_micro fleiss_kappa_macro '
-                                                              'average_macro_f1 average_micro_f1 '
-                                                              'fleiss_kappa_macro_interpretation '
-                                                              'fleiss_kappa_micro_interpretation')
+InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'kappa_micro kappa_macro '
+                                                              'average_macro_f1 average_micro_f1')
 
 
 class InterRaterAgreement(AbstractMetric):
@@ -71,23 +70,21 @@ class InterRaterAgreement(AbstractMetric):
         Return:
             The metrics provided by the given Metric and their corresponding values.
         """
-        fleiss_kappa = []
+        kappa = []
         micro_rater_assessments = []
         for doc in eval_runs[0]:
             rater_assessments = self.scorer.score_annotation_list([self.apply_preprocessor(run[doc])
                                                                    for run in eval_runs])
             micro_rater_assessments.extend(rater_assessments)
-            fleiss_kappa.append(irr.fleiss_kappa(irr.aggregate_raters(rater_assessments)[0]))
+            kappa.append(kappa_metric(irr.aggregate_raters(rater_assessments)[0]))
 
-        fleiss_kappa_macro = mean(fleiss_kappa)
-        fleiss_kappa_micro = irr.fleiss_kappa(irr.aggregate_raters(micro_rater_assessments)[0])
+        kappa_macro = mean(kappa)
+        kappa_micro = kappa_metric(irr.aggregate_raters(micro_rater_assessments)[0])
         average_f1 = self.compute_average_f1(eval_runs)
-        return InterRaterAgreementResult(fleiss_kappa_macro=fleiss_kappa_macro,
-                                         fleiss_kappa_micro=fleiss_kappa_micro,
+        return InterRaterAgreementResult(kappa_macro=kappa_macro,
+                                         kappa_micro=kappa_micro,
                                          average_macro_f1=average_f1[0],
-                                         average_micro_f1=average_f1[1],
-                                         fleiss_kappa_macro_interpretation=self.interpretation(fleiss_kappa_macro),
-                                         fleiss_kappa_micro_interpretation=self.interpretation(fleiss_kappa_micro))
+                                         average_micro_f1=average_f1[1])
 
     @staticmethod
     def interpretation(kappa):
