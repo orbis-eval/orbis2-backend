@@ -19,12 +19,8 @@ def kappa_metric(table):
     """
     # avoid integer division
     table = 1.0 * np.asarray(table)
-    n_sub, n_cat = table.shape
-    n_total = table.sum()
     n_rater = table.sum(1)
     n_rat = n_rater.max()
-    # assume fully ranked
-    assert n_total == n_sub * n_rat
 
     table2 = table * table
     p_rat = (table2.sum(1) - n_rat) / (n_rat * (n_rat - 1.))
