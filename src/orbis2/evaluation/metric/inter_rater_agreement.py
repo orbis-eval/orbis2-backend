@@ -55,7 +55,7 @@ class InterRaterAgreement(AbstractMetric):
         Return:
             A tuple of macro and micro F1.
         """
-        metric = F1Metric(scorer=AsymmetricScorer.from_scorer(self.scorer), *self._annotation_preprocessor)
+        metric = F1Metric(AsymmetricScorer.from_scorer(self.scorer), *self._annotation_preprocessor)
         f1_results = [metric.compute([reference, target]) for reference, target in permutations(eval_runs, 2)]
         return mean((m.mF1 for m in f1_results)), mean((m.MF1 for m in f1_results))
 
