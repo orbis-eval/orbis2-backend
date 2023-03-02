@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.database.orbis.orbis_db import OrbisDb
-from scripts.dummy_data import FIRST_RUN, SECOND_RUN, ANOTHER_RUN
 
 if __name__ == '__main__':
     from argparse import ArgumentParser, BooleanOptionalAction
@@ -23,4 +22,5 @@ if __name__ == '__main__':
             exit(-1)
 
         if args.add_dummy_data:
+            from scripts.dummy_data import FIRST_RUN, SECOND_RUN, ANOTHER_RUN
             OrbisService().add_runs([FIRST_RUN, SECOND_RUN, ANOTHER_RUN])

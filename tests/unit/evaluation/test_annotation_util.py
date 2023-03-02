@@ -51,6 +51,7 @@ def test_len_overlap_twoAnnotations_returnLenOfOverlap():
                        Annotation(start_indices=(3, 9), end_indices=(6, 12))) \
            == 1 + 1
 
+
 def test_get_annotation_segment():
     empty = Annotation(1, 2)
     one_segment = Annotation(1, 2, metadata=(Metadata('segment', 'first'), ))

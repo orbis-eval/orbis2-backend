@@ -1,5 +1,3 @@
-from typing import List, Dict, Tuple
-
 from orbis2.corpus_export.excel import ExcelFormat
 from orbis2.corpus_import.format.careercoach import ANNOTATOR
 from orbis2.corpus_import.format.nif import ENTITY_ANNOTATION_TYPE
