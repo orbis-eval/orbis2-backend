@@ -86,8 +86,8 @@ Compute the Inter-Rater-Agreement between the provided evaluation runs (i.e., an
 ./scripts/orbis-eval.py --metrics er_pIRR -- careercoach2022.v1 careercoach2022.v2
 ```
 
-| Metric |kappa_micro | kappa_macro | average_macro_f1 | average_micro_f1|
-| --- | --- | --- | --- |
-|Entity Recognition: Inter Rater Agreement; perfect matching.|0.54 | 0.53 | 0.68 | 0.65|
+| Metric | kappa_micro | kappa_macro | average_macro_f1 | average_micro_f1 |
+|-----|-----|-----|-----|-----|
+| Entity Recognition: Inter Rater Agreement; perfect matching.|0.54 | 0.53 | 0.68 | 0.65|
 
 
