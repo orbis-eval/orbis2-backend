@@ -73,3 +73,21 @@ Results for metric 'er_oF1': Entity Classification: Precision, Recall and F1; ov
 Notes:
 - if the metric benchmarks against a gold standard, you need to use the `--reference` parameter to specify the gold standard run.
 - symmetric metrics such as the inter-rater-agreement may specify more than two runs (e.g., to compute the inter-rater-agreement for more than two raters).
+
+
+## Inter-rater-agreement
+
+Compute the Inter-Rater-Agreement between the provided evaluation runs (i.e., annotated corpora) using the following metrics:
+- average macro F1 and micro F1 between the raters 
+- a modified kappa score which does not correct for random matches, since they are extremely unlikely in an annotation setting. 
+
+
+```bash
+./scripts/orbis-eval.py --metrics er_pIRR -- careercoach2022.v1 careercoach2022.v2
+```
+
+| Metric |kappa_micro | kappa_macro | average_macro_f1 | average_micro_f1|
+| --- | --- | --- | --- |
+|Entity Recognition: Inter Rater Agreement; perfect matching.|0.54 | 0.53 | 0.68 | 0.65|
+
+
