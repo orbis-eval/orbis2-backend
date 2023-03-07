@@ -76,8 +76,13 @@ def get_corpora() -> List[Corpus]:
     return get_orbis_service().get_corpora()
 
 
-@app.post('/addCorpus/')
-def add_corpus(corpus: Corpus) -> Corpus:
+@app.post('/addCorpus')
+def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
+    print(corpus)
+    print(documents)
+    if documents:
+        run = Run('default', 'default run, no annotations', corpus, {document: [] for document in documents})
+        get_orbis_service().add_run(run)
     return corpus
 
 

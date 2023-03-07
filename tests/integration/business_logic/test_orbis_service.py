@@ -438,6 +438,24 @@ def test_add_run_runContainsAnnotationWithAlreadyExistingType_annotationTypeIsNo
 
 
 # noinspection PyPep8Naming
+def test_add_run_runContainsDocumentWithRunIdZero_documentIsAddedToLinkedRunIndependentOfItsId(
+        clear_test_data_orbis):
+    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
+                                      {Document('Text, das ist ein Beispiel', run_id=0):
+                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                                                       Annotator('Andreas', [Role('admin')]))]}
+                                      ))
+
+    runs = OrbisService().get_runs()
+
+    assert len(runs) == 1
+    run_documents = list(runs[0].document_annotations.keys())
+    assert len(run_documents) == 1
+    assert run_documents[0].run_id == runs[0]._id
+    assert run_documents[0].content == 'Text, das ist ein Beispiel'
+
+
+# noinspection PyPep8Naming
 def test_add_run_runContainsSameAnnotationTwice_annotationIsInsertedOnlyOnceAndNoErrorOccurs(
         clear_test_data_orbis):
     assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
