@@ -111,7 +111,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
         return None
 
-    def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[Run], None]:
+    def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
         """
         Get all run names with a given corpus_id from database
 
