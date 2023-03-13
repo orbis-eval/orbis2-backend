@@ -6,7 +6,6 @@ from sqlalchemy.orm import subqueryload
 
 from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
 from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
-from orbis2.model.run import Run
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
