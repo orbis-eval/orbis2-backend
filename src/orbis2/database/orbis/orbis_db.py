@@ -5,6 +5,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
 from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
+from orbis2.database.orbis.entities.corpus_supports_annotation_type_relation import \
+    corpus_supports_annotation_type_table
 from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -86,7 +88,7 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no according run exists in the database
         """
         try:
-            results = self.session.query(RunDao).where(RunDao.corpus_id == corpus_id).all()
+            results = self.session.query(RunDao).where(RunDao.corpus_id == corpus_id).options(subqueryload('*')).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -95,6 +97,20 @@ class OrbisDb(SqlDb):
             logging.warning(f'Run by corpus id request with corpus id: {corpus_id} failed.')
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
+
+    def get_corpus(self, corpus_id: int) -> Union[CorpusDao, None]:
+        """
+        Get corpus from database by its id
+
+        Returns: A single corpus object or None if zero or multiple corpora exists in the database
+        """
+        if corpus := self.try_catch(
+            lambda: self.session.query(CorpusDao).get(corpus_id),
+            f'Corpus request with corpus id: {corpus_id} failed', False
+        ):
+            return corpus
+        logging.debug(f'Corpus with corpus id {corpus_id} has not been found in orbis database.')
+        return None
 
     def get_document(self, document_id: int) -> Union[DocumentDao, None]:
         """
@@ -188,7 +204,7 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists in the database
         """
         try:
-            results = self.session.query(DocumentDao).all()
+            results = self.session.query(DocumentDao).options(subqueryload('*')).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no document entries in orbis database.')
@@ -215,7 +231,7 @@ class OrbisDb(SqlDb):
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == RunDao.run_id,
                     RunDao.corpus_id == corpus_id
-                ).limit(page_size).offset(skip).all(),
+                ).limit(page_size).offset(skip).options(subqueryload('*')).all(),
                 f'Documents for corpus request with corpus id: {corpus_id} failed', False
         ):
             return documents
@@ -235,7 +251,7 @@ class OrbisDb(SqlDb):
                 lambda: self.session.query(DocumentDao).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == run_id
-                ).all(),
+                ).options(subqueryload('*')).all(),
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
@@ -257,7 +273,7 @@ class OrbisDb(SqlDb):
             lambda: self.session.query(DocumentHasAnnotationDao).where(
                 DocumentHasAnnotationDao.document_id == document_id,
                 DocumentHasAnnotationDao.run_id == run_id
-            ).all(),
+            ).options(subqueryload('*')).all(),
             'Get annotations of document by run id failed',
             [])
         if len(results) > 0:
@@ -284,7 +300,7 @@ class OrbisDb(SqlDb):
                     DocumentHasAnnotationDao.annotation_id == annotation_id,
                     DocumentHasAnnotationDao.document_id == document_id,
                     DocumentHasAnnotationDao.run_id == run_id
-                ).first(),
+                ).options(subqueryload('*')).first(),
                 'Get annotation of document by run id failed', None):
             return annotation
         logging.debug(f'There is no annotation entry (id {annotation_id}) for run({run_id}) - document({document_id}) '
@@ -298,7 +314,7 @@ class OrbisDb(SqlDb):
         Returns: A list of annotation objects or None if no annotation exists in the database
         """
         try:
-            results = self.session.query(AnnotationDao).all()
+            results = self.session.query(AnnotationDao).options(subqueryload('*')).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no annotation entries in orbis database.')
@@ -315,11 +331,24 @@ class OrbisDb(SqlDb):
         Args:
          annotation_id:
 
-        Returns: A single annotation object or None if zero or multiple runs exists in the database
+        Returns: A single annotation object or None if zero or multiple annotations exists in the database
         """
         return self.try_catch(
-            lambda: self.session.query(AnnotationDao).get(annotation_id),
-            f'Run request with run id: {annotation_id} failed', None)
+            lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
+            f'Annotation request with annotation id: {annotation_id} failed', None)
+
+    def get_annotation_type(self, annotation_type_id: int) -> Union[AnnotationTypeDao, None]:
+        """
+        Get annotation type from database.
+
+        Args:
+         annotation_type_id:
+
+        Returns: A single annotation type object or None if zero or multiple annotation types exists in the database
+        """
+        return self.try_catch(
+            lambda: self.session.query(AnnotationTypeDao).get(annotation_type_id),
+            f'Annotation type request with annotation type id: {annotation_type_id} failed', None)
 
     def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
         """
@@ -372,7 +401,7 @@ class OrbisDb(SqlDb):
         Returns: A list of annotator objects or None if no annotation exists in the database
         """
         try:
-            results = self.session.query(AnnotatorDao).all()
+            results = self.session.query(AnnotatorDao).options(subqueryload('*')).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no annotator entries in orbis database.')
@@ -474,6 +503,19 @@ class OrbisDb(SqlDb):
         return self.session.query(RunHasDocumentDao).where(
             RunHasDocumentDao.run_id == run_id
         ).count() == 0
+
+    def annotation_type_is_orphan(self, annotation_type_id: int) -> bool:
+        """
+        Checks if annotation type given by its id is an orphan
+        (meaning it's not linked to any corpora)
+
+        Args:
+            annotation_type_id:
+
+        Returns: True if annotation type is an orphan, false otherwise
+        """
+        return self.session.query(corpus_supports_annotation_type_table).filter_by(
+            annotation_type_id=annotation_type_id).count() == 0
 
     def remove_metadata(self, metadata_id: int) -> bool:
         """
@@ -655,6 +697,59 @@ class OrbisDb(SqlDb):
         if all([self.remove_run(run.run_id) for run in runs
                 if self.run_is_orphan(run.run_id)]):
             return self.commit()
+        return False
+
+    def remove_annotation_type(self, annotation_type_id: int) -> bool:
+        """
+        Remove annotation type from database.
+
+        Args:
+            annotation_type_id:
+
+        Returns: True if everything worked correctly, false otherwise
+        """
+        if annotation_type := self.get_annotation_type(annotation_type_id):
+            if self.annotation_type_is_orphan(annotation_type_id):
+                # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
+                return (self.try_catch(lambda: not self.session.delete(annotation_type),
+                                   f'Annotation type with id {annotation_type_id} could not be removed from orbis db.')
+                        and self.commit())
+            logging.warning(f"Annotation type with id {annotation_type_id} could not be deleted, "
+                            "it's still associated by corpora.")
+        return False
+
+    def remove_orphan_annotation_types(self, annotation_types: Set[AnnotationTypeDao]) -> bool:
+        """
+        Checks for each item in a given list of annotation types if it's an orphan, if yes, the item will be removed
+
+        Args:
+            annotation_types:
+
+        Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
+        """
+        if all([self.remove_annotation_type(annotation_type.type_id) for annotation_type in annotation_types
+                if self.annotation_type_is_orphan(annotation_type.type_id)]):
+            return self.commit()
+        return False
+
+    def remove_corpus(self, corpus_id: int) -> bool:
+        """
+        Remove corpus from database, relationship to its runs and annotation types is also removed,
+        if a run or an annotation type is then an orphan it will be deleted.
+
+        Args:
+            corpus_id:
+
+        Returns: True if everything worked correctly, false otherwise
+        """
+        if corpus := self.get_corpus(corpus_id):
+            # first, remove all runs with custom remove_run method, to ensure that all orphan entities are removed as well
+            if (all([self.remove_run(run.run_id) for run in self.get_run_by_corpus_id(corpus_id) if run])
+                    # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
+                    and self.try_catch(lambda: not self.session.delete(corpus),
+                                       f'Corpus with id {corpus_id} could not be removed from orbis db.')
+                    and self.commit()):
+                return self.remove_orphan_annotation_types(corpus.supported_annotation_types)
         return False
 
     @staticmethod

@@ -913,3 +913,103 @@ def test_remove_run_documentExistsInTwoDifferentRuns_runButNotDocumentIsRemoved(
     assert len(orbis_db.get_annotations()) == 1
     assert len(orbis_db.get_metadata()) == 1
     assert len(orbis_db.get_corpora()) == 1
+
+
+# noinspection PyPep8Naming
+def test_remove_annotation_type_annotationTypeIsUsedByCorpus_dontDeleteAnnotationType(insert_test_data_orbis):
+    orbis_db = OrbisDb()
+    annotation_type = orbis_db.get_annotation_types()[0]
+
+    assert not orbis_db.remove_annotation_type(annotation_type.type_id)
+    assert len(orbis_db.get_annotation_types()) > 0
+    assert len(orbis_db.get_corpora()) > 0
+
+
+# noinspection PyPep8Naming
+def test_remove_corpus_runIsOrphan_runAllAccordingDocumentsAndAllAnnotationTypesAreRemoved(insert_test_data_orbis):
+    orbis_db = OrbisDb()
+    corpus = orbis_db.get_corpora()[0]
+    orbis_db.remove_corpus(corpus.corpus_id)
+
+    assert not orbis_db.get_corpora()
+    assert not orbis_db.get_runs()
+    assert not orbis_db.get_documents()
+    assert not orbis_db.get_annotation_types()
+    assert not orbis_db.get_annotations()
+
+
+# noinspection PyPep8Naming
+def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDocumentsAndAllAnnotationTypesAreRemoved(
+        clear_test_data_orbis):
+    orbis_db = OrbisDb()
+    orbis_db.session.merge(
+        RunDao(run_id=1, name='run1', description='run1',
+               run_has_documents=[
+                   RunHasDocumentDao(
+                       document=DocumentDao(document_id=1, content='Text 1234', key='doc-key1', meta_data=[]),
+                       document_has_annotations=[
+                           DocumentHasAnnotationDao(
+                               annotation=AnnotationDao(
+                                   annotation_id=1, key='annotation-key1', surface_forms=['Text'], start_indices=[0],
+                                   end_indices=[4],
+                                   annotation_type=AnnotationTypeDao(
+                                       type_id=11, name='type11'
+                                   ), annotator=AnnotatorDao(
+                                       annotator_id=111, name='Annotator111', roles=[]
+                                   ), meta_data=[
+                                       MetadataDao(
+                                           metadata_id=1111, key='key1111', value='value1111'
+                                       )
+                                   ]
+                               )
+                           )
+                       ]
+                   )
+               ],
+               corpus=CorpusDao(corpus_id=1, name='corpus1'))
+    )
+    orbis_db.commit()
+
+    # second run but same corpora
+    orbis_db.session.merge(
+        RunDao(run_id=2, name='run2', description='run2',
+               run_has_documents=[
+                   RunHasDocumentDao(
+                       document=DocumentDao(document_id=1, content='Text 1234', key='doc-key1', meta_data=[]),
+                       document_has_annotations=[
+                           DocumentHasAnnotationDao(
+                               annotation=AnnotationDao(
+                                   annotation_id=2, key='annotation-key2', surface_forms=['Text2'], start_indices=[0],
+                                   end_indices=[5],
+                                   annotation_type=AnnotationTypeDao(
+                                       type_id=11, name='type11'
+                                   ), annotator=AnnotatorDao(
+                                       annotator_id=111, name='Annotator111', roles=[]
+                                   ), meta_data=[
+                                       MetadataDao(
+                                           metadata_id=1111, key='key1111', value='value1111'
+                                       )
+                                   ]
+                               )
+                           )
+                       ]
+                   )
+               ],
+               corpus=CorpusDao(corpus_id=1, name='corpus1'))
+    )
+    orbis_db.commit()
+
+    assert len(orbis_db.get_corpora()) == 1
+    assert len(orbis_db.get_runs()) == 2
+    assert len(orbis_db.get_documents()) == 1
+    assert len(orbis_db.get_annotation_types()) == 1
+    assert len(orbis_db.get_annotations()) == 2
+    assert len(orbis_db.get_metadata()) == 1
+
+    assert orbis_db.remove_corpus(1)
+    # assert not orbis_db.get_corpora()
+    # assert not orbis_db.get_runs()
+    # assert not orbis_db.get_documents()
+    # # assert not orbis_db.get_annotation_types()
+    # assert not orbis_db.get_annotations()
+    # assert not orbis_db.get_metadata()

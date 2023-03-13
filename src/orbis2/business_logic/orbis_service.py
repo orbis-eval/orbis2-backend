@@ -149,6 +149,11 @@ class OrbisService:
             return self.orbis_db.remove_document_from_corpus(document_id, corpus_id)
         return False
 
+    def remove_corpus(self, corpus_id: int) -> bool:
+        if corpus_id:
+            return self.orbis_db.remove_corpus(corpus_id)
+        return False
+
     def remove_run(self, run_id: int) -> bool:
         if run_id:
             return self.orbis_db.remove_run(run_id)
