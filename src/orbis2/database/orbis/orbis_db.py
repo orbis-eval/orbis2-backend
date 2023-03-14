@@ -717,7 +717,8 @@ class OrbisDb(SqlDb):
             if self.annotation_type_is_orphan(annotation_type_id):
                 # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
                 return (self.try_catch(lambda: not self.session.delete(annotation_type),
-                                       f'Annotation type with id {annotation_type_id} could not be removed from orbis db.')
+                                       f'Annotation type with id {annotation_type_id} '
+                                       'could not be removed from orbis db.')
                         and self.commit())
             logging.warning(f"Annotation type with id {annotation_type_id} could not be deleted, "
                             "it's still associated by corpora.")
