@@ -681,7 +681,7 @@ class OrbisDb(SqlDb):
             # get the documents and annotations of the run before deleting it, otherwise this could cause problems
             documents = {run_document.document for run_document in run.run_has_documents}
             annotations = {document_annotation.annotation for run_document in run.run_has_documents
-                            for document_annotation in run_document.document_has_annotations}
+                           for document_annotation in run_document.document_has_annotations}
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(run),
                                f'Run with id {run_id} could not be removed from orbis db.')
@@ -717,7 +717,7 @@ class OrbisDb(SqlDb):
             if self.annotation_type_is_orphan(annotation_type_id):
                 # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
                 return (self.try_catch(lambda: not self.session.delete(annotation_type),
-                                   f'Annotation type with id {annotation_type_id} could not be removed from orbis db.')
+                                       f'Annotation type with id {annotation_type_id} could not be removed from orbis db.')
                         and self.commit())
             logging.warning(f"Annotation type with id {annotation_type_id} could not be deleted, "
                             "it's still associated by corpora.")
@@ -749,9 +749,10 @@ class OrbisDb(SqlDb):
         """
         if corpus := self.get_corpus(corpus_id):
             supported_annotation_types = corpus.supported_annotation_types
-            # first, remove all runs with custom remove_run method, to ensure that all orphan entities are removed as well
+            # first, remove all runs with custom remove_run method,
+            # to ensure that all orphan entities are removed as well
             if (all([self.remove_run(run.run_id) for run in self.get_runs_by_corpus_id(corpus_id) if run])
-                    # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
+                    # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     and self.try_catch(lambda: not self.session.delete(corpus),
                                        f'Corpus with id {corpus_id} could not be removed from orbis db.')
                     and self.commit()):
