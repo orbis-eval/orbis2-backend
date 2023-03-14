@@ -35,7 +35,7 @@ class OrbisService:
         return None
 
     def get_runs_by_corpus_id(self, corpus_id: int) -> List[Run]:
-        if runs := self.orbis_db.get_run_by_corpus_id(corpus_id):
+        if runs := self.orbis_db.get_runs_by_corpus_id(corpus_id):
             return Run.from_run_daos(runs)
         return []
 

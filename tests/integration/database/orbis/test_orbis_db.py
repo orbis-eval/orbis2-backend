@@ -995,7 +995,9 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
                        ]
                    )
                ],
-               corpus=CorpusDao(corpus_id=1, name='corpus1'))
+               corpus=CorpusDao(corpus_id=1, name='corpus1',supported_annotation_types=[
+                   AnnotationTypeDao(type_id=11, name='type11')
+               ]))
     )
     orbis_db.commit()
 
@@ -1007,9 +1009,9 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
     assert len(orbis_db.get_metadata()) == 1
 
     assert orbis_db.remove_corpus(1)
-    # assert not orbis_db.get_corpora()
-    # assert not orbis_db.get_runs()
-    # assert not orbis_db.get_documents()
-    # # assert not orbis_db.get_annotation_types()
-    # assert not orbis_db.get_annotations()
-    # assert not orbis_db.get_metadata()
+    assert not orbis_db.get_corpora()
+    assert not orbis_db.get_runs()
+    assert not orbis_db.get_documents()
+    assert not orbis_db.get_annotation_types()
+    assert not orbis_db.get_annotations()
+    assert not orbis_db.get_metadata()
