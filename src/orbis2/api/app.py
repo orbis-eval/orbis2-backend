@@ -76,13 +76,18 @@ def get_corpora() -> List[Corpus]:
     return get_orbis_service().get_corpora()
 
 
+@app.get('/getCorpus')
+def get_corpus(corpus_id: int) -> Corpus:
+    return get_orbis_service().get_corpus(corpus_id)
+
+
 @app.post('/addCorpus')
-def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
+def add_corpus(corpus: Corpus, documents: List[Document] = []) -> Corpus:
     print(corpus)
     print(documents)
-    if documents:
-        run = Run('default', 'default run, no annotations', corpus, {document: [] for document in documents})
-        get_orbis_service().add_run(run)
+    run = Run(f'default_{corpus.name}', f'default run for corpus {corpus.name}, no annotations',
+              corpus, {document: [] for document in documents})
+    get_orbis_service().add_run(run)
     return corpus
 
 
@@ -100,8 +105,8 @@ def remove_annotation_from_document(annotation: Annotation, response: Response):
 
 
 @app.delete('/removeCorpus', status_code=200)
-def remove_corpus(corpus_id: int, response: Response):
-    if get_orbis_service().remove_corpus(corpus_id):
+def remove_corpus(corpus: Corpus, response: Response):
+    if get_orbis_service().remove_corpus(corpus._id):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
     return

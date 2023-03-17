@@ -89,6 +89,12 @@ class OrbisService:
             return Corpus.from_corpus_daos(corpora)
         return []
 
+    def get_corpus(self, corpus_id) -> Union[Corpus, None]:
+        if corpus_id:
+            if corpus := self.orbis_db.get_corpus(corpus_id):
+                return Corpus.from_corpus_dao(corpus)
+        return None
+
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
         return self.orbis_db.get_corpus_id(corpus_name)
 

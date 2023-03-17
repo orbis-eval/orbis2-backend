@@ -752,7 +752,9 @@ class OrbisDb(SqlDb):
             supported_annotation_types = corpus.supported_annotation_types
             # first, remove all runs with custom remove_run method,
             # to ensure that all orphan entities are removed as well
-            if (all([self.remove_run(run.run_id) for run in self.get_runs_by_corpus_id(corpus_id) if run])
+            if not (runs := self.get_runs_by_corpus_id(corpus_id)):
+                runs = []
+            if (all([self.remove_run(run.run_id) for run in runs if run])
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     and self.try_catch(lambda: not self.session.delete(corpus),
                                        f'Corpus with id {corpus_id} could not be removed from orbis db.')
