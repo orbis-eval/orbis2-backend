@@ -82,9 +82,9 @@ def get_corpus(corpus_id: int) -> Corpus:
 
 
 @app.post('/addCorpus')
-def add_corpus(corpus: Corpus, documents: List[Document] = []) -> Corpus:
-    print(corpus)
-    print(documents)
+def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
+    if not documents:
+        documents = []
     run = Run(f'default_{corpus.name}', f'default run for corpus {corpus.name}, no annotations',
               corpus, {document: [] for document in documents})
     get_orbis_service().add_run(run)
