@@ -35,7 +35,7 @@ class OrbisService:
         return None
 
     def get_runs_by_corpus_id(self, corpus_id: int) -> List[Run]:
-        if runs := self.orbis_db.get_run_by_corpus_id(corpus_id):
+        if runs := self.orbis_db.get_runs_by_corpus_id(corpus_id):
             return Run.from_run_daos(runs)
         return []
 
@@ -88,6 +88,12 @@ class OrbisService:
         if corpora := self.orbis_db.get_corpora():
             return Corpus.from_corpus_daos(corpora)
         return []
+
+    def get_corpus(self, corpus_id) -> Union[Corpus, None]:
+        if corpus_id:
+            if corpus := self.orbis_db.get_corpus(corpus_id):
+                return Corpus.from_corpus_dao(corpus)
+        return None
 
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
         return self.orbis_db.get_corpus_id(corpus_name)
@@ -147,6 +153,11 @@ class OrbisService:
     def remove_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
         if document_id and corpus_id:
             return self.orbis_db.remove_document_from_corpus(document_id, corpus_id)
+        return False
+
+    def remove_corpus(self, corpus_id: int) -> bool:
+        if corpus_id:
+            return self.orbis_db.remove_corpus(corpus_id)
         return False
 
     def remove_run(self, run_id: int) -> bool:
