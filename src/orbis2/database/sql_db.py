@@ -1,4 +1,6 @@
 import logging
+
+from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy_utils import database_exists, create_database
 
@@ -35,7 +37,7 @@ class SqlDb:
     def session(self):
         try:
             # check whether database connection is working properly
-            self._session.execute('SELECT 1')
+            self._session.execute(text('SELECT 1'))
         except DBAPIError:
             logging.info(f'Lost DB connection ({self.__class__.__name__}), reconnect...')
             self._session = get_session(self.url, True)
