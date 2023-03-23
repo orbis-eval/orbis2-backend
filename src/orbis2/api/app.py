@@ -91,6 +91,17 @@ def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
     return corpus
 
 
+@app.post('/addRun')
+def add_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
+    if corpus and run_name and run_description:
+        run = Run(run_name, run_description, corpus,
+                  {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus._id)})
+        if get_orbis_service().add_run(run):
+            # dictionary could not be serialized, since it's not necessary, remove it in this call
+            run.document_annotations = None
+            return run
+
+
 @app.post('/addAnnotation')
 def add_annotation(annotation: Annotation) -> Annotation:
     return get_orbis_service().add_annotation_to_document(annotation)
