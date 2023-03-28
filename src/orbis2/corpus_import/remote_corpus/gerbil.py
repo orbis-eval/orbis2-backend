@@ -7,7 +7,6 @@ import gzip
 from rdflib import Namespace, Graph
 from rdflib.namespace import RDF, DCTERMS
 from pathlib import Path
-from glob import glob
 from collections import namedtuple
 
 RemoteCorpus = namedtuple('RemoteCorpus', 'url title date language rights description')

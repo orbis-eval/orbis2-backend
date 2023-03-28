@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
+import sys
 from pathlib import Path
 from typing import List, Dict
+from urllib.request import urlopen
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.corpus_import.format.careercoach import CareerCoachFormat
@@ -76,7 +78,20 @@ def import_remote_corpus(args):
     """
     Import the corpus from a remote repository.
     """
-    print(args)
+    from orbis2.corpus_import.remote_corpus.gerbil import CORPORA
+    if not args.corpus_name in CORPORA:
+        print(f"Unknown corpus name: '{args.corpus_name}'. Use the 'list-remote' command to obtain a list of available "
+               "corpora")
+        sys.exit(-1)
+
+    # fetch the corpus from the remove server
+    corpus = CORPORA[args.corpus_name]
+    print(f"Fetching remote corpus from '{corpus.url}'")
+    with urlopen(corpus.url) as f:
+        documents = [f.read().decode(f.headers.get_content_charset())]
+        print("Importing corpus.")
+        import_documents(documents, args.run_name, args.run_description,
+                         invalid_annotation_types=args.invalid_annotation_type)
 
 def list_remote_corpora(args):
     """
