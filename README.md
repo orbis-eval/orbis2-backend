@@ -33,23 +33,28 @@ The environment variables are all stored in the file [src/orbis2/config/app_conf
 
 ### Local corpus
 
+Import the NIF corpus `KORE50.ttl` to the run (i.e., AnnotatedCorpus) `KORE50-version1.0`.
+```bash
+./scripts/importer.py local KORE50.ttl KORE50-version1.0
+```
+
 Import CareerCoach 2022 entity annotations
 ```bash
-./scripts/importer.py --corpus-partition gold_standard_annotation \
+./scripts/importer.py local --corpus-partition gold_standard_annotation \
      ../education-extraction/corpus/goldDocuments/ \
      careercoach2022  
 ```
 
 Import CareerCoach 2022 partition annotations
 ```bash
-./scripts/importer.py --corpus-partition gold_standard_annotation_segmentation \
+./scripts/importer.py local --corpus-partition gold_standard_annotation_segmentation \
      ../education-extraction/corpus/goldDocuments/ \
      careercoach2022
 ```
 
 Import CareerCoach 2022 entity annotations filtered by the page segments
 ```bash
-./scripts/importer.py ../education-extraction/corpus/goldDocuments/ careercoach2022 \
+./scripts/importer.py local ../education-extraction/corpus/goldDocuments/ careercoach2022 \
     --corpus-partition gold_standard_annotation \
     --careercoach-filter ../education-extraction/corpus/goldDocumentsPre/ \
     --invalid-annotation-type languageSkill languageskill position scope school softskill industry sco

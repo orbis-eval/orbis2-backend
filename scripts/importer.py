@@ -59,41 +59,44 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
                                document_annotations=document_annotations))
 
-def import_local_corpus(args):
+def import_local_corpus(subargs):
     """
     Import the corpus from the local file system.
     """
-    corpus_path = Path(args.corpus_path)
+    corpus_path = Path(subargs.corpus_path)
     if corpus_path.is_dir():
         documents = [p.open().read() for p in corpus_path.rglob("*.json") if p.is_file()]
     else:
         documents = [corpus_path.open().read()]
     print(f'Importing {len(documents)} documents.')
-    import_documents(documents, args.run_name, args.run_description,
-                     invalid_annotation_types=args.invalid_annotation_type,
-                     corpus_partition=args.corpus_partition,
-                     careercoach_filter=args.careercoach_filter)
+    import_documents(documents, subargs.run_name, subargs.run_description,
+                     invalid_annotation_types=subargs.invalid_annotation_type,
+                     corpus_partition=subargs.corpus_partition,
+                     careercoach_filter=subargs.careercoach_filter)
 
-def import_remote_corpus(args):
+def import_remote_corpus(subargs):
     """
     Import the corpus from a remote repository.
     """
     from orbis2.corpus_import.remote_corpus.gerbil import CORPORA
-    if not args.corpus_name in CORPORA:
-        print(f"Unknown corpus name: '{args.corpus_name}'. Use the 'list-remote' command to obtain a list of available "
+    if not subargs.corpus_name in CORPORA:
+        print(f"Unknown corpus name: '{subargs.corpus_name}'. Use the 'list-remote' command to obtain a list of available "
                "corpora")
         sys.exit(-1)
 
+    if not subargs.run_description:
+        subargs.run_description = subargs.run_name
+
     # fetch the corpus from the remove server
-    corpus = CORPORA[args.corpus_name]
+    corpus = CORPORA[subargs.corpus_name]
     print(f"Fetching remote corpus from '{corpus.url}'")
     with urlopen(corpus.url) as f:
         documents = [f.read().decode(f.headers.get_content_charset())]
         print("Importing corpus.")
-        import_documents(documents, args.run_name, args.run_description,
-                         invalid_annotation_types=args.invalid_annotation_type)
+        import_documents(documents, subargs.run_name, subargs.run_description,
+                         invalid_annotation_types=subargs.invalid_annotation_type)
 
-def list_remote_corpora(args):
+def list_remote_corpora(subargs):
     """
     Provide a list with all remote corpora.
     """
@@ -108,20 +111,24 @@ if __name__ == '__main__':
 
     parser = ArgumentParser()
     subparsers = parser.add_subparsers(required=True)
-    parser.add_argument('--run-description', help='Description of the given run.')
-    parser.add_argument('--corpus-partition', help='Corpus partition to import.')
-    parser.add_argument('--invalid-annotation-type', nargs="+", default=[],
-                        help='Annotation types to ignore during import.')
 
     parser_remote = subparsers.add_parser('remote', help='Import a named corpus (e.g., Reuters-128) from a remote '
                                                          'repository.')
     parser_remote.add_argument('corpus_name', help='The name of the corpus to import.')
-    parser_remote.add_argument('run_name')
+    parser_remote.add_argument('run_name', help='The AnnotatedCorpus (i.e., run) name to use.')
+    parser_remote.add_argument('--run-description', help='Description of the given run.')
+    parser_remote.add_argument('--invalid-annotation-type', nargs="+", default=[],
+                               help='Annotation types to ignore during import.')
     parser_remote.set_defaults(func=import_remote_corpus)
 
     parser_local = subparsers.add_parser('local', help='Import a corpus from the local filesystem.')
-    parser_local.add_argument('corpus_path')
-    parser_local.add_argument('run_name')
+    parser_local.add_argument('corpus_path', help='The path to the corpus to import')
+    parser_local.add_argument('run_name', help='The AnnotatedCorpus (i.e., run) name to use.')
+    parser_local.add_argument('--run-description', help='Description of the given run.')
+    parser_local.add_argument('--invalid-annotation-type', nargs="+", default=[],
+                              help='Annotation types to ignore during import.')
+
+    parser_local.add_argument('--corpus-partition', help='Corpus partition to import.')
     parser_local.add_argument('--careercoach-filter', help='Optional CareerCoach segment corpus for filtering the '
                                                            'results')
     parser_local.set_defaults(func=import_local_corpus)
@@ -130,7 +137,4 @@ if __name__ == '__main__':
     parser_list.set_defaults(func=list_remote_corpora)
 
     args = parser.parse_args()
-    if not args.run_description and 'run_name' in args:
-        args.run_description = args.run_name
     args.func(args)
-
