@@ -31,6 +31,8 @@ The environment variables are all stored in the file [src/orbis2/config/app_conf
 
 ## Corpus import
 
+### Local corpus
+
 Import CareerCoach 2022 entity annotations
 ```bash
 ./scripts/importer.py --corpus-partition gold_standard_annotation \
@@ -51,6 +53,21 @@ Import CareerCoach 2022 entity annotations filtered by the page segments
     --corpus-partition gold_standard_annotation \
     --careercoach-filter ../education-extraction/corpus/goldDocumentsPre/ \
     --invalid-annotation-type languageSkill languageskill position scope school softskill industry sco
+```
+
+### Remote corpus
+
+The Orbis import tool also supports importing remote corpora that have been published by the 
+[GERBIL](https://github.com/dice-group/gerbil) project.
+
+The `list-remote` command provides a list of all available corpora.
+```bash
+./scripts/importer.py list-remote
+```
+
+The `remote` command imports a given corpus into the specified run (`N3-Reuters-128-version1` in the example below).
+```bash
+./scripts/importer.py remote N3-Reuters-128 N3-Reuters-128-version1
 ```
 
 ## Corpus export

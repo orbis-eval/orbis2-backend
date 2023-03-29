@@ -9,11 +9,11 @@ from rdflib.namespace import RDF, DCTERMS
 from pathlib import Path
 from collections import namedtuple
 
-RemoteCorpus = namedtuple('RemoteCorpus', 'url title date language rights description')
 CORPUS_DIR = Path(__file__).parent / 'data' / 'gerbil'
+SUPPORTED_IMPORT_FORMATS = ('ttl',)
 
+RemoteCorpus = namedtuple('RemoteCorpus', 'url title date language rights description ext')
 DCAT = Namespace('http://www.w3.org/ns/dcat#')
-
 
 get = lambda g, s, p: list(g.triples((s, p, None)))[0][2].replace('\n', ' ')
 
@@ -30,7 +30,11 @@ def parse_corpus_definition(fname):
             rights = get(g, s, DCTERMS.rights)
             description = get(g, s, DCTERMS.description)
             url = get(g, s, DCAT.distribution)
-    return RemoteCorpus(url, title, date, language, rights, description)
+            # determine the extension of the downloaded file
+            ext = url.rsplit('.', 1)[-1]
+    return RemoteCorpus(url, title, date, language, rights, description, ext)
 
 
-CORPORA = {str(fname.name).split('.')[0]: parse_corpus_definition(fname) for fname in sorted(CORPUS_DIR.glob('*.ttl.gz'))}
+CORPORA = {str(fname.name).split('.')[0]: parse_corpus_definition(fname)
+           for fname in sorted(CORPUS_DIR.glob('*.ttl.gz'))
+           if parse_corpus_definition(fname).ext in SUPPORTED_IMPORT_FORMATS}
