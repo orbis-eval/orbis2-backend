@@ -16,5 +16,5 @@ seaborn~=0.12.2
 XlsxWriter~=3.0.7
 
 statsmodels~=0.13.5
-setuptools~=65.4.0
+setuptools~=65.5.1
 numpy~=1.23.5
