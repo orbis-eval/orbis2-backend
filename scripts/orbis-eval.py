@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
+import sys
+from pathlib import Path
 from typing import List
+
+try:
+    orbis_src = Path(__file__).parent.parent / 'src'
+    if orbis_src.is_dir():
+        sys.path.append(str(orbis_src))
+except IndexError:
+    pass
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor

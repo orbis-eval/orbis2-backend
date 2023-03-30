@@ -1,3 +1,13 @@
+import sys
+from pathlib import Path
+
+try:
+    orbis_src = Path(__file__).parent.parent / 'src'
+    if orbis_src.is_dir():
+        sys.path.append(str(orbis_src))
+except IndexError:
+    pass
+
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator

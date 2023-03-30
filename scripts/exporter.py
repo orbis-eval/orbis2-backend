@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
+import sys
 from collections import namedtuple
 from pathlib import Path
+
+try:
+    orbis_src = Path(__file__).parent.parent / 'src'
+    if orbis_src.is_dir():
+        sys.path.append(str(orbis_src))
+except IndexError:
+    pass
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.corpus_export.careercoach import CareerCoachExportFormat

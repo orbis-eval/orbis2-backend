@@ -5,6 +5,13 @@ from pathlib import Path
 from typing import List, Dict
 from urllib.request import urlopen
 
+try:
+    orbis_src = Path(__file__).parent.parent / 'src'
+    if orbis_src.is_dir():
+        sys.path.append(str(orbis_src))
+except IndexError:
+    pass
+
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.corpus_import.format.careercoach import CareerCoachFormat
 from orbis2.corpus_import.format.nif import NifFormat
@@ -59,6 +66,7 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
                                document_annotations=document_annotations))
 
+
 def import_local_corpus(subargs):
     """
     Import the corpus from the local file system.
@@ -74,14 +82,15 @@ def import_local_corpus(subargs):
                      corpus_partition=subargs.corpus_partition,
                      careercoach_filter=subargs.careercoach_filter)
 
+
 def import_remote_corpus(subargs):
     """
     Import the corpus from a remote repository.
     """
     from orbis2.corpus_import.remote_corpus.gerbil import CORPORA
-    if not subargs.corpus_name in CORPORA:
-        print(f"Unknown corpus name: '{subargs.corpus_name}'. Use the 'list-remote' command to obtain a list of available "
-               "corpora")
+    if subargs.corpus_name not in CORPORA:
+        print(f"Unknown corpus name: '{subargs.corpus_name}'. Use the 'list-remote' command to obtain a list of "
+              "available corpora")
         sys.exit(-1)
 
     if not subargs.run_description:
@@ -96,7 +105,8 @@ def import_remote_corpus(subargs):
         import_documents(documents, subargs.run_name, subargs.run_description,
                          invalid_annotation_types=subargs.invalid_annotation_type)
 
-def list_remote_corpora(subargs):
+
+def list_remote_corpora(_):
     """
     Provide a list with all remote corpora.
     """
