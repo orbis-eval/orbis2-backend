@@ -47,6 +47,7 @@ orbis:reuters a nif:ContextCollection ;
     nif:beginIndex 24 ;
     nif:endIndex 33 ;
     nif:referenceContext <https://www.fhgr.ch/orbis2/2023/export/reuters/2007996992#char=0,130> ;
+    itsrdf:taClassRef <https://www.w3.org/2002/07/owl#Thing> ;    
     itsrdf:taIdentRef <http://dbpedia.org/resource/Esky> ;
     itsrdf:taSource "DBpedia_en_3.9" .    
 
@@ -56,6 +57,7 @@ orbis:reuters a nif:ContextCollection ;
     nif:beginIndex 0 ;
     nif:endIndex 14 ;
     nif:referenceContext <https://www.fhgr.ch/orbis2/2023/export/reuters/1560772437#char=0,1329> ;
+    itsrdf:taClassRef <https://www.w3.org/2002/07/owl#Thing> ;
     itsrdf:taIdentRef <http://de.dbpedia.org/resource/Montedison> ;
     itsrdf:taSource "DBpedia_de_3.9" .
 
@@ -65,6 +67,7 @@ orbis:reuters a nif:ContextCollection ;
     nif:beginIndex 724 ;
     nif:endIndex 727 ;
     nif:referenceContext <https://www.fhgr.ch/orbis2/2023/export/reuters/1560772437#char=0,1329> ;
+    itsrdf:taClassRef <https://schema.org/Country> ;
     itsrdf:taIdentRef <http://dbpedia.org/resource/United_States> ;
     itsrdf:taSource "DBpedia_en_3.9" .
 
