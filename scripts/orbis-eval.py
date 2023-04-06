@@ -14,7 +14,7 @@ from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.evaluation.annotation_preprocessor.abstract_annotation_preprocessor import AnnotationPreprocessor
 from orbis2.evaluation.annotation_preprocessor.annotation_filter import AnnotationTypeFilter
 from orbis2.evaluation.annotation_preprocessor.normalize_overlaps import NormalizeOverlaps
-from orbis2.evaluation.metric import SUPPORTED_METRICS
+from orbis2.evaluation.metric import SUPPORTED_METRICS, metrics_help_str
 from orbis2.evaluation.output_formatter import OrbisEvaluationResult
 from orbis2.evaluation.output_formatter.markdown import MarkdownOutputFormatter
 
@@ -55,7 +55,9 @@ if __name__ == '__main__':
                                                      'user-supplied annotations.')
     parser.add_argument('--reference', help='The run containing the annotations considered to be true, i.e., '
                                             'the gold standard.')
-    parser.add_argument('--metrics', nargs='+', default=[], help='The metrics to compute.')
+    parser.add_argument('--metrics', nargs='+', default=[],
+                        help='The metrics to compute. You may specify multiple of the following metrics:\n'
+                        + metrics_help_str())
     parser.add_argument('--type-whitelist', nargs='*', default=[],
                         help='Optional list of annotation types to evaluation.')
     parser.add_argument('--type-blacklist', nargs='*', default=[], help='Optional list of annotation types to ignore.')
