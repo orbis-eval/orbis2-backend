@@ -76,9 +76,16 @@ if __name__ == '__main__':
 
     # compile the list of runs to annotate; the reference run (if available) is always on the first position
     orbis = OrbisService()
-    eval_runs = [orbis.get_run_by_name(args.reference).document_annotations] if args.reference else []
+    try:
+        eval_runs = [orbis.get_run_by_name(args.reference).document_annotations] if args.reference else []
+    except AttributeError:
+        parser.error(f"Run '{args.reference}' does not exist.")
+
     for annotator_run in args.annotator:
-        eval_runs.append(orbis.get_run_by_name(annotator_run).document_annotations)
+        try:
+            eval_runs.append(orbis.get_run_by_name(annotator_run).document_annotations)
+        except AttributeError:
+            parser.error(f"Run '{annotator_run}' does not exist.")
 
     annotation_preprocessors: List[AnnotationPreprocessor] = []
     if args.type_blacklist:

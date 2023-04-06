@@ -32,7 +32,7 @@ def export_documents(export_run: Run, export_directory: Path, export_format: Exp
     Args:
         export_run: The run to export.
         export_directory: The export directory.
-        export_format: The
+        export_format: The export format to use
     """
     export_format.exporter().export(export_run, export_directory)
 
