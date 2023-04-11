@@ -71,7 +71,7 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if run := self.try_catch(
-            lambda: self.session.query(RunDao).options(subqueryload('*')).get(run_id),
+            lambda: self.session.get(RunDao, run_id),
             f'Run request with run id: {run_id} failed', False
         ):
             return run
@@ -401,7 +401,8 @@ class OrbisDb(SqlDb):
         Returns: A single annotation object or None if zero or multiple annotations exists in the database
         """
         return self.try_catch(
-            lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
+            lambda: self.session.get(AnnotationDao, annotation_id),
+            # OL: lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
             f'Annotation request with annotation id: {annotation_id} failed', None)
 
     def get_annotation_type(self, annotation_type_id: int) -> Union[AnnotationTypeDao, None]:
@@ -458,8 +459,10 @@ class OrbisDb(SqlDb):
 
         Returns: A single object of metadata or None if no or multiple metadata exists in the database
         """
-        return self.try_catch(lambda: self.session.query(MetadataDao).get(metadata_id),
-                              f'No metadata with id: {metadata_id} found in orbis database.', None)
+        return self.try_catch(
+            # lambda: self.session.query(MetadataDao, metadata_id),
+            lambda: self.session.query(MetadataDao).get(metadata_id),
+            f'No metadata with id: {metadata_id} found in orbis database.', None)
 
     def get_annotators(self) -> Union[List[AnnotatorDao], None]:
         """

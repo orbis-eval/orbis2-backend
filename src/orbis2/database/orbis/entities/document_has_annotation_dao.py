@@ -10,8 +10,8 @@ from orbis2.database.orbis.orbis_base import OrbisBase
 class DocumentHasAnnotationDao(OrbisBase):
     __tablename__ = 'document_has_annotation'
 
-    run_id = Column(BigInteger, primary_key=True)
-    document_id = Column(BigInteger, primary_key=True)
+    run_id = Column(BigInteger, primary_key=True, default=0)        # note: the default values only serve to prevent
+    document_id = Column(BigInteger, primary_key=True, default=0)   #       SQLAlechemy warnings.
     # cascading in table_args removes entries from this table, when entries (run_id, document_id) from parent table
     # (run_has_document) get deleted
     __table_args__ = (ForeignKeyConstraint((run_id, document_id),
