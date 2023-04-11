@@ -64,6 +64,13 @@ class OrbisService:
         return []
 
     def get_next_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+        if document := self.orbis_db.get_next_document_of_run(run_id, document_id):
+            return Document.from_document_dao(document)
+        return None
+
+    def get_previous_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+        if document := self.orbis_db.get_previous_document_of_run(run_id, document_id):
+            return Document.from_document_dao(document)
         return None
 
     def get_document(self, document_id: int) -> Union[Document, None]:

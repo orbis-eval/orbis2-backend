@@ -255,7 +255,74 @@ class OrbisDb(SqlDb):
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
-        logging.debug(f'Documents for run with run id {run_id} has not been found in orbis database.')
+        logging.debug(f'Documents for run with run id {run_id} have not been found in orbis database.')
+        return None
+
+    def get_next_document_of_run(self, run_id: int, document_id: int) -> Union[DocumentDao, None]:
+        """
+        Get the next document for the given run.
+
+        Args:
+            run_id: id of the run for which the document is looked up.
+            document_id: current document id
+
+        Returns: the next document from the run, or None, if no document exists in the database.
+        """
+        # obtain the next document
+        if document := self.try_catch(
+            lambda: self.session.query(DocumentDao).where(
+                DocumentDao.document_id == RunHasDocumentDao.document_id,
+                RunHasDocumentDao.run_id == run_id
+            ).filter(DocumentDao.document_id > document_id).order_by(DocumentDao.document_id.asc()).first(),
+            f'Obtaining the next document for run id: {run_id} and document id: {document_id} failed', False
+        ):
+            return document
+
+        # no result => return the first document
+        if document := self.try_catch(
+            lambda: self.session.query(DocumentDao).where(
+                DocumentDao.document_id == RunHasDocumentDao.document_id,
+                RunHasDocumentDao.run_id == run_id
+            ).order_by(DocumentDao.document_id.asc()).first(),
+            f'Obtaining the first document for run id: {run_id} failed', False
+        ):
+            return document
+
+        logging.debug(f'Documents for run with run id {run_id} have not been found in orbis database.')
+        return None
+
+    def get_previous_document_of_run(self, run_id: int, document_id: int) -> Union[DocumentDao, None]:
+        """
+        Get the previous document for the given run.
+        If called with the id of the first document, the method returns the last one.
+
+        Args:
+            run_id: id of the run for which the document is looked up.
+            document_id: current document id
+
+        Returns: the previous document from the run, or None, if no document exists in the database.
+        """
+        # obtain the previous document
+        if document := self.try_catch(
+            lambda: self.session.query(DocumentDao).where(
+                DocumentDao.document_id == RunHasDocumentDao.document_id,
+                RunHasDocumentDao.run_id == run_id
+            ).filter(DocumentDao.document_id < document_id).order_by(DocumentDao.document_id.desc()).first(),
+            f'Obtaining the previous document for run id: {run_id} and document id: {document_id} failed', False
+        ):
+            return document
+
+        # no result => return the last document
+        if document := self.try_catch(
+            lambda: self.session.query(DocumentDao).where(
+                DocumentDao.document_id == RunHasDocumentDao.document_id,
+                RunHasDocumentDao.run_id == run_id
+            ).order_by(DocumentDao.document_id.desc()).first(),
+            f'Obtaining the last document for run id: {run_id} failed', False
+        ):
+            return document
+
+        logging.debug(f'Documents for run with run id {run_id} have not been found in orbis database.')
         return None
 
     def get_annotations_of_document_by_run_id(self, run_id: int,

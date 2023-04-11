@@ -32,5 +32,22 @@ def insert_test_data_orbis(clear_test_data_orbis):
         'run1', 'run1', Corpus('corpus1', [AnnotationType('annotation-type1')]),
         {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
          [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                     Annotator('Andreas', [Role('admin')], xxh32_hexdigest('test1234')), metadata=[Metadata('key2', 'value2')])]})
+                     Annotator('Andreas', [Role('admin')], xxh32_hexdigest('test1234')),
+                     metadata=[Metadata('key2', 'value2')])]})
+    assert OrbisService().add_run(run)
+
+
+@pytest.fixture()
+def insert_test_data_multiple_documents(clear_test_data_orbis):
+    test_annotation = Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                                 Annotator('Andreas', [Role('admin')], xxh32_hexdigest('test1234')),
+                                 metadata=[Metadata('key2', 'value2')])
+    run = Run(
+        'run2', 'run2', Corpus('corpus1', [AnnotationType('annotation-type1')]),
+        {Document('Text, this is document one.', metadata=[Metadata('key1', 'value1')]): [test_annotation],
+         Document('Text, this is document two.', metadata=[Metadata('key1', 'value1')]): [test_annotation],
+         Document('Text, this is document three.', metadata=[Metadata('key1', 'value1')]): [test_annotation],
+         Document('Text, this is document four.', metadata=[Metadata('key1', 'value1')]): [test_annotation],
+         Document('Text, this is document five.', metadata=[Metadata('key1', 'value1')]): [test_annotation],
+         })
     assert OrbisService().add_run(run)
