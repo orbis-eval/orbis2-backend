@@ -3,9 +3,10 @@ import sys
 from pathlib import Path
 
 try:
-    orbis_src = Path(__file__).parent.parent / 'src'
+    current = Path(__file__).parent
+    orbis_src = current.parent / 'src'
     if orbis_src.is_dir():
-        sys.path.append(str(orbis_src))
+        sys.path.extend([str(orbis_src), str(current)])
 except IndexError:
     pass
 
@@ -32,5 +33,5 @@ if __name__ == '__main__':
             exit(-1)
 
         if args.add_dummy_data:
-            from scripts.dummy_data import FIRST_RUN, SECOND_RUN, ANOTHER_RUN
+            from dummy_data import FIRST_RUN, SECOND_RUN, ANOTHER_RUN
             OrbisService().add_runs([FIRST_RUN, SECOND_RUN, ANOTHER_RUN])

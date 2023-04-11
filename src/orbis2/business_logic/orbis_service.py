@@ -63,6 +63,9 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
+    def get_next_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+        return None
+
     def get_document(self, document_id: int) -> Union[Document, None]:
         if document := self.orbis_db.get_document(document_id):
             return Document.from_document_dao(document)
