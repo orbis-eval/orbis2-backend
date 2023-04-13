@@ -1,18 +1,9 @@
 from typing import List
 
-from sqlalchemy import Sequence, Integer, Table, Column, ForeignKey, PrimaryKeyConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Sequence, Integer, ARRAY
+from sqlalchemy.orm import Mapped, mapped_column
 
-from orbis2.database.orbis.entities.color_dao import ColorDao
 from orbis2.database.orbis.orbis_base import OrbisBase
-
-color_palette_has_color_table = Table(
-    'color_palette_has_color',
-    OrbisBase.metadata,
-    Column('palette_id', ForeignKey('color_palette.palette_id')),
-    Column('color_id', ForeignKey('color.color_id')),
-    PrimaryKeyConstraint('palette_id', 'color_id')
-)
 
 
 class ColorPaletteDao(OrbisBase):
@@ -20,7 +11,7 @@ class ColorPaletteDao(OrbisBase):
 
     palette_id: Mapped[int] = mapped_column(Integer, Sequence('color_palette_id_seq'), primary_key=True)
     name: Mapped[str]
-    colors: Mapped[List[ColorDao]] = relationship(secondary=color_palette_has_color_table)
+    colors: Mapped[List[int]] = mapped_column(ARRAY(Integer))
 
     @staticmethod
     def get_default_color_palettes():
@@ -28,24 +19,6 @@ class ColorPaletteDao(OrbisBase):
         Returns:
             Default color palettes created on https://coolors.co/.
         """
-        default = [
-            ColorDao(color=0x533A71),
-            ColorDao(color=0x6184D8),
-            ColorDao(color=0x50C5B7),
-            ColorDao(color=0x9CEC5B),
-            ColorDao(color=0xF0F465)
-        ]
-        default_palette = ColorPaletteDao(name='default')
-        default_palette.colors = default
-
-        blueish = [
-            ColorDao(color=0x222E50),
-            ColorDao(color=0x007991),
-            ColorDao(color=0x439A86),
-            ColorDao(color=0xBCD8C1),
-            ColorDao(color=0xE9D985)
-        ]
-        blueish_palette = ColorPaletteDao(name='blueish')
-        blueish_palette.colors = default
-
-        return default + blueish + [default_palette, blueish_palette]
+        default = ColorPaletteDao(name='default', colors=[0x533A71, 0x6184D8, 0x50C5B7, 0x9CEC5B, 0xF0F465])
+        blueish = ColorPaletteDao(name='bluish', colors=[0x222E50, 0x007991, 0x439A86, 0xBCD8C1, 0xE9D985])
+        return [default, blueish]

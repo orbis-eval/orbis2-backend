@@ -1,10 +1,12 @@
 import logging
 from typing import Union, List, Callable, Set
 
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
 from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
+from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
 from orbis2.database.orbis.entities.corpus_supports_annotation_type_relation import \
     corpus_supports_annotation_type_table
 from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
@@ -20,6 +22,7 @@ from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
+from orbis2.model.color_palette import ColorPalette
 
 
 class OrbisDb(SqlDb):
@@ -404,6 +407,14 @@ class OrbisDb(SqlDb):
             lambda: self.session.get(AnnotationDao, annotation_id),
             # OL: lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
             f'Annotation request with annotation id: {annotation_id} failed', None)
+
+    def get_color_palettes(self) -> List[ColorPalette]:
+        """
+        Returns: A list of all available ColorPalettes.
+        """
+        return self.try_catch(
+            lambda: self.session.scalars(select(ColorPaletteDao)).all(),
+            'Cannot obtain list of available ColorPalettes.', None)
 
     def get_annotation_type(self, annotation_type_id: int) -> Union[AnnotationTypeDao, None]:
         """

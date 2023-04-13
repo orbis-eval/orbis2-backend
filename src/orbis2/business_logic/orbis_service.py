@@ -4,6 +4,7 @@ from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
+from orbis2.model.color_palette import ColorPalette
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
@@ -112,6 +113,9 @@ class OrbisService:
         if annotation_types := self.orbis_db.get_annotation_types():
             return AnnotationType.from_annotation_type_daos(annotation_types)
         return []
+
+    def get_color_palettes(self) -> List[ColorPalette]:
+        return self.orbis_db.get_color_palettes()
 
     def get_metadata(self) -> List[Metadata]:
         if metadata := self.orbis_db.get_metadata():
