@@ -4,6 +4,7 @@ from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError, SQLAlchemyError
 from sqlalchemy_utils import database_exists, create_database
 
+from orbis2.database.orbis.entities.color_palette_has_color import default_color_palettes
 from orbis2.database.session import get_session
 
 
@@ -99,3 +100,9 @@ class SqlDb:
         except SQLAlchemyError as e:
             logging.error(f'During clearing the tables the following exception occurred: {e.__str__()}')
             return False
+
+    def add_default_entries(self) -> None:
+        """
+        Add default entries such as colors and color palettes to the database.
+        """
+        self.session.add_all(default_color_palettes)
