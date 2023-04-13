@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Sequence, Integer, Table, Column, ForeignKey
+from sqlalchemy import Sequence, Integer, Table, Column, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from orbis2.database.orbis.entities.color_dao import ColorDao
@@ -11,13 +11,14 @@ color_palette_has_color_table = Table(
     OrbisBase.metadata,
     Column('palette_id', ForeignKey('color_palette.palette_id')),
     Column('color_id', ForeignKey('color.color_id')),
+    PrimaryKeyConstraint('palette_id', 'color_id')
 )
 
 
 class ColorPaletteDao(OrbisBase):
     __tablename__ = 'color_palette'
 
-    palette_id: Mapped[int] = mapped_column(Integer, Sequence('color_id_seq'), primary_key=True)
+    palette_id: Mapped[int] = mapped_column(Integer, Sequence('color_palette_id_seq'), primary_key=True)
     name: Mapped[str]
     colors: Mapped[List[ColorDao]] = relationship(secondary=color_palette_has_color_table)
 
