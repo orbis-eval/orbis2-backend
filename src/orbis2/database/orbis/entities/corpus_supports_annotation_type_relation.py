@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Table, ForeignKey, BigInteger
+from sqlalchemy import Column, Table, ForeignKey, BigInteger, Sequence
 
 from orbis2.database.orbis.orbis_base import OrbisBase
 
@@ -7,5 +7,5 @@ corpus_supports_annotation_type_table = Table(
     OrbisBase.metadata,
     Column('corpus_id', ForeignKey('corpus.corpus_id'), primary_key=True),
     Column('annotation_type_id', ForeignKey('annotation_type.type_id'), primary_key=True),
-    Column('color_id', BigInteger)
+    Column('color_id', BigInteger, Sequence('corpus_supports_annotation_type_seq', cycle=True))
 )
