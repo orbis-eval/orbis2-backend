@@ -1,5 +1,5 @@
 import logging
-from typing import Union, List, Callable, Set
+from typing import Union, List, Callable, Set, Dict
 
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -429,18 +429,16 @@ class OrbisDb(SqlDb):
             lambda: self.session.query(AnnotationTypeDao).get(annotation_type_id),
             f'Annotation type request with annotation type id: {annotation_type_id} failed', None)
 
-    def get_annotation_types(self) -> Union[List[AnnotationTypeDao], None]:
+    def get_corpus_annotation_types(self) -> Dict[AnnotationTypeDao, int]:
         """
-        Get all annotation types from database
-
-        Returns: A list of annotation type objects or None if no annotation type exists in the database
+        Returns: A list of all supported AnnotationTypes with their corresponding color_ids.
         """
         try:
-            results = self.session.query(AnnotationTypeDao).all()
+            results = self.session.scalars(select(AnnotationTypeDao)).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no annotation type entries in orbis database.')
-            return None
+            return {}
         except SQLAlchemyError as e:
             logging.warning('All annotation type request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')

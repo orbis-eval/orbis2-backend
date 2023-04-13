@@ -1,4 +1,4 @@
-from typing import Union, List
+from typing import Union, List, Dict
 
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
@@ -109,10 +109,8 @@ class OrbisService:
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
         return self.orbis_db.get_corpus_id(corpus_name)
 
-    def get_annotation_types(self) -> List[AnnotationType]:
-        if annotation_types := self.orbis_db.get_annotation_types():
-            return AnnotationType.from_annotation_type_daos(annotation_types)
-        return []
+    def get_corpus_annotation_types(self) -> Dict[AnnotationType, int]:
+        return self.orbis_db.get_corpus_annotation_types()
 
     def get_color_palettes(self) -> List[ColorPalette]:
         return self.orbis_db.get_color_palettes()

@@ -918,10 +918,10 @@ def test_remove_run_documentExistsInTwoDifferentRuns_runButNotDocumentIsRemoved(
 # noinspection PyPep8Naming
 def test_remove_annotation_type_annotationTypeIsUsedByCorpus_dontDeleteAnnotationType(insert_test_data_orbis):
     orbis_db = OrbisDb()
-    annotation_type = orbis_db.get_annotation_types()[0]
+    annotation_type = orbis_db.get_corpus_annotation_types()[0]
 
     assert not orbis_db.remove_annotation_type(annotation_type.type_id)
-    assert len(orbis_db.get_annotation_types()) > 0
+    assert len(orbis_db.get_corpus_annotation_types()) > 0
     assert len(orbis_db.get_corpora()) > 0
 
 
@@ -934,7 +934,7 @@ def test_remove_corpus_runIsOrphan_runAllAccordingDocumentsAndAllAnnotationTypes
     assert not orbis_db.get_corpora()
     assert not orbis_db.get_runs()
     assert not orbis_db.get_documents()
-    assert not orbis_db.get_annotation_types()
+    assert not orbis_db.get_corpus_annotation_types()
     assert not orbis_db.get_annotations()
 
 
@@ -1004,7 +1004,7 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
     assert len(orbis_db.get_corpora()) == 1
     assert len(orbis_db.get_runs()) == 2
     assert len(orbis_db.get_documents()) == 1
-    assert len(orbis_db.get_annotation_types()) == 1
+    assert len(orbis_db.get_corpus_annotation_types()) == 1
     assert len(orbis_db.get_annotations()) == 2
     assert len(orbis_db.get_metadata()) == 1
 
@@ -1012,6 +1012,6 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
     assert not orbis_db.get_corpora()
     assert not orbis_db.get_runs()
     assert not orbis_db.get_documents()
-    assert not orbis_db.get_annotation_types()
+    assert not orbis_db.get_corpus_annotation_types()
     assert not orbis_db.get_annotations()
     assert not orbis_db.get_metadata()

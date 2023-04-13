@@ -59,11 +59,12 @@ class Run(BaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
-            supported_annotation_types = corpus_supports_annotation_type_table.select()
+            supported_annotation_types = corpus_supports_annotation_type_table.get
         run = cls(run_dao.name,
                   run_dao.description,
                   Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
                   document_annotations,
+                  supported_annotation_types,
                   Run.from_run_daos(run_dao.parents))
         return run
 
