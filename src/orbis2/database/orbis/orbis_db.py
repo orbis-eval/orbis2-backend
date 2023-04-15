@@ -107,7 +107,7 @@ class OrbisDb(SqlDb):
         Returns: A single corpus object or None if zero or multiple corpora exists in the database
         """
         if corpus := self.try_catch(
-            lambda: self.session.query(CorpusDao).get(corpus_id),
+            lambda: self.session.scalars(select(CorpusDao).where(CorpusDao.corpus_id == corpus_id)).first(),
             f'Corpus request with corpus id: {corpus_id} failed', False
         ):
             return corpus
@@ -138,9 +138,9 @@ class OrbisDb(SqlDb):
         Returns: A list of run names or None if no according run exists in the database
         """
         try:
-            results = self.session.query(RunDao.run_id, RunDao.name).where(RunDao.corpus_id == corpus_id).all()
+            results = self.session.scalars(select(RunDao).where(RunDao.corpus_id == corpus_id)).all()
             if len(results) > 0:
-                return [RunDao(run_id=result.run_id, name=result.name) for result in results]
+                return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
             return None
         except SQLAlchemyError as e:
@@ -155,9 +155,9 @@ class OrbisDb(SqlDb):
         Returns: A list of all run names or None if no run exists
         """
         try:
-            results = self.session.query(RunDao.run_id, RunDao.name).all()
+            results = self.session.scalars(select(RunDao)).all()
             if len(results) > 0:
-                return [RunDao(run_id=result.run_id, name=result.name) for result in results]
+                return results
             logging.debug('There are no run entries in orbis database.')
             return None
         except SQLAlchemyError as e:
@@ -189,9 +189,9 @@ class OrbisDb(SqlDb):
         Returns: The id if one entry exists, None if zero or more entries exist
         """
         try:
-            results = self.session.query(CorpusDao.corpus_id).where(CorpusDao.name == corpus_name).all()
+            results = self.session.scalars(select(CorpusDao.corpus_id).where(CorpusDao.name == corpus_name)).all()
             if len(results) == 1:
-                return results[0].corpus_id
+                return results[0]
             logging.debug(f'{len(results)} (!= 1) corpora found in orbis database.')
             return None
         except SQLAlchemyError as e:
@@ -272,20 +272,20 @@ class OrbisDb(SqlDb):
         """
         # obtain the next document
         if document := self.try_catch(
-            lambda: self.session.query(DocumentDao).where(
+            lambda: self.session.scalars(select(DocumentDao).where(
                 DocumentDao.document_id == RunHasDocumentDao.document_id,
                 RunHasDocumentDao.run_id == run_id
-            ).filter(DocumentDao.document_id > document_id).order_by(DocumentDao.document_id.asc()).first(),
+            ).filter(DocumentDao.document_id > document_id).order_by(DocumentDao.document_id.asc())).first(),
             f'Obtaining the next document for run id: {run_id} and document id: {document_id} failed', False
         ):
             return document
 
         # no result => return the first document
         if document := self.try_catch(
-            lambda: self.session.query(DocumentDao).where(
+            lambda: self.session.scalars(select(DocumentDao).where(
                 DocumentDao.document_id == RunHasDocumentDao.document_id,
                 RunHasDocumentDao.run_id == run_id
-            ).order_by(DocumentDao.document_id.asc()).first(),
+            ).order_by(DocumentDao.document_id.asc())).first(),
             f'Obtaining the first document for run id: {run_id} failed', False
         ):
             return document
@@ -306,20 +306,20 @@ class OrbisDb(SqlDb):
         """
         # obtain the previous document
         if document := self.try_catch(
-            lambda: self.session.query(DocumentDao).where(
+            lambda: self.session.scalars(select(DocumentDao).where(
                 DocumentDao.document_id == RunHasDocumentDao.document_id,
                 RunHasDocumentDao.run_id == run_id
-            ).filter(DocumentDao.document_id < document_id).order_by(DocumentDao.document_id.desc()).first(),
+            ).filter(DocumentDao.document_id < document_id).order_by(DocumentDao.document_id.desc())).first(),
             f'Obtaining the previous document for run id: {run_id} and document id: {document_id} failed', False
         ):
             return document
 
         # no result => return the last document
         if document := self.try_catch(
-            lambda: self.session.query(DocumentDao).where(
+            lambda: self.session.scalars(select(DocumentDao).where(
                 DocumentDao.document_id == RunHasDocumentDao.document_id,
                 RunHasDocumentDao.run_id == run_id
-            ).order_by(DocumentDao.document_id.desc()).first(),
+            ).order_by(DocumentDao.document_id.desc())).first(),
             f'Obtaining the last document for run id: {run_id} failed', False
         ):
             return document
@@ -403,7 +403,8 @@ class OrbisDb(SqlDb):
         Returns: A single annotation object or None if zero or multiple annotations exists in the database
         """
         return self.try_catch(
-            lambda: self.session.get(AnnotationDao, annotation_id),
+            lambda: self.session.scalars(select(AnnotationDao).where(
+                AnnotationDao.annotation_id == annotation_id)).first(),
             # OL: lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
             f'Annotation request with annotation id: {annotation_id} failed', None)
 
@@ -425,7 +426,8 @@ class OrbisDb(SqlDb):
         Returns: A single annotation type object or None if zero or multiple annotation types exists in the database
         """
         return self.try_catch(
-            lambda: self.session.query(AnnotationTypeDao).get(annotation_type_id),
+            lambda: self.session.scalars(select(AnnotationTypeDao).where(
+                AnnotationTypeDao.type_id == annotation_type_id)).first(),
             f'Annotation type request with annotation type id: {annotation_type_id} failed', None)
 
     def get_corpus_annotation_types(self, corpus_id: int) -> Dict[AnnotationTypeDao, int]:
