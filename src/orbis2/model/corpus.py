@@ -47,13 +47,11 @@ class Corpus(BaseModel):
         return [cls.from_corpus_dao(corpus_dao) for corpus_dao in corpus_daos]
 
     def to_dao(self) -> CorpusDao:
-        c =  CorpusDao(corpus_id=self._id, name=self.name,
-                         supported_annotation_types=[
-                             CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an, color_id=color)
-                             for an, color in self.supported_annotation_types.items()]
-                         )
-        print(c, [c.annotation_type for c in c.supported_annotation_types])
-        print(self.supported_annotation_types)
+        c = CorpusDao(corpus_id=self._id, name=self.name,
+                      supported_annotation_types=[
+                             CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an.to_dao(),
+                                                             color_id=color)
+                             for an, color in self.supported_annotation_types.items()])
         return c
 
     def copy(self) -> 'Corpus':

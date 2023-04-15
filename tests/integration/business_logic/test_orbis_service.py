@@ -392,29 +392,6 @@ def test_add_annotation_to_document_addTwoDifferentAnnotationWithSameMetadata_me
 
 
 # noinspection PyPep8Naming
-def test_add_annotation_types_addAlreadyExistingAnnotation_annotationTypeIsNotInsertedAndNoErrorOccurs(
-        clear_test_data_orbis):
-    annotation_type = AnnotationType('annotation-type1')
-    assert OrbisService().add_annotation_type(annotation_type)
-    assert OrbisService().add_annotation_type(annotation_type)
-    annotation_types = OrbisService().get_corpus_annotation_types()
-
-    assert len(annotation_types) == 1
-    assert annotation_types[0].name == 'annotation-type1'
-
-
-# noinspection PyPep8Naming
-def test_add_annotation_types_addSameAnnotationTypeTwiceInOneCall_annotationTypeIsInsertedOnlyOnce(
-        clear_test_data_orbis):
-    annotation_type = AnnotationType('annotation-type1')
-    assert OrbisService().add_annotation_types([annotation_type, annotation_type])
-    annotation_types = OrbisService().get_corpus_annotation_types()
-
-    assert len(annotation_types) == 1
-    assert annotation_types[0].name == 'annotation-type1'
-
-
-# noinspection PyPep8Naming
 def test_update_run_newDocumentHasBeenAdded_correctlyUpdatedOnDb(clear_test_data_orbis):
     run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
                                                  AnnotationType('annotation-tpye2')]),

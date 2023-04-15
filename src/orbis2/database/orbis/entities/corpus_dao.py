@@ -12,7 +12,8 @@ class CorpusDao(OrbisBase):
 
     corpus_id: Mapped[int] = mapped_column(Sequence('corpus_id_seq'), primary_key=True)
     name: Mapped[str] = mapped_column(VARCHAR(40), nullable=False)
-    supported_annotation_types: Mapped[List['CorpusSupportsAnnotationTypeDao']] = relationship()
+    supported_annotation_types: Mapped[List['CorpusSupportsAnnotationTypeDao']] = relationship(
+        cascade="all, delete-orphan")
 
 
 class CorpusSupportsAnnotationTypeDao(OrbisBase):

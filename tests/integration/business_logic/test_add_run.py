@@ -73,7 +73,8 @@ def test_add_runs_addMultipleRunsContainingAnnotationsWithSameTypeInOneCall_anno
              [Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
                          Annotator('Andreas', [Role('admin')]))]}
             )])
-    annotation_types = OrbisService().get_corpus_annotation_types()
+    corpus = OrbisService().get_corpora()[0]
+    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpus._id))
 
     assert len(annotation_types) == 1
     assert annotation_types[0].name == 'annotation-type1'
@@ -124,7 +125,7 @@ def test_add_run_addSameRunTwice_allDataAreInsertedOnlyOnce(
     corpora = OrbisService().get_corpora()
     assert len(corpora) == 1
 
-    annotation_types = OrbisService().get_corpus_annotation_types()
+    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0]._id)
     assert len(annotation_types) == 1
 
     metadata = OrbisService().get_metadata()
@@ -151,7 +152,7 @@ def test_add_run_addSameRunFromDb_allDataAreInsertedOnlyOnce(insert_test_data_or
     corpora = OrbisService().get_corpora()
     assert len(corpora) == 1
 
-    annotation_types = OrbisService().get_corpus_annotation_types()
+    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0]._id)
     assert len(annotation_types) == 1
 
     metadata = OrbisService().get_metadata()
@@ -174,7 +175,8 @@ def test_add_run_runContainsAnnotationWithAlreadyExistingType_annotationTypeIsNo
                                            [Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
                                                        Annotator('Andreas', [Role('admin')]))]}
                                       ))
-    annotation_types = OrbisService().get_corpus_annotation_types()
+    corpora = OrbisService().get_corpora()
+    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpora[0]._id))
 
     assert len(annotation_types) == 1
     assert annotation_types[0].name == 'annotation-type1'
