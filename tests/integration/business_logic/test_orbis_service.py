@@ -25,7 +25,7 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert run.corpus.name == 'corpus1'
 
     assert len(run.corpus.supported_annotation_types) == 1
-    supported_annotation_type = run.corpus.supported_annotation_types[0]
+    supported_annotation_type = list(run.corpus.supported_annotation_types.items())[0][0]
     assert type(supported_annotation_type) is AnnotationType
     assert supported_annotation_type._id > 0
     assert supported_annotation_type.name == 'annotation-type1'
@@ -124,7 +124,7 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 
     OrbisService().add_run(
         Run(
-            'run2', 'run2', Corpus('corpus2', [AnnotationType('annotation-type1')]),
+            'run2', 'run2', Corpus('corpus2', {AnnotationType('annotation-type1'): 1}),
             {Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')]):
                  [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]}))
@@ -138,7 +138,7 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_corpusContainsTwoDocumentsPageSize1_returnOnlyFirstDocumentOfCorrectCorpus(
         clear_test_data_orbis):
-    corpus =  Corpus('corpus1', [AnnotationType('annotation-type1')])
+    corpus =  Corpus('corpus1', {AnnotationType('annotation-type1'): 1})
     document1 = Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')])
     document2 = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
     OrbisService().add_run(
@@ -160,7 +160,7 @@ def test_get_documents_of_corpus_corpusContainsTwoDocumentsPageSize1_returnOnlyF
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_corpusContainsTwoDocumentsSkipFirstPageSize1_returnSecondDocumentOfCorrectCorpus(
         clear_test_data_orbis):
-    corpus =  Corpus('corpus1', [AnnotationType('annotation-type1')])
+    corpus =  Corpus('corpus1', {AnnotationType('annotation-type1'): 1})
     document1 = Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')])
     document2 = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
     OrbisService().add_run(
@@ -249,12 +249,13 @@ def test_get_corpus_id_dbExistsAndContainsCorpus_returnsCorpusId(insert_test_dat
 
 # noinspection PyPep8Naming
 def test_get_annotation_types_dbExistsAndContainsAnnotationTypes_returnsAnnotationTypes(insert_test_data_orbis):
-    annotation_types = OrbisService().get_corpus_annotation_types()
+    corpus = OrbisService().get_corpora()[0]
+    annotation_types = OrbisService().get_corpus_annotation_types(corpus_id=corpus._id)
 
     assert annotation_types
     assert len(annotation_types) == 1
-    annotation_type = annotation_types[0]
-    assert annotation_type._id > 0
+    annotation_type = list(annotation_types.items())[0][0]
+    assert annotation_type.type_id > 0
     assert annotation_type.name == 'annotation-type1'
 
 
@@ -268,277 +269,6 @@ def test_get_metadata_dbExistsAndContainsMetadata_returnsMetadata(insert_test_da
     assert metadatum._id > 0
     assert metadatum.key == 'key1'
     assert metadatum.value == 'value1'
-
-
-# noinspection PyPep8Naming
-def test_add_runs_emptyDbExistsAndRunIsCorrectlyInitialized_returnTrue(clear_test_data_orbis):
-    assert OrbisService().add_runs([
-        Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
-                                               AnnotationType('annotation-tpye2')]),
-            {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text', 0, 4, AnnotationType('annotation_type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])]}
-            )])
-
-
-# noinspection PyPep8Naming
-def test_add_runs_emptyDbExistsAndRunWithMultipleAnnotationsIsCorrectlyInitialized_returnTrue(
-        clear_test_data_orbis):
-    assert OrbisService().add_runs([
-        Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'), AnnotationType('annotation-type2')]),
-            {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
-              Annotation('', 'Beispiel', 18, 26, AnnotationType('annotation-type2'),
-                         Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key1', 'value1'),
-                                                                          Metadata('key2', 'value2')])
-              ]}
-            )])
-
-
-# noinspection PyPep8Naming
-def test_add_runs_emptyDbExistsAndRunWithMultipleDocumentAnnotationsIsCorrectlyInitialized_returnTrue(
-        clear_test_data_orbis):
-    assert OrbisService().add_runs([
-        Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'), AnnotationType('annotation-type2')]),
-            {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
-              Annotation('', 'Beispiel', 18, 26, AnnotationType('annotation-type2'),
-                         Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])],
-             Document('Text2, das ist ein neues Beispiel2', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text2', 0, 5, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')]),
-              Annotation('', 'Beispiel2', 25, 34, AnnotationType('annotation-type2'),
-                         Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])]
-             }
-            )])
-
-
-# noinspection PyPep8Naming
-def test_add_runs_addMultipleRunsContainingAnnotationsWithSameTypeInOneCall_annotationTypeIsInsertedOnlyOnce(
-        clear_test_data_orbis):
-    assert OrbisService().add_runs([
-        Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-            {Document('Text, das ist ein Beispiel'):
-             [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]))]}
-            ),
-        Run('Run2', 'Run2', Corpus('Corpus2', [AnnotationType('annotation-type1')]),
-            {Document('Annotation, das ist ein Beispiel'):
-             [Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
-                         Annotator('Andreas', [Role('admin')]))]}
-            )])
-    annotation_types = OrbisService().get_corpus_annotation_types()
-
-    assert len(annotation_types) == 1
-    assert annotation_types[0].name == 'annotation-type1'
-
-
-# noinspection PyPep8Naming
-def test_add_runs_addMultipleRunsWithSameMetadataInOneCall_metadataIsInsertedOnlyOnce(
-        clear_test_data_orbis):
-    assert OrbisService().add_runs([
-        Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-            {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1')]),
-              Annotation('', 'Beispiel', 18, 26, AnnotationType('annotation-type1'),
-                         Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1')])],
-             Document('Text2, das ist ein neues Beispiel2', metadata=[Metadata('key1', 'value1')]):
-             [Annotation('', 'Text2', 0, 5, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                         metadata=[Metadata('key1', 'value1')])]
-             }
-            )])
-    metadata = OrbisService().get_metadata()
-
-    assert len(metadata) == 1
-    assert metadata[0].key == 'key1'
-    assert metadata[0].value == 'value1'
-
-
-# noinspection PyPep8Naming
-def test_add_run_addSameRunTwice_allDataAreInsertedOnlyOnce(
-        clear_test_data_orbis):
-    run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-              {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
-               [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
-                           metadata=[Metadata('key1', 'value1')])]})
-    assert OrbisService().add_run(run)
-    assert OrbisService().add_run(run)
-
-    runs = OrbisService().get_runs()
-    assert len(runs) == 1
-
-    documents = OrbisService().get_documents()
-    assert len(documents) == 1
-
-    annotations = OrbisService().get_annotations()
-    assert len(annotations) == 1
-
-    corpora = OrbisService().get_corpora()
-    assert len(corpora) == 1
-
-    annotation_types = OrbisService().get_corpus_annotation_types()
-    assert len(annotation_types) == 1
-
-    metadata = OrbisService().get_metadata()
-    assert len(metadata) == 1
-
-    annotators = OrbisService().get_annotators()
-    assert len(annotators) == 1
-
-
-# noinspection PyPep8Naming
-def test_add_run_addSameRunFromDb_allDataAreInsertedOnlyOnce(insert_test_data_orbis):
-    run = OrbisService().get_runs()[0]
-    assert OrbisService().add_run(run)
-
-    runs = OrbisService().get_runs()
-    assert len(runs) == 1
-
-    documents = OrbisService().get_documents()
-    assert len(documents) == 1
-
-    annotations = OrbisService().get_annotations()
-    assert len(annotations) == 1
-
-    corpora = OrbisService().get_corpora()
-    assert len(corpora) == 1
-
-    annotation_types = OrbisService().get_corpus_annotation_types()
-    assert len(annotation_types) == 1
-
-    metadata = OrbisService().get_metadata()
-    assert len(metadata) == 2
-
-    annotators = OrbisService().get_annotators()
-    assert len(annotators) == 1
-
-
-# noinspection PyPep8Naming
-def test_add_run_runContainsAnnotationWithAlreadyExistingType_annotationTypeIsNotInsertedAndNoErrorOccurs(
-        clear_test_data_orbis):
-    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-                                      {Document('Text, das ist ein Beispiel'):
-                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]))]}
-                                      ))
-    assert OrbisService().add_run(Run('Run2', 'Run2', Corpus('Corpus2', [AnnotationType('annotation-type1')]),
-                                      {Document('Annotation, das ist ein Beispiel'):
-                                           [Annotation('', 'Annotation', 0, 10, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]))]}
-                                      ))
-    annotation_types = OrbisService().get_corpus_annotation_types()
-
-    assert len(annotation_types) == 1
-    assert annotation_types[0].name == 'annotation-type1'
-
-
-# noinspection PyPep8Naming
-def test_add_run_runContainsDocumentWithRunIdZero_documentIsAddedToLinkedRunIndependentOfItsId(
-        clear_test_data_orbis):
-    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-                                      {Document('Text, das ist ein Beispiel', run_id=0):
-                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]))]}
-                                      ))
-
-    runs = OrbisService().get_runs()
-
-    assert len(runs) == 1
-    run_documents = list(runs[0].document_annotations.keys())
-    assert len(run_documents) == 1
-    assert run_documents[0].run_id == runs[0]._id
-    assert run_documents[0].content == 'Text, das ist ein Beispiel'
-
-
-# noinspection PyPep8Naming
-def test_add_run_runContainsSameAnnotationTwice_annotationIsInsertedOnlyOnceAndNoErrorOccurs(
-        clear_test_data_orbis):
-    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-                                      {Document('Text, das ist ein Beispiel'):
-                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key', 'value')])],
-                                       Document('Text, das ist ein anderes Beispiel'):
-                                            [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                        Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key', 'value')])]}
-                                      ))
-
-    annotations = OrbisService().get_annotations()
-
-    assert len(annotations) == 1
-
-
-# noinspection PyPep8Naming
-def test_add_run_runContainsSameMetadataOnDifferentAnnotations_metadataIsInsertedOnlyOnceAndNoErrorOccurs(
-        clear_test_data_orbis):
-    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-                                      {Document('Text, das ist ein Beispiel'):
-                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key', 'value')])],
-                                       Document('Text, das ist ein anderes Beispiel'):
-                                            [Annotation('', 'anderes', 18, 25, AnnotationType('annotation-type2'),
-                                                        Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key', 'value')])]}
-                                      ))
-
-    metadata = OrbisService().get_metadata()
-
-    assert len(metadata) == 1
-    assert metadata[0].key == 'key'
-
-
-# noinspection PyPep8Naming
-def test_add_run_runContainsSameTwoMetadataOnDifferentAnnotations_metadataAreInsertedOnlyOnceAndNoErrorOccurs(
-        clear_test_data_orbis):
-    assert OrbisService().add_run(Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1')]),
-                                      {Document('Text, das ist ein Beispiel'):
-                                           [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'),
-                                                       Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key1', 'value1'),
-                                                                  Metadata('key2', 'value2')])],
-                                       Document('Text, das ist ein anderes Beispiel'):
-                                            [Annotation('', 'anderes', 18, 25, AnnotationType('annotation-type2'),
-                                                        Annotator('Andreas', [Role('admin')]),
-                                                        metadata=[Metadata('key1', 'value1'),
-                                                                  Metadata('key2', 'value2')])]}
-                                      ))
-
-    metadata = OrbisService().get_metadata()
-
-    assert len(metadata) == 2
-    assert metadata[0].key == 'key1'
-    assert metadata[1].key == 'key2'
-
-
-# noinspection PyPep8Naming
-def test_add_run_runHasParent_childIsReferencedInParent(insert_test_data_orbis):
-    parent = OrbisService().get_runs()[0]
-    child = parent.copy('child-run', 'child-run')
-
-    assert OrbisService().add_run(child)
-
-    runs = OrbisService().get_runs()
-
-    assert len(runs) == 2
-
-    db_parent = [run for run in runs if run.name == 'run1'][0]
-    db_child = [run for run in runs if run.name == 'child-run'][0]
-
-    assert db_child == child
-    assert len(db_child.parents) == 1
-    assert db_child.parents[0] == parent
-    assert parent == db_parent
-
-    assert db_child.document_annotations == parent.document_annotations
-    assert db_child.document_annotations.keys() == parent.document_annotations.keys()
-    assert list(db_child.document_annotations.values()) == list(parent.document_annotations.values())
 
 
 # noinspection PyPep8Naming

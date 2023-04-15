@@ -109,8 +109,8 @@ class OrbisService:
     def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
         return self.orbis_db.get_corpus_id(corpus_name)
 
-    def get_corpus_annotation_types(self) -> Dict[AnnotationType, int]:
-        return self.orbis_db.get_corpus_annotation_types()
+    def get_corpus_annotation_types(self, corpus_id: int) -> Dict[AnnotationType, int]:
+        return self.orbis_db.get_corpus_annotation_types(corpus_id)
 
     def get_color_palettes(self) -> List[ColorPalette]:
         return self.orbis_db.get_color_palettes()

@@ -3,8 +3,6 @@ from typing import Dict, List
 
 from xxhash import xxh32_intdigest
 
-from orbis2.database.orbis.entities.corpus_supports_annotation_type_relation import \
-    corpus_supports_annotation_type_table
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
@@ -19,13 +17,11 @@ class Run(BaseModel):
     description: str
     corpus: Corpus
     document_annotations: Dict[Document, List[Annotation]]
-    supported_annotation_types: Dict[AnnotationType, int]
     # parents: ['Run']
     _id: int
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None,
-                 supported_annotation_types: Dict[AnnotationType, int] = None, parents: ['Run'] = None, _id: int = 0):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
         """
         CONSTRUCTOR
 
@@ -34,7 +30,6 @@ class Run(BaseModel):
         self.description = description
         self.corpus = corpus
         self.document_annotations = document_annotations if document_annotations else {}
-        self.supported_annotation_types = supported_annotation_types if supported_annotation_types else {}
         self.parents = parents if parents else []
 
     def __hash__(self):
@@ -59,12 +54,10 @@ class Run(BaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
-            supported_annotation_types = corpus_supports_annotation_type_table.get
         run = cls(run_dao.name,
                   run_dao.description,
                   Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
                   document_annotations,
-                  supported_annotation_types,
                   Run.from_run_daos(run_dao.parents))
         return run
 

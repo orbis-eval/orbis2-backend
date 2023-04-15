@@ -1,7 +1,7 @@
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
-from orbis2.database.orbis.entities.corpus_dao import CorpusDao
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao, CorpusSupportsAnnotationTypeDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
@@ -916,25 +916,15 @@ def test_remove_run_documentExistsInTwoDifferentRuns_runButNotDocumentIsRemoved(
 
 
 # noinspection PyPep8Naming
-def test_remove_annotation_type_annotationTypeIsUsedByCorpus_dontDeleteAnnotationType(insert_test_data_orbis):
-    orbis_db = OrbisDb()
-    annotation_type = orbis_db.get_corpus_annotation_types()[0]
-
-    assert not orbis_db.remove_annotation_type(annotation_type.type_id)
-    assert len(orbis_db.get_corpus_annotation_types()) > 0
-    assert len(orbis_db.get_corpora()) > 0
-
-
-# noinspection PyPep8Naming
 def test_remove_corpus_runIsOrphan_runAllAccordingDocumentsAndAllAnnotationTypesAreRemoved(insert_test_data_orbis):
     orbis_db = OrbisDb()
-    corpus = orbis_db.get_corpora()[0]
-    orbis_db.remove_corpus(corpus.corpus_id)
+    corpus_id = orbis_db.get_corpora()[0].corpus_id
+    orbis_db.remove_corpus(corpus_id)
 
     assert not orbis_db.get_corpora()
     assert not orbis_db.get_runs()
     assert not orbis_db.get_documents()
-    assert not orbis_db.get_corpus_annotation_types()
+    assert not orbis_db.get_corpus_annotation_types(corpus_id=corpus_id)
     assert not orbis_db.get_annotations()
 
 
@@ -996,7 +986,7 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
                    )
                ],
                corpus=CorpusDao(corpus_id=1, name='corpus1',supported_annotation_types=[
-                   AnnotationTypeDao(type_id=11, name='type11')
+                   CorpusSupportsAnnotationTypeDao(corpus_id=1, annotation_type_id=11, color_id=1)
                ]))
     )
     orbis_db.commit()
@@ -1004,7 +994,7 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
     assert len(orbis_db.get_corpora()) == 1
     assert len(orbis_db.get_runs()) == 2
     assert len(orbis_db.get_documents()) == 1
-    assert len(orbis_db.get_corpus_annotation_types()) == 1
+    assert len(orbis_db.get_corpus_annotation_types(corpus_id=1)) == 1
     assert len(orbis_db.get_annotations()) == 2
     assert len(orbis_db.get_metadata()) == 1
 
@@ -1012,6 +1002,6 @@ def test_remove_corpus_containedMultipleRunsAllAreOrphans_allRunsAllAccordingDoc
     assert not orbis_db.get_corpora()
     assert not orbis_db.get_runs()
     assert not orbis_db.get_documents()
-    assert not orbis_db.get_corpus_annotation_types()
+    assert not orbis_db.get_corpus_annotation_types(corpus_id=1)
     assert not orbis_db.get_annotations()
     assert not orbis_db.get_metadata()

@@ -7,14 +7,12 @@ from sqlalchemy.orm import subqueryload
 
 from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
 from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
-from orbis2.database.orbis.entities.corpus_supports_annotation_type_relation import \
-    corpus_supports_annotation_type_table
 from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
-from orbis2.database.orbis.entities.corpus_dao import CorpusDao
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao, CorpusSupportsAnnotationTypeDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
@@ -429,14 +427,15 @@ class OrbisDb(SqlDb):
             lambda: self.session.query(AnnotationTypeDao).get(annotation_type_id),
             f'Annotation type request with annotation type id: {annotation_type_id} failed', None)
 
-    def get_corpus_annotation_types(self) -> Dict[AnnotationTypeDao, int]:
+    def get_corpus_annotation_types(self, corpus_id: int) -> Dict[AnnotationTypeDao, int]:
         """
         Returns: A list of all supported AnnotationTypes with their corresponding color_ids.
         """
         try:
-            results = self.session.scalars(select(AnnotationTypeDao)).all()
+            results = self.session.scalars(select(CorpusSupportsAnnotationTypeDao).where(
+                CorpusSupportsAnnotationTypeDao.corpus_id == corpus_id)).all()
             if len(results) > 0:
-                return results
+                return {csat.annotation_type: csat.color_id for csat in results}
             logging.debug('There are no annotation type entries in orbis database.')
             return {}
         except SQLAlchemyError as e:
@@ -593,7 +592,7 @@ class OrbisDb(SqlDb):
 
         Returns: True if annotation type is an orphan, false otherwise
         """
-        return self.session.query(corpus_supports_annotation_type_table).filter_by(
+        return self.session.query(CorpusSupportsAnnotationTypeDao).filter_by(
             annotation_type_id=annotation_type_id).count() == 0
 
     def remove_metadata(self, metadata_id: int) -> bool:
@@ -828,11 +827,15 @@ class OrbisDb(SqlDb):
         Returns: True if everything worked correctly, false otherwise
         """
         if corpus := self.get_corpus(corpus_id):
-            supported_annotation_types = corpus.supported_annotation_types
+            supported_annotation_types = [a.annotation_type for a in corpus.supported_annotation_types]
             # first, remove all runs with custom remove_run method,
             # to ensure that all orphan entities are removed as well
             if not (runs := self.get_runs_by_corpus_id(corpus_id)):
                 runs = []
+            # delete the list of supported annotation types for that corpus
+            for csat in corpus.supported_annotation_types:
+                self.session.delete(csat)
+            self.commit()
             if (all([self.remove_run(run.run_id) for run in runs if run])
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     and self.try_catch(lambda: not self.session.delete(corpus),
