@@ -40,7 +40,6 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no run exists in the database
         """
         try:
-            # results = self.session.query(RunDao).options(subqueryload('*')).all()
             results = self.session.scalars(select(RunDao).options(subqueryload('*'))).all()
             if len(results) > 0:
                 return results
