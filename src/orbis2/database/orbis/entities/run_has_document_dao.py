@@ -1,5 +1,7 @@
+from typing import List
+
 from sqlalchemy import Boolean, Column, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.run_dao import RunDao
@@ -9,9 +11,9 @@ from orbis2.database.orbis.orbis_base import OrbisBase
 class RunHasDocumentDao(OrbisBase):
     __tablename__ = 'run_has_document'
 
-    run_id = Column(ForeignKey(RunDao.run_id), primary_key=True)
-    document_id = Column(ForeignKey(DocumentDao.document_id), primary_key=True)
-    document = relationship(DocumentDao)
-    document_has_annotations = relationship('DocumentHasAnnotationDao',
-                                            cascade='save-update, merge, delete, delete-orphan')
+    run_id: Mapped[int] = mapped_column(ForeignKey(RunDao.run_id), primary_key=True)
+    document_id: Mapped[int] = mapped_column(ForeignKey(DocumentDao.document_id), primary_key=True)
+    document: Mapped[DocumentDao] = relationship()
+    document_has_annotations: Mapped[List['DocumentHasAnnotationDao']] = relationship(
+        cascade='save-update, merge, delete, delete-orphan')
     done = Column(Boolean)

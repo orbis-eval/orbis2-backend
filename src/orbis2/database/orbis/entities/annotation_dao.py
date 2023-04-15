@@ -19,9 +19,9 @@ class AnnotationDao(OrbisBase):
     surface_forms: Mapped[List[str]] = mapped_column(ARRAY(Text))
     start_indices: Mapped[List[int]] = mapped_column(ARRAY(Integer))
     end_indices: Mapped[List[int]] = mapped_column(ARRAY(Integer))
-    annotation_type_id: Mapped[AnnotationTypeDao] = mapped_column(ForeignKey(AnnotationTypeDao.type_id))
+    annotation_type_id: Mapped[int] = mapped_column(ForeignKey(AnnotationTypeDao.type_id))
     annotation_type: Mapped[AnnotationTypeDao] = relationship()
-    annotator_id: Mapped[AnnotatorDao] = Column(ForeignKey(AnnotatorDao.annotator_id))
+    annotator_id: Mapped[int] = Column(ForeignKey(AnnotatorDao.annotator_id))
     annotator: Mapped[AnnotatorDao] = relationship()
     meta_data: Mapped[MetadataDao] = relationship(secondary=annotation_has_metadata_table)
     __table_args__ = (CheckConstraint(func.array_length(surface_forms, 1) == func.array_length(start_indices, 1)),
