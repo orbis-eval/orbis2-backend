@@ -40,7 +40,8 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no run exists in the database
         """
         try:
-            results = self.session.query(RunDao).options(subqueryload('*')).all()
+            # results = self.session.query(RunDao).options(subqueryload('*')).all()
+            results = self.session.scalars(select(RunDao).options(subqueryload('*'))).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no run entries in orbis database.')
@@ -57,8 +58,8 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if results := self.try_catch(
-            lambda: self.session.query(RunDao).options(subqueryload('*')).where(
-                RunDao.name == run_name).all(),
+            lambda: self.session.scalars(select(RunDao).options(subqueryload('*')).where(
+                RunDao.name == run_name)).all(),
             f'Run request with run name: {run_name} failed', False
         ):
             if len(results) == 1:
@@ -90,7 +91,7 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no according run exists in the database
         """
         try:
-            results = self.session.query(RunDao).where(RunDao.corpus_id == corpus_id).options(subqueryload('*')).all()
+            results = self.session.scalars(select(RunDao).options(subqueryload('*')).where(RunDao.corpus_id == corpus_id)).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -121,7 +122,8 @@ class OrbisDb(SqlDb):
         Returns: A single document object or None if zero or multiple documents exists in the database
         """
         if document := self.try_catch(
-            lambda: self.session.query(DocumentDao).options(subqueryload('*')).get(document_id),
+            lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
+                DocumentDao.document_id == document_id)).first(),
             f'Document request with document id: {document_id} failed', False
         ):
             return document
@@ -472,7 +474,7 @@ class OrbisDb(SqlDb):
         """
         return self.try_catch(
             # lambda: self.session.query(MetadataDao, metadata_id),
-            lambda: self.session.query(MetadataDao).get(metadata_id),
+            lambda: self.session.scalars(select(MetadataDao).where(MetadataDao.metadata_id == metadata_id)).first(),
             f'No metadata with id: {metadata_id} found in orbis database.', None)
 
     def get_annotators(self) -> Union[List[AnnotatorDao], None]:
