@@ -341,10 +341,10 @@ class OrbisDb(SqlDb):
         Returns: A list of document annotation objects or None if no according annotation exists in the database
         """
         results = self.try_catch(
-            lambda: self.session.query(DocumentHasAnnotationDao).where(
+            lambda: self.session.scalars(select(DocumentHasAnnotationDao).options(subqueryload('*')).where(
                 DocumentHasAnnotationDao.document_id == document_id,
                 DocumentHasAnnotationDao.run_id == run_id
-            ).options(subqueryload('*')).all(),
+            )).all(),
             'Get annotations of document by run id failed',
             [])
         if len(results) > 0:
@@ -367,11 +367,11 @@ class OrbisDb(SqlDb):
         Returns: A single document annotation object or None if no or multiple annotation exists in the database
         """
         if annotation := self.try_catch(
-                lambda: self.session.query(DocumentHasAnnotationDao).where(
+                lambda: self.session.scalars(select(DocumentHasAnnotationDao).options(subqueryload('*')).where(
                     DocumentHasAnnotationDao.annotation_id == annotation_id,
                     DocumentHasAnnotationDao.document_id == document_id,
                     DocumentHasAnnotationDao.run_id == run_id
-                ).options(subqueryload('*')).first(),
+                )).first(),
                 'Get annotation of document by run id failed', None):
             return annotation
         logging.debug(f'There is no annotation entry (id {annotation_id}) for run({run_id}) - document({document_id}) '
@@ -385,7 +385,7 @@ class OrbisDb(SqlDb):
         Returns: A list of annotation objects or None if no annotation exists in the database
         """
         try:
-            results = self.session.query(AnnotationDao).options(subqueryload('*')).all()
+            results = self.session.scalars(select(AnnotationDao).options(subqueryload('*'))).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no annotation entries in orbis database.')
@@ -407,7 +407,6 @@ class OrbisDb(SqlDb):
         return self.try_catch(
             lambda: self.session.scalars(select(AnnotationDao).where(
                 AnnotationDao.annotation_id == annotation_id)).first(),
-            # OL: lambda: self.session.query(AnnotationDao).options(subqueryload('*')).get(annotation_id),
             f'Annotation request with annotation id: {annotation_id} failed', None)
 
     def get_color_palettes(self) -> List[ColorPalette]:
@@ -454,7 +453,7 @@ class OrbisDb(SqlDb):
         Returns: A list of metadata objects or None if no metadata exists in the database
         """
         try:
-            results = self.session.query(MetadataDao).all()
+            results = self.session.scalars(select(MetadataDao)).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no metadata entries in orbis database.')
@@ -473,7 +472,6 @@ class OrbisDb(SqlDb):
         Returns: A single object of metadata or None if no or multiple metadata exists in the database
         """
         return self.try_catch(
-            # lambda: self.session.query(MetadataDao, metadata_id),
             lambda: self.session.scalars(select(MetadataDao).where(MetadataDao.metadata_id == metadata_id)).first(),
             f'No metadata with id: {metadata_id} found in orbis database.', None)
 
@@ -484,7 +482,7 @@ class OrbisDb(SqlDb):
         Returns: A list of annotator objects or None if no annotation exists in the database
         """
         try:
-            results = self.session.query(AnnotatorDao).options(subqueryload('*')).all()
+            results = self.session.scalars(select(AnnotatorDao).options(subqueryload('*'))).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no annotator entries in orbis database.')
