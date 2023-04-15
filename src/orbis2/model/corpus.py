@@ -3,7 +3,8 @@ from typing import Dict, List, Union
 
 from xxhash import xxh32_intdigest
 
-from orbis2.database.orbis.entities.corpus_dao import CorpusDao, CorpusSupportsAnnotationTypeDao
+from orbis2.database.orbis.entities.corpus_dao import CorpusDao
+from orbis2.database.orbis.entities.corpus_supports_annotation_type_dao import CorpusSupportsAnnotationTypeDao
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.base_model import BaseModel
 
