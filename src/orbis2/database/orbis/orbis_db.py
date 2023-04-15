@@ -57,9 +57,9 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if results := self.try_catch(
-            lambda: self.session.scalars(select(RunDao).options(subqueryload('*')).where(
-                RunDao.name == run_name)).all(),
-            f'Run request with run name: {run_name} failed', False
+                lambda: self.session.scalars(select(RunDao).options(subqueryload('*')).where(
+                    RunDao.name == run_name)).all(),
+                f'Run request with run name: {run_name} failed', False
         ):
             if len(results) == 1:
                 return results[0]
@@ -73,8 +73,8 @@ class OrbisDb(SqlDb):
         Returns: A single run object or None if zero or multiple runs exists in the database
         """
         if run := self.try_catch(
-            lambda: self.session.get(RunDao, run_id),
-            f'Run request with run id: {run_id} failed', False
+                lambda: self.session.get(RunDao, run_id),
+                f'Run request with run id: {run_id} failed', False
         ):
             return run
         logging.debug(f'Run with run id {run_id} has not been found in orbis database.')
@@ -90,7 +90,8 @@ class OrbisDb(SqlDb):
         Returns: A list of run objects or None if no according run exists in the database
         """
         try:
-            results = self.session.scalars(select(RunDao).options(subqueryload('*')).where(RunDao.corpus_id == corpus_id)).all()
+            results = self.session.scalars(select(RunDao).options(subqueryload('*')).where(
+                RunDao.corpus_id == corpus_id)).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -107,8 +108,8 @@ class OrbisDb(SqlDb):
         Returns: A single corpus object or None if zero or multiple corpora exists in the database
         """
         if corpus := self.try_catch(
-            lambda: self.session.scalars(select(CorpusDao).where(CorpusDao.corpus_id == corpus_id)).first(),
-            f'Corpus request with corpus id: {corpus_id} failed', False
+                lambda: self.session.scalars(select(CorpusDao).where(CorpusDao.corpus_id == corpus_id)).first(),
+                f'Corpus request with corpus id: {corpus_id} failed', False
         ):
             return corpus
         logging.debug(f'Corpus with corpus id {corpus_id} has not been found in orbis database.')
@@ -121,9 +122,9 @@ class OrbisDb(SqlDb):
         Returns: A single document object or None if zero or multiple documents exists in the database
         """
         if document := self.try_catch(
-            lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
-                DocumentDao.document_id == document_id)).first(),
-            f'Document request with document id: {document_id} failed', False
+                lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
+                    DocumentDao.document_id == document_id)).first(),
+                f'Document request with document id: {document_id} failed', False
         ):
             return document
         logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
@@ -172,7 +173,7 @@ class OrbisDb(SqlDb):
 
         Returns: A list of corpus objects or None if no according corpus exists in the database
         """
-        results = self.try_catch(lambda: self.session.query(CorpusDao).options(subqueryload('*')).all(),
+        results = self.try_catch(lambda: self.session.scalars(select(CorpusDao).options(subqueryload('*'))).all(),
                                  'All corpora request failed',
                                  [])
         if len(results) > 0:
@@ -207,7 +208,7 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists in the database
         """
         try:
-            results = self.session.query(DocumentDao).options(subqueryload('*')).all()
+            results = self.session.scalars(select(DocumentDao).options(subqueryload('*'))).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no document entries in orbis database.')
@@ -230,11 +231,11 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao).filter(
+                lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == RunDao.run_id,
                     RunDao.corpus_id == corpus_id
-                ).limit(page_size).offset(skip).options(subqueryload('*')).all(),
+                ).limit(page_size).offset(skip)).all(),
                 f'Documents for corpus request with corpus id: {corpus_id} failed', False
         ):
             return documents
@@ -251,10 +252,10 @@ class OrbisDb(SqlDb):
         Returns: A list of document objects or None if no document exists for this corpus in the database
         """
         if documents := self.try_catch(
-                lambda: self.session.query(DocumentDao).where(
+                lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == run_id
-                ).options(subqueryload('*')).all(),
+                )).all(),
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
@@ -273,21 +274,21 @@ class OrbisDb(SqlDb):
         """
         # obtain the next document
         if document := self.try_catch(
-            lambda: self.session.scalars(select(DocumentDao).where(
-                DocumentDao.document_id == RunHasDocumentDao.document_id,
-                RunHasDocumentDao.run_id == run_id
-            ).filter(DocumentDao.document_id > document_id).order_by(DocumentDao.document_id.asc())).first(),
-            f'Obtaining the next document for run id: {run_id} and document id: {document_id} failed', False
+                lambda: self.session.scalars(select(DocumentDao).where(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id
+                ).where(DocumentDao.document_id > document_id).order_by(DocumentDao.document_id.asc())).first(),
+                f'Obtaining the next document for run id: {run_id} and document id: {document_id} failed', False
         ):
             return document
 
         # no result => return the first document
         if document := self.try_catch(
-            lambda: self.session.scalars(select(DocumentDao).where(
-                DocumentDao.document_id == RunHasDocumentDao.document_id,
-                RunHasDocumentDao.run_id == run_id
-            ).order_by(DocumentDao.document_id.asc())).first(),
-            f'Obtaining the first document for run id: {run_id} failed', False
+                lambda: self.session.scalars(select(DocumentDao).where(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id
+                ).order_by(DocumentDao.document_id.asc())).first(),
+                f'Obtaining the first document for run id: {run_id} failed', False
         ):
             return document
 
@@ -307,21 +308,21 @@ class OrbisDb(SqlDb):
         """
         # obtain the previous document
         if document := self.try_catch(
-            lambda: self.session.scalars(select(DocumentDao).where(
-                DocumentDao.document_id == RunHasDocumentDao.document_id,
-                RunHasDocumentDao.run_id == run_id
-            ).filter(DocumentDao.document_id < document_id).order_by(DocumentDao.document_id.desc())).first(),
-            f'Obtaining the previous document for run id: {run_id} and document id: {document_id} failed', False
+                lambda: self.session.scalars(select(DocumentDao).where(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id
+                ).where(DocumentDao.document_id < document_id).order_by(DocumentDao.document_id.desc())).first(),
+                f'Obtaining the previous document for run id: {run_id} and document id: {document_id} failed', False
         ):
             return document
 
         # no result => return the last document
         if document := self.try_catch(
-            lambda: self.session.scalars(select(DocumentDao).where(
-                DocumentDao.document_id == RunHasDocumentDao.document_id,
-                RunHasDocumentDao.run_id == run_id
-            ).order_by(DocumentDao.document_id.desc())).first(),
-            f'Obtaining the last document for run id: {run_id} failed', False
+                lambda: self.session.scalars(select(DocumentDao).where(
+                    DocumentDao.document_id == RunHasDocumentDao.document_id,
+                    RunHasDocumentDao.run_id == run_id
+                ).order_by(DocumentDao.document_id.desc())).first(),
+                f'Obtaining the last document for run id: {run_id} failed', False
         ):
             return document
 
@@ -540,8 +541,10 @@ class OrbisDb(SqlDb):
 
         Returns: True if metadata is an orphan, false otherwise
         """
-        return (self.session.query(annotation_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0 and
-                self.session.query(document_has_metadata_table).filter_by(metadata_id=metadata_id).count() == 0)
+        return not (self.session.scalars(
+            select(annotation_has_metadata_table).filter_by(metadata_id=metadata_id)).first()
+                    or self.session.scalars(
+                    select(document_has_metadata_table).filter_by(metadata_id=metadata_id)).first())
 
     def annotation_is_orphan(self, annotation_id: int) -> bool:
         """
@@ -553,9 +556,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if annotation is an orphan, false otherwise
         """
-        return self.session.query(DocumentHasAnnotationDao).where(
-            DocumentHasAnnotationDao.annotation_id == annotation_id
-        ).count() == 0
+        return not self.session.scalars(select(DocumentHasAnnotationDao).where(
+            DocumentHasAnnotationDao.annotation_id == annotation_id)).first()
 
     def document_is_orphan(self, document_id: int) -> bool:
         """
@@ -568,9 +570,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if document is an orphan, false otherwise
         """
-        return self.session.query(RunHasDocumentDao).where(
-            RunHasDocumentDao.document_id == document_id
-        ).count() == 0
+        return not self.session.scalars(select(RunHasDocumentDao).where(
+            RunHasDocumentDao.document_id == document_id)).first()
 
     def run_is_orphan(self, run_id: int) -> bool:
         """
@@ -582,9 +583,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if run is an orphan, false otherwise
         """
-        return self.session.query(RunHasDocumentDao).where(
-            RunHasDocumentDao.run_id == run_id
-        ).count() == 0
+        return not self.session.scalars(select(RunHasDocumentDao).where(
+            RunHasDocumentDao.run_id == run_id)).first()
 
     def annotation_type_is_orphan(self, annotation_type_id: int) -> bool:
         """
@@ -596,8 +596,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if annotation type is an orphan, false otherwise
         """
-        return self.session.query(CorpusSupportsAnnotationTypeDao).filter_by(
-            annotation_type_id=annotation_type_id).count() == 0
+        return not self.session.scalars(select(CorpusSupportsAnnotationTypeDao).where(
+            CorpusSupportsAnnotationTypeDao.annotation_type_id == annotation_type_id)).first()
 
     def remove_metadata(self, metadata_id: int) -> bool:
         """
@@ -831,7 +831,7 @@ class OrbisDb(SqlDb):
         Returns: True if everything worked correctly, false otherwise
         """
         if corpus := self.get_corpus(corpus_id):
-            supported_annotation_types = [a.annotation_type for a in corpus.supported_annotation_types]
+            supported_annotation_types = {a.annotation_type for a in corpus.supported_annotation_types}
             # first, remove all runs with custom remove_run method,
             # to ensure that all orphan entities are removed as well
             if not (runs := self.get_runs_by_corpus_id(corpus_id)):
