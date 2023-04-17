@@ -44,4 +44,3 @@ class AnnotationType(BaseModel):
 
     def copy(self) -> 'AnnotationType':
         return AnnotationType(self.name)
-

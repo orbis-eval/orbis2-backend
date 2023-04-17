@@ -60,9 +60,8 @@ class NifExportFormat:
         self.g.add((annotation_uri, ITSRDF.taIdentRef, URIRef(annotation.key)))
         if annotation.annotation_type:
             annotation_type = URIRef(annotation.annotation_type.name) \
-                if annotation.annotation_type.name.startswith('http://') \
-                    or annotation.annotation_type.name.startswith('https://') else \
-                ORBIS.term('type/' + annotation.annotation_type.name)
+                if annotation.annotation_type.name.startswith('http://') or annotation.annotation_type.name.startswith(
+                'https://') else ORBIS.term('type/' + annotation.annotation_type.name)
             self.g.add((annotation_uri, RDF.type, annotation_type))
             self.g.add((annotation_uri, ITSRDF.taClassRef, annotation_type))
         for metadata in annotation.metadata:

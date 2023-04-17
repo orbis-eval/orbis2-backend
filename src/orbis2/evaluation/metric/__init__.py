@@ -109,6 +109,7 @@ SUPPORTED_METRICS = {
                                  description='Entity Recognition: Inter Rater Agreement; perfect matching'),
 }
 
+
 def metrics_help_str():
     """
     Returns:
@@ -116,4 +117,3 @@ def metrics_help_str():
     """
     metrics = [f"'{name}' ({metric.description})" for name, metric in SUPPORTED_METRICS.items()]
     return ', '.join(metrics)
-

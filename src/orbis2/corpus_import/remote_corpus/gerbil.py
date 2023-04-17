@@ -15,7 +15,9 @@ SUPPORTED_IMPORT_FORMATS = ('ttl',)
 RemoteCorpus = namedtuple('RemoteCorpus', 'url title date language rights description ext')
 DCAT = Namespace('http://www.w3.org/ns/dcat#')
 
-get = lambda g, s, p: list(g.triples((s, p, None)))[0][2].replace('\n', ' ')
+
+def get(g, s, p):
+    return list(g.triples((s, p, None)))[0][2].replace('\n', ' ')
 
 
 def parse_corpus_definition(fname):
