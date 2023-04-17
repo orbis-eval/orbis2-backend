@@ -4,13 +4,17 @@
 
 ### Prerequisites
 
-- Python 3.9
-- PostgreSQL 15.0
+- Python 3.9 - PostgreSQL 15.0
 
-### Run the API
+## Run the API
 
 
-### Environment variables
+### Database setup and environment variables
+
+Setup the following databases:
+
+1. orbis (used for production)
+2. orbis_test (used in unit tests)
 
 The environment variables are all stored in the file [src/orbis2/config/app_config.py](src/orbis2/config/app_config.py) during run time.
 
@@ -113,3 +117,22 @@ Compute the Inter-Rater-Agreement between the provided evaluation runs (i.e., an
 | Entity Recognition: Inter Rater Agreement; perfect matching.|0.54 | 0.53 | 0.68 | 0.65|
 
 
+
+## New API Calls
+
+
+### Next and previous document support:
+
+1. `get_next_document(run_id: int, document_id: int) -> Union[Document, None]`: retrieve the next document
+2. `get_previous_document(run_id: int, document_id: int) -> Union[Document, None]`: retrieve the previous document
+
+
+### Color support:
+
+1. `get_color_palettes() -> List[ColorPalette]`: available color palettes which contain a name + a list of colors
+2. `get_corpus_annotation_types(corpus_id: int) > Dict[AnnotationType, int]`: a dictionary of AnnotationTypes and the corresponding `color_id`. The color to use is computed by 
+     ```python
+     color_index = color_id % len(color_palette)
+     color = color_palette[color_index]
+     ```
+3. `set_corpus_annotation_type_color(corpus_id: int, annotation_type_id: int, color_id: int)`: sets a color for a given corpus and `annotation_type`.
