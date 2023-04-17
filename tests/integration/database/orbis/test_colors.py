@@ -17,3 +17,21 @@ def test_get_color_palette(insert_test_data_orbis):
     assert [palette.colors for palette in sorted(palettes, key=attrgetter('name'))] == \
            [palette.colors for palette in sorted(ColorPaletteDao.get_default_color_palettes(),
                                                  key=attrgetter('name'))]
+
+
+def test_set_corpus_annotation_type_color(insert_test_data_orbis):
+    """
+    Verifies that setting the corpus annotation_type color_id works.
+    """
+    orbis_db = OrbisDb()
+    run = orbis_db.get_runs()[0]
+
+    supported_annotation_type = run.corpus.supported_annotation_types[0].annotation_type
+
+    # set color_ids
+    for color_id in range(0, 5):
+        orbis_db.set_corpus_annotation_type_color(run.corpus.corpus_id,
+                                                  supported_annotation_type.type_id,
+                                                  color_id)
+        run = orbis_db.get_runs()[0]
+        assert run.corpus.supported_annotation_types[0].color_id == color_id

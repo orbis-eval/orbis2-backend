@@ -65,11 +65,21 @@ class OrbisService:
         return []
 
     def get_next_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+        """
+        Returns:
+            The next document for the given run. Cycles through (i.e., returns the first document when called with the
+            last document's document_id).
+        """
         if document := self.orbis_db.get_next_document_of_run(run_id, document_id):
             return Document.from_document_dao(document)
         return None
 
     def get_previous_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+        """
+        Returns:
+            The previous document for the given run and document_id. Cycles through (i.e., return the last document
+            when called with the first document's document id).
+        """
         if document := self.orbis_db.get_previous_document_of_run(run_id, document_id):
             return Document.from_document_dao(document)
         return None
@@ -110,9 +120,35 @@ class OrbisService:
         return self.orbis_db.get_corpus_id(corpus_name)
 
     def get_corpus_annotation_types(self, corpus_id: int) -> Dict[AnnotationType, int]:
-        return self.orbis_db.get_corpus_annotation_types(corpus_id)
+        """
+        Return a dictionary of all supported AnnotationTypes and their corresponding color_ids.
+
+        Note:
+        - the color of an AnnotationType is determined by computing `color_id % len(color_palette)`.
+        - the call `set_corpus_annotation_type_color` assigns a different color_id to a corpus AnnotationType.
+
+        Returns:
+            A dictionary of all supported AnnotationTypes and their corresponding color_id.
+        """
+        return {AnnotationType.from_annotation_type_dao(annotation_type_dao): color_id
+                for annotation_type_dao, color_id in self.orbis_db.get_corpus_annotation_types(corpus_id).items()}
+
+    def set_corpus_annotation_type_color(self, corpus_id: int, annotation_type_id: int, color_id: int) -> None:
+        """
+        Set the color id of the given annotation type for a corpus.
+
+        Args:
+            corpus_id: the corpus for which the annotation type's color is set.
+            annotation_type_id: id of the annotation type
+            color_id: id of the color (the effective color to used is computed based on `color_id % len(color_palette)`
+        """
+        self.orbis_db.set_corpus_annotation_type_color(corpus_id, annotation_type_id, color_id)
 
     def get_color_palettes(self) -> List[ColorPalette]:
+        """
+        Returns:
+            A list of all available ColorPalettes.
+        """
         return self.orbis_db.get_color_palettes()
 
     def get_metadata(self) -> List[Metadata]:

@@ -10,6 +10,3 @@ def test_remove_annotation_type_annotationTypeIsUsedByCorpus_dontDeleteAnnotatio
     assert not orbis_db.remove_annotation_type(annotation_type.type_id)
     assert len(orbis_db.get_corpus_annotation_types(corpus_id=corpus.corpus_id)) > 0
     assert len(orbis_db.get_corpora()) > 0
-
-
-

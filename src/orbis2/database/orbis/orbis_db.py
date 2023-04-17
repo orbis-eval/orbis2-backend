@@ -21,6 +21,7 @@ from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
+from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.color_palette import ColorPalette
 
 
@@ -445,6 +446,20 @@ class OrbisDb(SqlDb):
         except SQLAlchemyError as e:
             logging.warning('All annotation type request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')
+
+    def set_corpus_annotation_type_color(self, corpus_id: int, annotation_type_id: int, color_id: int) -> None:
+        """
+        Set the color id of the given annotation type for a corpus.
+
+        Args:
+            corpus_id: the corpus for which the annotation type's color is set.
+            annotation_type_id: id of the annotation type
+            color_id: id of the color (the effective color to used is computed based on `color_id % len(color_palette)`
+        """
+        csat = CorpusSupportsAnnotationTypeDao(corpus_id=corpus_id, annotation_type_id=annotation_type_id,
+                                               color_id=color_id)
+        self.session.merge(csat)
+        self.commit()
 
     def get_metadata(self) -> Union[List[MetadataDao], None]:
         """

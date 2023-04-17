@@ -255,7 +255,7 @@ def test_get_annotation_types_dbExistsAndContainsAnnotationTypes_returnsAnnotati
     assert annotation_types
     assert len(annotation_types) == 1
     annotation_type = list(annotation_types.items())[0][0]
-    assert annotation_type.type_id > 0
+    assert annotation_type._id > 0
     assert annotation_type.name == 'annotation-type1'
 
 
