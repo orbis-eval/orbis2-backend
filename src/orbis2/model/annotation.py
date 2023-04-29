@@ -13,27 +13,27 @@ from orbis2.model.metadata import Metadata
 
 class Annotation(OrbisPydanticBaseModel):
     key: str
-    surface_forms: Tuple[str]
-    start_indices: Tuple[int]
-    end_indices: Tuple[int]
+    surface_forms: Union[Tuple[str, ...] | str]
+    start_indices: Union[Tuple[int, ...] | int]
+    end_indices: Union[Tuple[int, ...] | int]
     annotation_type: AnnotationType
     annotator: Annotator
-    run_id: int
-    document_id: int
-    metadata: List[Metadata]
-    timestamp: datetime
-    _id: int
+    run_id: int = None
+    document_id: int = None
+    metadata: List[Metadata] = None
+    timestamp: datetime = datetime.now()
+    _id: int = 0
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: List[Metadata] = None, timestamp: datetime = None, _id: int = 0):
-        super().__init__(key=key, surface_form=surface_forms, start_indices=start_indices, end_indices=end_indices,
-                         annotation_type=annotation_type, run_id=run_id, metadata=metadata, timestamp=timestamp,
-                         _id=_id)
-        self.start_indices = (start_indices, )  if isinstance(start_indices, int) else start_indices
+                 metadata: List[Metadata] = None, timestamp: datetime = datetime.now(), _id: int = 0):
+        super().__init__(key=key, surface_forms=surface_forms, start_indices=start_indices, end_indices=end_indices,
+                         annotation_type=annotation_type, annotator=annotator, run_id=run_id, document_id=document_id,
+                         metadata=metadata, timestamp=timestamp, _id=_id)
+        self.start_indices = (start_indices, ) if isinstance(start_indices, int) else start_indices
         self.end_indices = (end_indices, ) if isinstance(end_indices, int) else end_indices
         self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else surface_forms
         self.metadata = metadata if metadata else []
@@ -117,17 +117,20 @@ class Annotation(OrbisPydanticBaseModel):
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
                         end_indices: Union[Tuple[int, ...], int],
                         surface_forms: Union[Tuple[str, ...], str] = None,
-                        key: str = "mock",
-                        annotation_type: str = None,
+                        key: str = 'mock',
+                        annotation_type: str = 'mock',
+                        annotator: str = 'mock',
                         metadata: [Metadata] = None):
     """
     Return:
          A mock Annotation to be used in unittests.
     """
+    if not surface_forms:
+        surface_forms = 'mock' if isinstance(start_indices, int) else ('mock', ) * len(start_indices)
     return Annotation(key=key,
                       surface_forms=surface_forms,
                       start_indices=start_indices,
                       end_indices=end_indices,
-                      annotation_type=AnnotationType(annotation_type) if annotation_type else None,
-                      annotator=None,
+                      annotation_type=AnnotationType(name=annotation_type),
+                      annotator=Annotator(name=annotator, roles=[]),
                       metadata=metadata)

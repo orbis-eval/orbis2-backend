@@ -15,7 +15,7 @@ class Document(OrbisPydanticBaseModel):
     run_id: int
     metadata: List[Metadata]
     done: bool
-    _id: int
+    _id: int = 0
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False, _id: int = 0):

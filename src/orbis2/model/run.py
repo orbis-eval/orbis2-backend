@@ -15,7 +15,7 @@ class Run(OrbisPydanticBaseModel):
     corpus: Corpus
     document_annotations: Dict[Document, List[Annotation]]
     # parents: ['Run']
-    _id: int
+    _id: int = 0
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
                  document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):

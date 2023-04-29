@@ -6,7 +6,7 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class Role(OrbisPydanticBaseModel):
     name: str
-    _id: int
+    _id: int = 0
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
