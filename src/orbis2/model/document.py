@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 
 from xxhash import xxh32_intdigest
@@ -6,12 +5,11 @@ from xxhash import xxh32_intdigest
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
 
 
-@dataclass
-class Document(BaseModel):
+class Document(OrbisPydanticBaseModel):
     content: str
     key: str
     run_id: int
@@ -21,15 +19,8 @@ class Document(BaseModel):
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.content = content
-        self.key = key
-        self.run_id = run_id
+        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done, _id=_id)
         self.metadata = metadata if metadata else []
-        self.done = done
 
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)

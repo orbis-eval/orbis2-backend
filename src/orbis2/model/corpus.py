@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import Dict, List, Union
 
 from xxhash import xxh32_intdigest
@@ -6,22 +5,17 @@ from xxhash import xxh32_intdigest
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.corpus_supports_annotation_type_dao import CorpusSupportsAnnotationTypeDao
 from orbis2.model.annotation_type import AnnotationType
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class Corpus(BaseModel):
+class Corpus(OrbisPydanticBaseModel):
     name: str
     supported_annotation_types: Dict[AnnotationType, int]
     _id: int
 
     def __init__(self, name: str, supported_annotation_types: Union[Dict[AnnotationType, int], List[AnnotationType]],
                  _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
+        super().__init__(name=name, supported_annotation_types=supported_annotation_types, _id=_id)
         if isinstance(supported_annotation_types, dict):
             self.supported_annotation_types = supported_annotation_types
         else:

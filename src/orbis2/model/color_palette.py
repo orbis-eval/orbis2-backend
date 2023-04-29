@@ -1,24 +1,15 @@
-from dataclasses import dataclass
 from typing import List
+
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class ColorPalette(BaseModel):
+class ColorPalette(OrbisPydanticBaseModel):
     name: str
     # A list of the hexadecimal color values for the given Palette
     colors: List[str]
-
-    def __init__(self, name: str, colors: List[str]):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
-        self.colors = colors
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

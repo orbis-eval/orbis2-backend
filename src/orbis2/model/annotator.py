@@ -1,30 +1,17 @@
-from dataclasses import dataclass
 from typing import List
 
 from xxhash import xxh32_intdigest, xxh32_hexdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.role import Role
 
 
-@dataclass
-class Annotator(BaseModel):
+class Annotator(OrbisPydanticBaseModel):
     name: str
     roles: List[Role]
-    password: str
-    _id: int
-
-    def __init__(self, name: str, roles: List[Role], password: str = None, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
-        self.roles = roles
-        if not password:
-            password = xxh32_hexdigest('')
-        self.password = password
+    password: str = xxh32_hexdigest('')
+    _id: int = 0
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

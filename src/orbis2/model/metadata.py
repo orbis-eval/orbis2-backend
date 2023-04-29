@@ -1,23 +1,13 @@
-from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class Metadata(BaseModel):
+class Metadata(OrbisPydanticBaseModel):
     key: str
     value: str
     _id: int
-
-    def __init__(self, key: str, value: str, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.key = key
-        self.value = value
 
     def __hash__(self):
         return xxh32_intdigest(self.key + self.value)

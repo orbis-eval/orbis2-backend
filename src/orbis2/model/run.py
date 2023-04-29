@@ -1,18 +1,15 @@
-from dataclasses import dataclass
 from typing import Dict, List
 
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.model.annotation import Annotation
-from orbis2.model.annotation_type import AnnotationType
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 
 
-@dataclass
-class Run(BaseModel):
+class Run(OrbisPydanticBaseModel):
     name: str
     description: str
     corpus: Corpus
@@ -22,13 +19,8 @@ class Run(BaseModel):
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
                  document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
-        self.description = description
-        self.corpus = corpus
+        super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
+                         parents=parents)
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
 

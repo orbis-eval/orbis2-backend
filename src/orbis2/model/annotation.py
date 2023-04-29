@@ -1,19 +1,17 @@
 from datetime import datetime
 from typing import Union, Tuple, List
 
-from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
 
 
-@dataclass
-class Annotation(BaseModel):
+class Annotation(OrbisPydanticBaseModel):
     key: str
     surface_forms: Tuple[str]
     start_indices: Tuple[int]
@@ -32,31 +30,13 @@ class Annotation(BaseModel):
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
                  metadata: List[Metadata] = None, timestamp: datetime = None, _id: int = 0):
-        if isinstance(start_indices, int):
-            start_indices = (start_indices, )
-        if isinstance(start_indices, List):
-            start_indices = tuple(start_indices)
-        if isinstance(end_indices, int):
-            end_indices = (end_indices, )
-        if isinstance(end_indices, List):
-            end_indices = tuple(end_indices)
-        if isinstance(surface_forms, str):
-            surface_forms = (surface_forms, )
-        if isinstance(surface_forms, List):
-            surface_forms = tuple(surface_forms)
-        if not metadata:
-            metadata = []
-
-        self.key = key
-        self.surface_forms = surface_forms
-        self.start_indices = start_indices
-        self.end_indices = end_indices
-        self.annotation_type = annotation_type
-        self.annotator = annotator
-        self.run_id = run_id
-        self.document_id = document_id
+        super().__init__(key=key, surface_form=surface_forms, start_indices=start_indices, end_indices=end_indices,
+                         annotation_type=annotation_type, run_id=run_id, metadata=metadata, timestamp=timestamp,
+                         _id=_id)
+        self.start_indices = (start_indices, )  if isinstance(start_indices, int) else start_indices
+        self.end_indices = (end_indices, ) if isinstance(end_indices, int) else end_indices
+        self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else surface_forms
         self.metadata = metadata if metadata else []
-        self.timestamp = timestamp
 
     def __eq__(self, other):
         if isinstance(other, Annotation):
