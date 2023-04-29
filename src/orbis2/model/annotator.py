@@ -11,6 +11,9 @@ class Annotator(OrbisPydanticBaseModel):
     name: str
     roles: List[Role]
     password: str = xxh32_hexdigest('')
+    
+    def __init__(self, name: str, roles: List[Role], password: str = xxh32_hexdigest('')):
+        super().__init__(name=name, roles=roles, password=password)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

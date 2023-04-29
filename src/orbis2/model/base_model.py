@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from pydantic import BaseModel
+from copy import deepcopy
 
 
 class OrbisPydanticBaseModel(BaseModel):
@@ -19,6 +20,16 @@ class OrbisPydanticBaseModel(BaseModel):
             The underscore is necessary, otherwise the deserialization of the property throws an error.
         """
         return self.__hash__()
+
+    def refined_copy(self, **kwargs):
+        """
+        Return:
+            A deep copy of the given object with provided key value pairs modified.
+        """
+        copy = deepcopy(self)
+        for key, value in kwargs.items():
+            setattr(copy, key, value)
+        return copy
 
     def dict(self, *args, **kwargs):
         output = super().dict(*args, **kwargs)

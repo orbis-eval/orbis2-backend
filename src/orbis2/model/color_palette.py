@@ -10,6 +10,9 @@ class ColorPalette(OrbisPydanticBaseModel):
     name: str
     # A list of the hexadecimal color values for the given Palette
     colors: List[str]
+    
+    def __init__(self, name: str, colors: List[str]):
+        super().__init__(name=name, colors=colors)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

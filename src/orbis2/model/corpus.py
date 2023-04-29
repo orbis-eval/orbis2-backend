@@ -10,7 +10,7 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class Corpus(OrbisPydanticBaseModel):
     name: str
-    supported_annotation_types: Dict[AnnotationType, int]
+    supported_annotation_types: Union[Dict[AnnotationType, int], List[AnnotationType]]
 
     def __init__(self, name: str, supported_annotation_types: Union[Dict[AnnotationType, int], List[AnnotationType]]):
         super().__init__(name=name, supported_annotation_types=supported_annotation_types)

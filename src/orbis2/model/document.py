@@ -12,13 +12,13 @@ from orbis2.model.metadata import Metadata
 class Document(OrbisPydanticBaseModel):
     content: str
     key: str
-    run_id: int
-    metadata: List[Metadata]
-    done: bool
+    run_id: int = None
+    metadata: List[Metadata] = None
+    done: bool = False
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
-        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done, _id=_id)
+        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done)
         self.metadata = metadata if metadata else []
 
     def __hash__(self):
@@ -48,3 +48,4 @@ class Document(OrbisPydanticBaseModel):
             document_has_annotation_daos = []
         return RunHasDocumentDao(run_id=self.run_id, document_id=self._id, document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
+

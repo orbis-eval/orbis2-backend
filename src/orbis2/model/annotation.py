@@ -21,20 +21,20 @@ class Annotation(OrbisPydanticBaseModel):
     run_id: int = None
     document_id: int = None
     metadata: List[Metadata] = None
-    timestamp: datetime = datetime.now()
+    timestamp: datetime = None
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: List[Metadata] = None, timestamp: datetime = datetime.now()):
+                 metadata: List[Metadata] = None, timestamp: datetime = None):
         super().__init__(key=key, surface_forms=surface_forms, start_indices=start_indices, end_indices=end_indices,
                          annotation_type=annotation_type, annotator=annotator, run_id=run_id, document_id=document_id,
                          metadata=metadata, timestamp=timestamp)
-        self.start_indices = (start_indices, ) if isinstance(start_indices, int) else start_indices
-        self.end_indices = (end_indices, ) if isinstance(end_indices, int) else end_indices
-        self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else surface_forms
+        self.start_indices = (start_indices, ) if isinstance(start_indices, int) else tuple(start_indices)
+        self.end_indices = (end_indices, ) if isinstance(end_indices, int) else tuple(end_indices)
+        self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else tuple(surface_forms)
         self.metadata = metadata if metadata else []
 
     def __eq__(self, other):
@@ -68,7 +68,7 @@ class Annotation(OrbisPydanticBaseModel):
 
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int = None, document_id: int = None,
-                            timestamp: datetime = None) -> 'Annotation':
+                            timestamp: datetime = datetime.now()) -> 'Annotation':
         annotation = cls(key=annotation_dao.key, surface_forms=annotation_dao.surface_forms,
                          start_indices=annotation_dao.start_indices, end_indices=annotation_dao.end_indices,
                          annotation_type=AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),

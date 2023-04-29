@@ -7,6 +7,9 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 class Metadata(OrbisPydanticBaseModel):
     key: str
     value: str
+    
+    def __init__(self, key: str, value: str):
+        super().__init__(key=key, value=value)
 
     def __hash__(self):
         return xxh32_intdigest(self.key + self.value)

@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from xxhash import xxh32_intdigest
 
@@ -11,13 +11,13 @@ from orbis2.model.document import Document
 
 class Run(OrbisPydanticBaseModel):
     name: str
-    description: str
-    corpus: Corpus
-    document_annotations: Dict[Document, List[Annotation]]
-    # parents: ['Run']
+    description: str = None
+    corpus: Corpus = None
+    document_annotations: Dict[Document, List[Annotation]] = None
+    parents: Optional[List['Run']] = None
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None):
         super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
                          parents=parents)
         self.document_annotations = document_annotations if document_annotations else {}
@@ -75,8 +75,8 @@ class Run(OrbisPydanticBaseModel):
             parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
-            document.copy(new_run._id): [
-                annotation.copy(new_run._id, document._id) for annotation in annotations
+            document.refined_copy(run_id=new_run._id): [
+                annotation.refined_copy(run_id=new_run._id, document_id=document._id) for annotation in annotations
             ] for document, annotations in self.document_annotations.items()
         }
         new_run.document_annotations = document_annotations
