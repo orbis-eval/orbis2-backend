@@ -124,7 +124,6 @@ def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
     """
     if not surface_forms:
         surface_forms = 'mock' if isinstance(start_indices, int) else ('mock', ) * len(start_indices)
-    print("***", surface_forms)
     return Annotation(key=key,
                       surface_forms=surface_forms,
                       start_indices=start_indices,

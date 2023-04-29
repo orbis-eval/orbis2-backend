@@ -48,4 +48,3 @@ class Document(OrbisPydanticBaseModel):
             document_has_annotation_daos = []
         return RunHasDocumentDao(run_id=self.run_id, document_id=self._id, document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
-
