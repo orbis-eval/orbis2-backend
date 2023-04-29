@@ -9,7 +9,7 @@ def test_tokenize_whitespace_tokenization():
     annotations = [a(10, 38, 'Grosser Gott wir loben dich!'),
                    a(40, 70, 'Herr, wir rühmen deine Stärke!')]
     tokenized = AnnotationTokenizer(tokenize_by=TokenizeBy.WHITESPACE).preprocess(annotations)
-
+    print(tokenized)
     assert tokenized == [a(10, 17, 'Grosser'),
                          a(18, 22, 'Gott'),
                          a(23, 26, 'wir'),
