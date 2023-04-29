@@ -19,11 +19,8 @@ class ColorPalette(OrbisPydanticBaseModel):
 
     @classmethod
     def from_color_palette_dao(cls, color_palette_dao: ColorPaletteDao) -> 'ColorPalette':
-        return cls(color_palette_dao.name,
-                   ['{0:06X}'.format(color) for color in color_palette_dao.colors])
+        return cls(name=color_palette_dao.name,
+                   colors=['{0:06X}'.format(color) for color in color_palette_dao.colors])
 
     def to_dao(self) -> ColorPaletteDao:
         return ColorPaletteDao(name=self.name, colors=self.colors)
-
-    def copy(self) -> 'ColorPalette':
-        return ColorPaletteDao(self.name, self.colors)

@@ -6,7 +6,6 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class Role(OrbisPydanticBaseModel):
     name: str
-    _id: int = 0
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -18,7 +17,7 @@ class Role(OrbisPydanticBaseModel):
 
     @classmethod
     def from_role_dao(cls, role_dao: RoleDao) -> 'Role':
-        role = cls(role_dao.name)
+        role = cls(name=role_dao.name)
         return role
 
     @classmethod
@@ -31,6 +30,3 @@ class Role(OrbisPydanticBaseModel):
     @staticmethod
     def to_role_daos(roles: [RoleDao]) -> [RoleDao]:
         return [role.to_dao() for role in roles]
-
-    def copy(self) -> 'Role':
-        return Role(self.name)

@@ -15,10 +15,9 @@ class Run(OrbisPydanticBaseModel):
     corpus: Corpus
     document_annotations: Dict[Document, List[Annotation]]
     # parents: ['Run']
-    _id: int = 0
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None):
         super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
                          parents=parents)
         self.document_annotations = document_annotations if document_annotations else {}
@@ -46,11 +45,11 @@ class Run(OrbisPydanticBaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
-        run = cls(run_dao.name,
-                  run_dao.description,
-                  Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
-                  document_annotations,
-                  Run.from_run_daos(run_dao.parents))
+        run = cls(name=run_dao.name,
+                  description=run_dao.description,
+                  corpus=Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
+                  document_annotations=document_annotations,
+                  parents=Run.from_run_daos(run_dao.parents))
         return run
 
     @classmethod

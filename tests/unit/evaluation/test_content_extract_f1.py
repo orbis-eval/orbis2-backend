@@ -4,13 +4,13 @@ from orbis2.model.annotation import get_mock_annotation as Annotation
 
 def test_content_extraction_f1_single_document():
     reference = {
-        '0': [Annotation(surface_forms="Ehre sei Gott in der Höhe!", start_indices=30, end_indices=56,
-                         annotation_type="praise"),
+        '0': [Annotation(surface_forms='Ehre sei Gott in der Höhe!', start_indices=30, end_indices=56,
+                         annotation_type='praise'),
               ]
     }
 
     annotator = {
-        '0': [Annotation(surface_forms="Ehre sei Gott", start_indices=30, end_indices=43, annotation_type="praise"),
+        '0': [Annotation(surface_forms='Ehre sei Gott', start_indices=30, end_indices=43, annotation_type='praise'),
               ]
     }
 

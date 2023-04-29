@@ -11,7 +11,6 @@ class Annotator(OrbisPydanticBaseModel):
     name: str
     roles: List[Role]
     password: str = xxh32_hexdigest('')
-    _id: int = 0
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -23,7 +22,8 @@ class Annotator(OrbisPydanticBaseModel):
 
     @classmethod
     def from_annotator_dao(cls, annotator_dao: AnnotatorDao) -> 'Annotator':
-        annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles), annotator_dao.password)
+        annotator = cls(name=annotator_dao.name, roles=Role.from_role_daos(annotator_dao.roles),
+                        password=annotator_dao.password)
         return annotator
 
     @classmethod
@@ -33,6 +33,3 @@ class Annotator(OrbisPydanticBaseModel):
     def to_dao(self) -> AnnotatorDao:
         return AnnotatorDao(annotator_id=self._id, name=self.name, password=self.password,
                             roles=Role.to_role_daos(self.roles))
-
-    def copy(self) -> 'Annotator':
-        return Annotator(self.name, [role.copy() for role in self.roles], self.password)

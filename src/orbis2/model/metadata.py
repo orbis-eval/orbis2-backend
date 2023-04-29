@@ -7,7 +7,6 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 class Metadata(OrbisPydanticBaseModel):
     key: str
     value: str
-    _id: int = 0
 
     def __hash__(self):
         return xxh32_intdigest(self.key + self.value)
@@ -19,7 +18,7 @@ class Metadata(OrbisPydanticBaseModel):
 
     @classmethod
     def from_metadata_dao(cls, metadata_dao: MetadataDao) -> 'Metadata':
-        metadata = cls(metadata_dao.key, metadata_dao.value)
+        metadata = cls(key=metadata_dao.key, value=metadata_dao.value)
         return metadata
 
     @classmethod
@@ -38,6 +37,3 @@ class Metadata(OrbisPydanticBaseModel):
 
     def __repr__(self):
         return self.__str__()
-
-    def copy(self) -> 'Metadata':
-        return Metadata(self.key, self.value)

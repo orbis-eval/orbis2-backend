@@ -1,3 +1,5 @@
+from xxhash import xxh32_intdigest
+
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.corpus import Corpus
 
@@ -7,7 +9,9 @@ def test_annotation_type_initialization():
     Tests, whether Annotation Types are correctly initialized.
     """
     a = AnnotationType(name='annotation_type_1')
-    assert a.dict()
+    print(a.dict())
+    assert a.dict() == {'name': 'annotation_type_1',
+                        '_id': xxh32_intdigest('annotation_type_1')}
 
 
 def test_annotation_type_pydantic_model():

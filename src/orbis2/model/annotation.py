@@ -22,17 +22,16 @@ class Annotation(OrbisPydanticBaseModel):
     document_id: int = None
     metadata: List[Metadata] = None
     timestamp: datetime = datetime.now()
-    _id: int = 0
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
                  start_indices: Union[Tuple[int, ...], int],
                  end_indices: Union[Tuple[int, ...], int],
                  annotation_type: AnnotationType, annotator: Annotator,
                  run_id: int = None, document_id: int = None,
-                 metadata: List[Metadata] = None, timestamp: datetime = datetime.now(), _id: int = 0):
+                 metadata: List[Metadata] = None, timestamp: datetime = datetime.now()):
         super().__init__(key=key, surface_forms=surface_forms, start_indices=start_indices, end_indices=end_indices,
                          annotation_type=annotation_type, annotator=annotator, run_id=run_id, document_id=document_id,
-                         metadata=metadata, timestamp=timestamp, _id=_id)
+                         metadata=metadata, timestamp=timestamp)
         self.start_indices = (start_indices, ) if isinstance(start_indices, int) else start_indices
         self.end_indices = (end_indices, ) if isinstance(end_indices, int) else end_indices
         self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else surface_forms
@@ -70,11 +69,12 @@ class Annotation(OrbisPydanticBaseModel):
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int = None, document_id: int = None,
                             timestamp: datetime = None) -> 'Annotation':
-        annotation = cls(annotation_dao.key, annotation_dao.surface_forms, annotation_dao.start_indices,
-                         annotation_dao.end_indices,
-                         AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),
-                         Annotator.from_annotator_dao(annotation_dao.annotator), run_id, document_id,
-                         Metadata.from_metadata_daos(annotation_dao.meta_data), timestamp)
+        annotation = cls(key=annotation_dao.key, surface_forms=annotation_dao.surface_forms,
+                         start_indices=annotation_dao.start_indices, end_indices=annotation_dao.end_indices,
+                         annotation_type=AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),
+                         annotator=Annotator.from_annotator_dao(annotation_dao.annotator), run_id=run_id,
+                         document_id=document_id, metadata=Metadata.from_metadata_daos(annotation_dao.meta_data),
+                         timestamp=timestamp)
         return annotation
 
     @classmethod
@@ -85,8 +85,10 @@ class Annotation(OrbisPydanticBaseModel):
 
     @classmethod
     def from_document_has_annotation(cls, document_annotation_dao: DocumentHasAnnotationDao) -> 'Annotation':
-        return cls.from_annotation_dao(document_annotation_dao.annotation, document_annotation_dao.run_id,
-                                       document_annotation_dao.document_id, document_annotation_dao.timestamp)
+        return cls.from_annotation_dao(annotation_dao=document_annotation_dao.annotation,
+                                       run_id=document_annotation_dao.run_id,
+                                       document_id=document_annotation_dao.document_id,
+                                       timestamp=document_annotation_dao.timestamp)
 
     @classmethod
     def from_document_has_annotations(cls, document_has_annotations: [DocumentHasAnnotationDao]) -> ['Annotation']:
@@ -107,11 +109,6 @@ class Annotation(OrbisPydanticBaseModel):
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
                                         annotation_id=self._id, annotation=self.to_dao())
-
-    def copy(self, run_id: int, document_id: int) -> 'Annotation':
-        return Annotation(self.key, self.surface_forms, self.start_indices, self.end_indices,
-                          self.annotation_type.copy(), self.annotator.copy(), run_id, document_id, self.metadata.copy(),
-                          self.timestamp)
 
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],

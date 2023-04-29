@@ -15,10 +15,9 @@ class Document(OrbisPydanticBaseModel):
     run_id: int
     metadata: List[Metadata]
     done: bool
-    _id: int = 0
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
-                 done: bool = False, _id: int = 0):
+                 done: bool = False):
         super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done, _id=_id)
         self.metadata = metadata if metadata else []
 
@@ -32,8 +31,8 @@ class Document(OrbisPydanticBaseModel):
 
     @classmethod
     def from_document_dao(cls, document_dao: DocumentDao, run_id: int = None, done: bool = False) -> 'Document':
-        document = cls(document_dao.content, document_dao.key, run_id,
-                       Metadata.from_metadata_daos(document_dao.meta_data), done)
+        document = cls(content=document_dao.content, key=document_dao.key, run_id=run_id,
+                       metadata=Metadata.from_metadata_daos(document_dao.meta_data), done=done)
         return document
 
     @classmethod
@@ -49,6 +48,3 @@ class Document(OrbisPydanticBaseModel):
             document_has_annotation_daos = []
         return RunHasDocumentDao(run_id=self.run_id, document_id=self._id, document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
-
-    def copy(self, run_id: int) -> 'Document':
-        return Document(self.content, self.key, run_id, self.metadata.copy())
