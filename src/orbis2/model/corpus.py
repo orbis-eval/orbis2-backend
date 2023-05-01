@@ -30,10 +30,9 @@ class Corpus(OrbisPydanticBaseModel):
 
     @classmethod
     def from_corpus_dao(cls, corpus_dao: CorpusDao) -> 'Corpus':
-        corpus = cls(name=corpus_dao.name,
-                     supported_annotation_types={AnnotationType.from_annotation_type_dao(supported.annotation_type):
-                                                 supported.color_id
-                                                 for supported in corpus_dao.supported_annotation_types})
+        corpus = cls(name=corpus_dao.name, supported_annotation_types=[
+            AnnotationType.from_annotation_type_dao(supported.annotation_type).set(color_id=supported.color_id)
+            for supported in corpus_dao.supported_annotation_types])
         return corpus
 
     @classmethod
@@ -44,6 +43,6 @@ class Corpus(OrbisPydanticBaseModel):
         c = CorpusDao(corpus_id=self._id, name=self.name,
                       supported_annotation_types=[
                           CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an.to_dao(),
-                                                          color_id=color)
-                          for an, color in self.supported_annotation_types.items()])
+                                                          color_id=an.color_id)
+                          for an in self.supported_annotation_types])
         return c

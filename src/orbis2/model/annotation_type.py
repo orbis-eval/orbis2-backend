@@ -6,9 +6,10 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class AnnotationType(OrbisPydanticBaseModel):
     name: str
+    color_id: int = None
 
-    def __init__(self, name: str):
-        super().__init__(name=name)
+    def __init__(self, name: str, color_id: str = None):
+        super().__init__(name=name, color_id=color_id)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

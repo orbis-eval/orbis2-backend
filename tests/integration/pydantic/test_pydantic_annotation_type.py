@@ -11,6 +11,7 @@ def test_annotation_type_initialization():
     a = AnnotationType(name='annotation_type_1')
     print(a.dict())
     assert a.dict() == {'name': 'annotation_type_1',
+                        'color_id': None,
                         '_id': xxh32_intdigest('annotation_type_1')}
 
 

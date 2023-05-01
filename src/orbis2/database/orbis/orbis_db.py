@@ -516,6 +516,7 @@ class OrbisDb(SqlDb):
 
         Returns: True if it worked, false otherwise
         """
+        print(run.corpus.supported_annotation_types)
         return self.try_catch(lambda: self.session.merge(run), f'Adding the run {run} failed.') and self.commit()
 
     def add_annotation_to_document(self, document_has_annotation: DocumentHasAnnotationDao) -> int:

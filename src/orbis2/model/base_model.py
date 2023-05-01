@@ -27,9 +27,15 @@ class OrbisPydanticBaseModel(BaseModel):
             A deep copy of the given object with provided key value pairs modified.
         """
         copy = deepcopy(self)
+        return copy.set(**kwargs)
+
+    def set(self, **kwargs) -> 'OrbisPydanticBaseModel':
+        """
+        Set the given keys to the provided values for the object.
+        """
         for key, value in kwargs.items():
-            setattr(copy, key, value)
-        return copy
+            setattr(self, key, value)
+        return self
 
     def dict(self, *args, **kwargs):
         output = super().dict(*args, **kwargs)
