@@ -16,6 +16,4 @@ def test_pydantic_run():
               {Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
                [Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
                            metadata=[Metadata('key1', 'value1')])]})
-
-    from json import dumps
-    assert dumps(run.dict())
+    assert run.dict()

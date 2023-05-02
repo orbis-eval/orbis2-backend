@@ -42,12 +42,12 @@ class OrbisService:
 
     def get_run_names(self, corpus_id: int = None) -> List[Run]:
         if corpus_id:
-            runs = Run.from_run_daos(self.orbis_db.get_run_names_by_corpus_id(corpus_id))
+            runs = [r.set(document_annotations=None)
+                    for r in Run.from_run_daos(self.orbis_db.get_run_names_by_corpus_id(corpus_id))]
         else:
-            runs = Run.from_run_daos(self.orbis_db.get_run_names())
-        if runs:
-            return runs
-        return []
+            runs = [r.set(document_annotations=None)
+                    for r in Run.from_run_daos(self.orbis_db.get_run_names())]
+        return runs if runs else []
 
     def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
