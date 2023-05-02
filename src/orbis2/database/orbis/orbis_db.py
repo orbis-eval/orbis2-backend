@@ -5,23 +5,22 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
-from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
-from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
-from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.config.app_config import AppConfig
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
+from orbis2.database.orbis.entities.annotation_has_metadata_relation import annotation_has_metadata_table
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
+from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.corpus_supports_annotation_type_dao import CorpusSupportsAnnotationTypeDao
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
+from orbis2.database.orbis.entities.document_has_metadata_relation import document_has_metadata_table
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.database.orbis.orbis_base import OrbisBase
 from orbis2.database.sql_db import SqlDb
-from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.color_palette import ColorPalette
 
 
@@ -638,8 +637,8 @@ class OrbisDb(SqlDb):
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
         # if no metadata is orphan, this statement is true (since: if all([]) -> True)
-        if all([self.remove_metadata(meta_data.metadata_id)
-                for meta_data in metadata if self.metadata_is_orphan(meta_data.metadata_id)]):
+        if all((self.remove_metadata(meta_data.metadata_id)
+                for meta_data in metadata if self.metadata_is_orphan(meta_data.metadata_id))):
             return self.commit()
         return False
 
@@ -672,8 +671,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all([self.remove_annotation(annotation.annotation_id) for annotation in annotations
-                if self.annotation_is_orphan(annotation.annotation_id)]):
+        if all((self.remove_annotation(annotation.annotation_id) for annotation in annotations
+                if self.annotation_is_orphan(annotation.annotation_id))):
             return self.commit()
         return False
 
@@ -727,8 +726,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all([self.remove_document(document.document_id) for document in documents
-                if self.document_is_orphan(document.document_id)]):
+        if all((self.remove_document(document.document_id) for document in documents
+                if self.document_is_orphan(document.document_id))):
             return self.commit()
         return False
 
@@ -794,8 +793,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all([self.remove_run(run.run_id) for run in runs
-                if self.run_is_orphan(run.run_id)]):
+        if all((self.remove_run(run.run_id) for run in runs
+                if self.run_is_orphan(run.run_id))):
             return self.commit()
         return False
 
@@ -828,8 +827,8 @@ class OrbisDb(SqlDb):
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all([self.remove_annotation_type(annotation_type.type_id) for annotation_type in annotation_types
-                if self.annotation_type_is_orphan(annotation_type.type_id)]):
+        if all((self.remove_annotation_type(annotation_type.type_id) for annotation_type in annotation_types
+                if self.annotation_type_is_orphan(annotation_type.type_id))):
             return self.commit()
         return False
 
@@ -853,7 +852,7 @@ class OrbisDb(SqlDb):
             for csat in corpus.supported_annotation_types:
                 self.session.delete(csat)
             self.commit()
-            if (all([self.remove_run(run.run_id) for run in runs if run])
+            if (all((self.remove_run(run.run_id) for run in runs if run))
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     and self.try_catch(lambda: not self.session.delete(corpus),
                                        f'Corpus with id {corpus_id} could not be removed from orbis db.')

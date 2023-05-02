@@ -1,5 +1,4 @@
 import re
-from copy import copy
 from enum import Enum
 from typing import List
 

@@ -6,13 +6,15 @@ from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.role import Role
 
+DEFAULT_PASSWORD_HASH = xxh32_hexdigest('')
+
 
 class Annotator(OrbisPydanticBaseModel):
     name: str
     roles: List[Role]
-    password: str = xxh32_hexdigest('')
-    
-    def __init__(self, name: str, roles: List[Role], password: str = xxh32_hexdigest('')):
+    password: str = DEFAULT_PASSWORD_HASH
+
+    def __init__(self, name: str, roles: List[Role], password: str = DEFAULT_PASSWORD_HASH):
         super().__init__(name=name, roles=roles, password=password)
 
     def __hash__(self):

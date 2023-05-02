@@ -7,7 +7,7 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 class Metadata(OrbisPydanticBaseModel):
     key: str
     value: str
-    
+
     def __init__(self, key: str, value: str):
         super().__init__(key=key, value=value)
 

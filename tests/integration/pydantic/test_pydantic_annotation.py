@@ -16,3 +16,7 @@ def test_annotation_initialization():
     assert annotation.metadata == [Metadata('key1', 'value1'), Metadata('key2', 'value2')]
 
 
+def test_annotation_json_serialization():
+    annotation = Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
+                            metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
+    assert annotation.json()

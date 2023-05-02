@@ -1,4 +1,4 @@
-from typing import Dict, List, Union
+from typing import List
 
 from xxhash import xxh32_intdigest
 

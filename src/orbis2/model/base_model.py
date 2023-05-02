@@ -29,7 +29,7 @@ class OrbisPydanticBaseModel(BaseModel):
         copy = deepcopy(self)
         return copy.set(**kwargs)
 
-    def set(self, **kwargs) -> 'OrbisPydanticBaseModel':
+    def set(self, **kwargs) -> 'OrbisPydanticBaseModel':    # noqa A003
         """
         Set the given keys to the provided values for the object.
         """
@@ -37,10 +37,13 @@ class OrbisPydanticBaseModel(BaseModel):
             setattr(self, key, value)
         return self
 
-    def dict(self, *args, **kwargs):
+    def dict(self, *args, **kwargs):                        # noqa A003
         output = super().dict(*args, **kwargs)
         output['_id'] = self._id
         return output
+
+    def json(self):
+        return self.dict(by_alias=True, exclude_unset=True, exclude_none=True)
 
     def __str__(self):
         attr_values = [f'{key}={value}'
