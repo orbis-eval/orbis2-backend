@@ -1,21 +1,14 @@
-from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.role_dao import RoleDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class Role(BaseModel):
+class Role(OrbisPydanticBaseModel):
     name: str
-    _id: int
 
-    def __init__(self, name: str, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
+    def __init__(self, name: str):
+        super().__init__(name=name)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -27,7 +20,7 @@ class Role(BaseModel):
 
     @classmethod
     def from_role_dao(cls, role_dao: RoleDao) -> 'Role':
-        role = cls(role_dao.name)
+        role = cls(name=role_dao.name)
         return role
 
     @classmethod
@@ -40,6 +33,3 @@ class Role(BaseModel):
     @staticmethod
     def to_role_daos(roles: [RoleDao]) -> [RoleDao]:
         return [role.to_dao() for role in roles]
-
-    def copy(self) -> 'Role':
-        return Role(self.name)

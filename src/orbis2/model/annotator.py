@@ -1,30 +1,19 @@
-from dataclasses import dataclass
 from typing import List
 
 from xxhash import xxh32_intdigest, xxh32_hexdigest
 
 from orbis2.database.orbis.entities.annotator_dao import AnnotatorDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.role import Role
 
 
-@dataclass
-class Annotator(BaseModel):
+class Annotator(OrbisPydanticBaseModel):
     name: str
     roles: List[Role]
-    password: str
-    _id: int
-
-    def __init__(self, name: str, roles: List[Role], password: str = None, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
-        self.roles = roles
-        if not password:
-            password = xxh32_hexdigest('')
-        self.password = password
+    password: str = xxh32_hexdigest('')
+    
+    def __init__(self, name: str, roles: List[Role], password: str = xxh32_hexdigest('')):
+        super().__init__(name=name, roles=roles, password=password)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -36,7 +25,8 @@ class Annotator(BaseModel):
 
     @classmethod
     def from_annotator_dao(cls, annotator_dao: AnnotatorDao) -> 'Annotator':
-        annotator = cls(annotator_dao.name, Role.from_role_daos(annotator_dao.roles), annotator_dao.password)
+        annotator = cls(name=annotator_dao.name, roles=Role.from_role_daos(annotator_dao.roles),
+                        password=annotator_dao.password)
         return annotator
 
     @classmethod
@@ -46,6 +36,3 @@ class Annotator(BaseModel):
     def to_dao(self) -> AnnotatorDao:
         return AnnotatorDao(annotator_id=self._id, name=self.name, password=self.password,
                             roles=Role.to_role_daos(self.roles))
-
-    def copy(self) -> 'Annotator':
-        return Annotator(self.name, [role.copy() for role in self.roles], self.password)

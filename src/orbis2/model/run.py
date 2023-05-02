@@ -1,34 +1,25 @@
-from dataclasses import dataclass
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.model.annotation import Annotation
-from orbis2.model.annotation_type import AnnotationType
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 
 
-@dataclass
-class Run(BaseModel):
+class Run(OrbisPydanticBaseModel):
     name: str
-    description: str
-    corpus: Corpus
-    document_annotations: Dict[Document, List[Annotation]]
-    # parents: ['Run']
-    _id: int
+    description: str = None
+    corpus: Corpus = None
+    document_annotations: Dict[Document, List[Annotation]] = None
+    parents: Optional[List['Run']] = None
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: ['Run'] = None, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
-        self.description = description
-        self.corpus = corpus
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None):
+        super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
+                         parents=parents)
         self.document_annotations = document_annotations if document_annotations else {}
         self.parents = parents if parents else []
 
@@ -54,11 +45,11 @@ class Run(BaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
-        run = cls(run_dao.name,
-                  run_dao.description,
-                  Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
-                  document_annotations,
-                  Run.from_run_daos(run_dao.parents))
+        run = cls(name=run_dao.name,
+                  description=run_dao.description,
+                  corpus=Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
+                  document_annotations=document_annotations,
+                  parents=Run.from_run_daos(run_dao.parents))
         return run
 
     @classmethod
@@ -84,8 +75,8 @@ class Run(BaseModel):
             parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
-            document.copy(new_run._id): [
-                annotation.copy(new_run._id, document._id) for annotation in annotations
+            document.refined_copy(run_id=new_run._id): [
+                annotation.refined_copy(run_id=new_run._id, document_id=document._id) for annotation in annotations
             ] for document, annotations in self.document_annotations.items()
         }
         new_run.document_annotations = document_annotations

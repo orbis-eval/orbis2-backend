@@ -1,23 +1,15 @@
-from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.metadata_dao import MetadataDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class Metadata(BaseModel):
+class Metadata(OrbisPydanticBaseModel):
     key: str
     value: str
-    _id: int
-
-    def __init__(self, key: str, value: str, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.key = key
-        self.value = value
+    
+    def __init__(self, key: str, value: str):
+        super().__init__(key=key, value=value)
 
     def __hash__(self):
         return xxh32_intdigest(self.key + self.value)
@@ -29,7 +21,7 @@ class Metadata(BaseModel):
 
     @classmethod
     def from_metadata_dao(cls, metadata_dao: MetadataDao) -> 'Metadata':
-        metadata = cls(metadata_dao.key, metadata_dao.value)
+        metadata = cls(key=metadata_dao.key, value=metadata_dao.value)
         return metadata
 
     @classmethod
@@ -42,12 +34,3 @@ class Metadata(BaseModel):
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:
         return [metadata.to_dao() for metadata in metadata]
-
-    def __str__(self):
-        return f'<Metadata: {self.key}: {self.value}>'
-
-    def __repr__(self):
-        return self.__str__()
-
-    def copy(self) -> 'Metadata':
-        return Metadata(self.key, self.value)

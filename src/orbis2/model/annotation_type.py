@@ -1,21 +1,15 @@
-from dataclasses import dataclass
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 
-@dataclass
-class AnnotationType(BaseModel):
+class AnnotationType(OrbisPydanticBaseModel):
     name: str
-    _id: int
+    color_id: int = None
 
-    def __init__(self, name: str, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.name = name
+    def __init__(self, name: str, color_id: str = None):
+        super().__init__(name=name, color_id=color_id)
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -27,7 +21,7 @@ class AnnotationType(BaseModel):
 
     @classmethod
     def from_annotation_type_dao(cls, annotation_type_dao: AnnotationTypeDao) -> 'AnnotationType':
-        annotation_type = cls(annotation_type_dao.name)
+        annotation_type = cls(name=annotation_type_dao.name)
         return annotation_type
 
     @classmethod
@@ -41,6 +35,3 @@ class AnnotationType(BaseModel):
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:
         return [annotation_type.to_dao() for annotation_type in annotation_types]
-
-    def copy(self) -> 'AnnotationType':
-        return AnnotationType(self.name)

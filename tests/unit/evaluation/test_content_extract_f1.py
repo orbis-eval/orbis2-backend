@@ -1,24 +1,21 @@
 from orbis2.evaluation.metric import SUPPORTED_METRICS
-from orbis2.model.annotation import Annotation
-from orbis2.model.annotation_type import AnnotationType
-from orbis2.model.annotator import Annotator
-
-ANNOTATOR = Annotator("muster", roles=[])
+from orbis2.model.annotation import get_mock_annotation as Annotation
 
 
 def test_content_extraction_f1_single_document():
     reference = {
-        '0': [Annotation("", "Ehre sei Gott in der Höhe!", 30, 56,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR),
+        '0': [Annotation(surface_forms='Ehre sei Gott in der Höhe!', start_indices=30, end_indices=56,
+                         annotation_type='praise'),
               ]
     }
 
     annotator = {
-        '0': [Annotation("", "Ehre sei Gott", 30, 43,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR),
+        '0': [Annotation(surface_forms='Ehre sei Gott', start_indices=30, end_indices=43, annotation_type='praise'),
               ]
     }
 
+    print(reference)
+    print(annotator)
     print(SUPPORTED_METRICS['content_extraction_f1'].metric)
     res = SUPPORTED_METRICS['content_extraction_f1'].metric().compute([reference, annotator])
     assert res.mP == 1
@@ -31,17 +28,18 @@ def test_content_extraction_f1_single_document():
 
 def test_content_extraction_f1_multiple_documents():
     reference = {
-        '0': [Annotation("", "Ehre sei Gott in der Höhe!", 30, 56,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)],
-        '1':  [Annotation("", "Und Friede den Menschen, die guten Willens sind.", 90, 138,
-                          annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)]
+        '0': [Annotation(surface_forms="Ehre sei Gott in der Höhe!", start_indices=30, end_indices=56,
+                         annotation_type="praise")],
+        '1':  [Annotation(surface_forms="Und Friede den Menschen, die guten Willens sind.",
+                          start_indices=90, end_indices=138, annotation_type="praise")]
     }
 
     annotator = {
-        '0': [Annotation("", "Ehre sei Gott", 30, 43,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)],
-        '1': [Annotation("", "Friede den Menschen, die guten Willens sind. Im Himmel", 94, 148,
-                         annotation_type=AnnotationType("praise"), annotator=ANNOTATOR)]
+        '0': [Annotation(surface_forms="Ehre sei Gott", start_indices=30, end_indices=43,
+                         annotation_type="praise", annotator="mocky")],
+        '1': [Annotation(surface_forms="Friede den Menschen, die guten Willens sind. Im Himmel",
+                         start_indices=94, end_indices=148,
+                         annotation_type="praise", annotator="mocky")]
     }
 
     res = SUPPORTED_METRICS['content_extraction_f1'].metric().compute([reference, annotator])

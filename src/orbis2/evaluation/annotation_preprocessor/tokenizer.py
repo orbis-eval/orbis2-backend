@@ -31,11 +31,11 @@ class AnnotationTokenizer(AnnotationPreprocessor):
                                          annotation.end_indices):
                 idx = 0
                 while m := self._tokenize.search(surface[idx:]):
-                    new = copy(annotation)
-                    new.surface_forms = (m.group(),)
-                    new.start_indices = (start + idx + m.start(),)
-                    new.end_indices = (start + idx + m.end(),)
+                    new = annotation.refined_copy(
+                        surface_forms=(m.group(),),
+                        start_indices=(start + idx + m.start(),),
+                        end_indices=(start + idx + m.end(),)
+                    )
                     result.append(new)
                     idx += m.end()
-
         return result

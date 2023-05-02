@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import List
 
 from xxhash import xxh32_intdigest
@@ -6,30 +5,21 @@ from xxhash import xxh32_intdigest
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
-from orbis2.model.base_model import BaseModel
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
 
 
-@dataclass
-class Document(BaseModel):
+class Document(OrbisPydanticBaseModel):
     content: str
     key: str
-    run_id: int
-    metadata: List[Metadata]
-    done: bool
-    _id: int
+    run_id: int = None
+    metadata: List[Metadata] = None
+    done: bool = False
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
-                 done: bool = False, _id: int = 0):
-        """
-        CONSTRUCTOR
-
-        """
-        self.content = content
-        self.key = key
-        self.run_id = run_id
+                 done: bool = False):
+        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done)
         self.metadata = metadata if metadata else []
-        self.done = done
 
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)
@@ -41,8 +31,8 @@ class Document(BaseModel):
 
     @classmethod
     def from_document_dao(cls, document_dao: DocumentDao, run_id: int = None, done: bool = False) -> 'Document':
-        document = cls(document_dao.content, document_dao.key, run_id,
-                       Metadata.from_metadata_daos(document_dao.meta_data), done)
+        document = cls(content=document_dao.content, key=document_dao.key, run_id=run_id,
+                       metadata=Metadata.from_metadata_daos(document_dao.meta_data), done=done)
         return document
 
     @classmethod
@@ -58,6 +48,3 @@ class Document(BaseModel):
             document_has_annotation_daos = []
         return RunHasDocumentDao(run_id=self.run_id, document_id=self._id, document=self.to_dao(),
                                  document_has_annotations=document_has_annotation_daos, done=self.done)
-
-    def copy(self, run_id: int) -> 'Document':
-        return Document(self.content, self.key, run_id, self.metadata.copy())
