@@ -25,7 +25,7 @@ def test_get_runs_dbExistsAndContainsRuns_getAllRunsCorrectlyTransformed(insert_
     assert run.corpus.name == 'corpus1'
 
     assert len(run.corpus.supported_annotation_types) == 1
-    supported_annotation_type = list(run.corpus.supported_annotation_types.items())[0][0]
+    supported_annotation_type = run.corpus.supported_annotation_types[0]
     assert type(supported_annotation_type) is AnnotationType
     assert supported_annotation_type._id > 0
     assert supported_annotation_type.name == 'annotation-type1'
@@ -124,9 +124,9 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 
     OrbisService().add_run(
         Run(
-            'run2', 'run2', Corpus('corpus2', {AnnotationType('annotation-type1'): 1}),
+            'run2', 'run2', Corpus('corpus2', [AnnotationType('annotation-type1', color_id=1)]),
             {Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')]):
-                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1', color_id=1),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]}))
 
     documents = OrbisService().get_documents_of_corpus(corpus_id)
@@ -138,17 +138,17 @@ def test_get_documents_of_corpus_dbExistsAndContainsMultipleCorpus_returnDocumen
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_corpusContainsTwoDocumentsPageSize1_returnOnlyFirstDocumentOfCorrectCorpus(
         clear_test_data_orbis):
-    corpus =  Corpus('corpus1', {AnnotationType('annotation-type1'): 1})
+    corpus =  Corpus('corpus1', [AnnotationType('annotation-type1', color_id=1)])
     document1 = Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')])
     document2 = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
     OrbisService().add_run(
         Run(
             'run1', 'run1', corpus,
             {document1:
-                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1', color_id=1),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])],
              document2:
-                 [Annotation('url', 'Texts', 0, 5, AnnotationType('annotation-type1'),
+                 [Annotation('url', 'Texts', 0, 5, AnnotationType('annotation-type1', color_id=1),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]
              }))
 
@@ -160,17 +160,17 @@ def test_get_documents_of_corpus_corpusContainsTwoDocumentsPageSize1_returnOnlyF
 # noinspection PyPep8Naming
 def test_get_documents_of_corpus_corpusContainsTwoDocumentsSkipFirstPageSize1_returnSecondDocumentOfCorrectCorpus(
         clear_test_data_orbis):
-    corpus =  Corpus('corpus1', {AnnotationType('annotation-type1'): 1})
+    corpus =  Corpus('corpus1', [AnnotationType('annotation-type1', color_id=1)])
     document1 = Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')])
     document2 = Document('Text, das ist ein anderes Beispiel', metadata=[Metadata('key1', 'value1')])
     OrbisService().add_run(
         Run(
             'run1', 'run1', corpus,
             {document1:
-                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                 [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1', color_id=1),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])],
              document2:
-                 [Annotation('url', 'Texts', 0, 5, AnnotationType('annotation-type1'),
+                 [Annotation('url', 'Texts', 0, 5, AnnotationType('annotation-type1', color_id=1),
                              Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]
              }))
 

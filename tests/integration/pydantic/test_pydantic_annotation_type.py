@@ -21,10 +21,10 @@ def test_annotation_type_pydantic_model():
     """
     corpus = Corpus(
         name='corpus1',
-        supported_annotation_types={
-            AnnotationType(name='annotation-type1'): 0,
-            AnnotationType(name='annotation-type2'): 1
-        },
+        supported_annotation_types=[
+            AnnotationType(name='annotation-type1', color_id=0),
+            AnnotationType(name='annotation-type2', color_id=1)
+        ],
     )
 
     assert corpus.dict()

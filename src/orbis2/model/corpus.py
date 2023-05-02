@@ -10,15 +10,10 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class Corpus(OrbisPydanticBaseModel):
     name: str
-    supported_annotation_types: Union[Dict[AnnotationType, int], List[AnnotationType]]
+    supported_annotation_types: List[AnnotationType]
 
-    def __init__(self, name: str, supported_annotation_types: Union[Dict[AnnotationType, int], List[AnnotationType]]):
+    def __init__(self, name: str, supported_annotation_types: List[AnnotationType]):
         super().__init__(name=name, supported_annotation_types=supported_annotation_types)
-        if isinstance(supported_annotation_types, dict):
-            self.supported_annotation_types = supported_annotation_types
-        else:
-            self.supported_annotation_types = {annotation_type: idx
-                                               for idx, annotation_type in enumerate(supported_annotation_types)}
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
