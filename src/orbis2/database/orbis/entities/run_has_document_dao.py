@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import List, TYPE_CHECKING
 
 from sqlalchemy import Boolean, Column, ForeignKey
 from sqlalchemy.orm import relationship, mapped_column, Mapped
@@ -7,8 +7,6 @@ from sqlalchemy.orm import relationship, mapped_column, Mapped
 from orbis2.database.orbis.entities.document_dao import DocumentDao
 from orbis2.database.orbis.entities.run_dao import RunDao
 from orbis2.database.orbis.orbis_base import OrbisBase
-
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentHasAnnotationDao
 
