@@ -42,7 +42,8 @@ class Corpus(OrbisPydanticBaseModel):
     def to_dao(self) -> CorpusDao:
         c = CorpusDao(corpus_id=self._id, name=self.name,
                       supported_annotation_types=[
-                          CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an.to_dao(),
-                                                          color_id=an.color_id)
+                          (CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an.to_dao())
+                              if not an.color_id else CorpusSupportsAnnotationTypeDao(
+                              corpus_id=self._id, annotation_type=an.to_dao(), color_id=an.color_id))
                           for an in self.supported_annotation_types])
         return c
