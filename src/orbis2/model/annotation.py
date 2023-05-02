@@ -60,12 +60,6 @@ class Annotation(OrbisPydanticBaseModel):
                                 [metadata.__hash__() for metadata in self.metadata].__str__(),
                                 ).__str__())
 
-    def __str__(self):
-        return f'Annotation({self.surface_forms}{self.start_indices}, {self.end_indices}, {self.annotation_type})'
-
-    def __repr__(self):
-        return self.__str__()
-
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int = None, document_id: int = None,
                             timestamp: datetime = datetime.now()) -> 'Annotation':

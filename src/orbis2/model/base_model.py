@@ -41,3 +41,11 @@ class OrbisPydanticBaseModel(BaseModel):
         output = super().dict(*args, **kwargs)
         output['_id'] = self._id
         return output
+
+    def __str__(self):
+        attr_values = [f'{key}={value}'
+                       for key, value in sorted(self.dict().items()) if key != '_id'] + [f'_id={self._id}']
+        return f'<{self.__class__.__name__}({", ".join(attr_values)})>'
+
+    def __repr__(self):
+        return self.__str__()

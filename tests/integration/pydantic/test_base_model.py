@@ -44,3 +44,21 @@ def test_refined_copy():
     assert annotation_copy.annotator == Annotator('Albert', [Role('admin')])
     assert annotation_copy.metadata == [Metadata('key1', 'value1'), Metadata('key2', 'value2'),
                                         Metadata('key3', 'value3')]
+
+
+def test_str():
+    """
+    Tests the behavior of the __str__ function.
+    """
+    annotation_type = AnnotationType('mytype')
+    assert str(annotation_type) == '<AnnotationType(color_id=None, name=mytype, _id=4102450537)>'
+
+
+def test_repr():
+    """
+    Tests the behavior of the __repr__ function.
+    """
+    annotation_type = AnnotationType('mytype')
+    assert str(annotation_type) == repr(annotation_type)
+
+
