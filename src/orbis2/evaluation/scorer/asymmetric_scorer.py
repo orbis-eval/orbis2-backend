@@ -29,8 +29,8 @@ class AsymmetricScorer(Scorer):
             scoring_operator: Function used for combining the results from the
                 surface_matcher and entity_scorer.
         """
-        self.scorer = lambda true, pred: scoring_operator(surface_scorer(
-             true, pred), entity_scorer(true, pred))
+        self.scorer = lambda true, pred: scoring_operator(surface_scorer(true, pred),
+                                                          entity_scorer(true, pred))
 
     @staticmethod
     def from_scorer(s: Scorer):

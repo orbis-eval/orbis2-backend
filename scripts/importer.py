@@ -98,8 +98,11 @@ def import_remote_corpus(subargs):
 
     # fetch the corpus from the remove server
     corpus = CORPORA[subargs.corpus_name]
+    if not corpus.url.lower().startswith('http'):
+        raise ValueError(f'Invalid URL: {corpus.url}.')
+
     print(f"Fetching remote corpus from '{corpus.url}'")
-    with urlopen(corpus.url) as f:
+    with urlopen(corpus.url) as f:      # noqa: S310 -- http schema enforced above
         documents = [f.read().decode(f.headers.get_content_charset())]
         print("Importing corpus.")
         import_documents(documents, subargs.run_name, subargs.run_description,

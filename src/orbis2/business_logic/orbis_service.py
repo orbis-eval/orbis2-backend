@@ -1,4 +1,4 @@
-from typing import Union, List, Dict
+from typing import List, Dict, Optional
 
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
@@ -25,12 +25,12 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
-    def get_run_by_name(self, run_name: str) -> Union[Run, None]:
+    def get_run_by_name(self, run_name: str) -> Optional[Run]:
         if run := self.orbis_db.get_run_by_name(run_name):
             return Run.from_run_dao(run)
         return None
 
-    def get_run(self, run_id: int) -> Union[Run, None]:
+    def get_run(self, run_id: int) -> Optional[Run]:
         if run := self.orbis_db.get_run(run_id):
             return Run.from_run_dao(run)
         return None
@@ -64,7 +64,7 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
-    def get_next_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+    def get_next_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
             The next document for the given run. Cycles through (i.e., returns the first document when called with the
@@ -74,7 +74,7 @@ class OrbisService:
             return Document.from_document_dao(document)
         return None
 
-    def get_previous_document(self, run_id: int, document_id: int) -> Union[Document, None]:
+    def get_previous_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
             The previous document for the given run and document_id. Cycles through (i.e., return the last document
@@ -84,7 +84,7 @@ class OrbisService:
             return Document.from_document_dao(document)
         return None
 
-    def get_document(self, document_id: int) -> Union[Document, None]:
+    def get_document(self, document_id: int) -> Optional[Document]:
         if document := self.orbis_db.get_document(document_id):
             return Document.from_document_dao(document)
         return None
@@ -98,11 +98,11 @@ class OrbisService:
                 return Annotation.from_annotation_daos(annotations, run_id, document_id)
         return []
 
-    def get_annotation(self, run_id: int, document_id: int, annotation_id: int) -> Union[Annotation, None]:
-        if run_id and document_id and annotation_id:
-            if document_has_annotations := self.orbis_db.get_annotation_of_document_by_run_id(run_id, document_id,
-                                                                                              annotation_id):
-                return Annotation.from_document_has_annotation(document_has_annotations)
+    def get_annotation(self, run_id: int, document_id: int, annotation_id: int) -> Optional[Annotation]:
+        if run_id and document_id and annotation_id and (
+                document_has_annotations := self.orbis_db.get_annotation_of_document_by_run_id(run_id, document_id,
+                                                                                               annotation_id)):
+            return Annotation.from_document_has_annotation(document_has_annotations)
         return None
 
     def get_corpora(self) -> List[Corpus]:
@@ -110,13 +110,12 @@ class OrbisService:
             return Corpus.from_corpus_daos(corpora)
         return []
 
-    def get_corpus(self, corpus_id) -> Union[Corpus, None]:
-        if corpus_id:
-            if corpus := self.orbis_db.get_corpus(corpus_id):
-                return Corpus.from_corpus_dao(corpus)
+    def get_corpus(self, corpus_id) -> Optional[Corpus]:
+        if corpus_id and (corpus := self.orbis_db.get_corpus(corpus_id)):
+            return Corpus.from_corpus_dao(corpus)
         return None
 
-    def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
+    def get_corpus_id(self, corpus_name: str) -> Optional[int]:
         return self.orbis_db.get_corpus_id(corpus_name)
 
     def get_corpus_annotation_types(self, corpus_id: int) -> Dict[AnnotationType, int]:
@@ -169,15 +168,12 @@ class OrbisService:
     def add_runs(self, runs: [Run]) -> bool:
         if not runs:
             return False
-        for run in runs:
-            if not self.orbis_db.add_run(run.to_dao()):
-                return False
-        return True
+        return all(self.orbis_db.add_run(run.to_dao()) for run in runs)
 
-    def add_annotation_to_document(self, annotation: Annotation) -> Union[Annotation, None]:
-        if annotation:
-            if annotation_id := self.orbis_db.add_annotation_to_document(annotation.to_document_annotation_dao()):
-                return self.get_annotation(annotation.run_id, annotation.document_id, annotation_id)
+    def add_annotation_to_document(self, annotation: Annotation) -> Optional[Annotation]:
+        if annotation and (annotation_id := self.orbis_db.add_annotation_to_document(
+                annotation.to_document_annotation_dao())):
+            return self.get_annotation(annotation.run_id, annotation.document_id, annotation_id)
         return None
 
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
@@ -188,10 +184,7 @@ class OrbisService:
     def add_annotation_types(self, annotation_types: [AnnotationType]) -> bool:
         if not annotation_types:
             return False
-        for annotation_type in annotation_types:
-            if not self.add_annotation_type(annotation_type):
-                return False
-        return True
+        return all(self.add_annotation_type(annotation_type) for annotation_type in annotation_types)
 
     def remove_annotation_from_document(self, annotation: Annotation) -> bool:
         if annotation:

@@ -1,7 +1,7 @@
 import logging.config
 import sys
 import threading
-from typing import Union, Tuple
+from typing import Optional, Tuple
 
 import uvicorn as uvicorn
 from fastapi import FastAPI
@@ -76,7 +76,7 @@ def get_document_id(index: int) -> str:
         return global_document_ids[global_document_id_index]
 
 
-def get_run_and_document(run_document_id: str) -> Union[Tuple[Run, Document], None]:
+def get_run_and_document(run_document_id: str) -> Optional[Tuple[Run, Document]]:
     run_id, document_id = (int(str_id) for str_id in run_document_id.split(sep='|'))
     if run := get_orbis_service().get_run(run_id):
         document = [document for document in run.document_annotations.keys() if document.document_id == document_id][0]
@@ -146,32 +146,31 @@ def get_current_index_state():
 def get_document(da_id=None):
     response = Response(status_code=400,
                         message='No corpora found.')
-    if da_id:
-        if run_document := get_run_and_document(da_id):
-            run, document = run_document
-            annotations = run.document_annotations[document]
-            response = Response(
-                status_code=200,
-                content={
-                    'da_id': da_id,
-                    'text': document.content,
-                    'annotations': {
-                        'd_id': document.document_id,
-                        'meta': '',
-                        'annotations': [{
-                            'key': annotation.key,
-                            'type': annotation.annotation_type.name + "-" + annotation.key.split('#')[1].replace(
-                                '/', '')
-                            if annotation.annotation_type.name == 'proposal' else annotation.annotation_type.name,
-                            'surface_form': annotation.surface_forms[0],
-                            'start': annotation.start_indices[0],
-                            'end': annotation.end_indices[0],
-                            'scope': '',
-                            'meta': {}
-                        } for annotation in annotations]
-                    }
+    if da_id and (run_document := get_run_and_document(da_id)):
+        run, document = run_document
+        annotations = run.document_annotations[document]
+        response = Response(
+            status_code=200,
+            content={
+                'da_id': da_id,
+                'text': document.content,
+                'annotations': {
+                    'd_id': document.document_id,
+                    'meta': '',
+                    'annotations': [{
+                        'key': annotation.key,
+                        'type': annotation.annotation_type.name + "-" + annotation.key.split('#')[1].replace(
+                            '/', '')
+                        if annotation.annotation_type.name == 'proposal' else annotation.annotation_type.name,
+                        'surface_form': annotation.surface_forms[0],
+                        'start': annotation.start_indices[0],
+                        'end': annotation.end_indices[0],
+                        'scope': '',
+                        'meta': {}
+                    } for annotation in annotations]
                 }
-            )
+            }
+        )
     return response.as_json()
 
 
@@ -187,7 +186,7 @@ def save_document_annotations(data: DataExchangeModel):
             annotation.get('surface_form'), annotation.get('start'),
             annotation.get('end'), AnnotationType(annotation.get('type').split('-')[0]),
             Annotator(data.get('annotator'), []), metadata=[Metadata('segment', 'unknown')])
-                       for annotation in data.get('data').get('annotations')]
+            for annotation in data.get('data').get('annotations')]
         run.document_annotations[document] = annotations
         if get_orbis_service().add_run(run):
             response = Response(status_code=200,

@@ -1,5 +1,5 @@
 import logging
-from typing import Union, List, Callable, Set, Dict
+from typing import List, Callable, Set, Dict, Optional
 
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
@@ -33,7 +33,7 @@ class OrbisDb(SqlDb):
         """
         super().__init__(AppConfig.get_orbis_db_url(), OrbisBase)
 
-    def get_runs(self) -> Union[List[RunDao], None]:
+    def get_runs(self) -> Optional[List[RunDao]]:
         """
         Get all runs from database
 
@@ -50,7 +50,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def get_run_by_name(self, run_name: str) -> Union[RunDao, None]:
+    def get_run_by_name(self, run_name: str) -> Optional[RunDao]:
         """
         Get run from database by its name
 
@@ -66,7 +66,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'There are {len(results)} (!=0) runs run name {run_name} in orbis database.')
         return None
 
-    def get_run(self, run_id: int) -> Union[RunDao, None]:
+    def get_run(self, run_id: int) -> Optional[RunDao]:
         """
         Get run from database by its id
 
@@ -80,7 +80,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Run with run id {run_id} has not been found in orbis database.')
         return None
 
-    def get_runs_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
+    def get_runs_by_corpus_id(self, corpus_id: int) -> Optional[List[RunDao]]:
         """
         Get all runs with a given corpus_id from database
 
@@ -101,7 +101,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
-    def get_corpus(self, corpus_id: int) -> Union[CorpusDao, None]:
+    def get_corpus(self, corpus_id: int) -> Optional[CorpusDao]:
         """
         Get corpus from database by its id
 
@@ -115,7 +115,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Corpus with corpus id {corpus_id} has not been found in orbis database.')
         return None
 
-    def get_document(self, document_id: int) -> Union[DocumentDao, None]:
+    def get_document(self, document_id: int) -> Optional[DocumentDao]:
         """
         Get document from database by its id
 
@@ -130,7 +130,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
         return None
 
-    def get_run_names_by_corpus_id(self, corpus_id: int) -> Union[List[RunDao], None]:
+    def get_run_names_by_corpus_id(self, corpus_id: int) -> Optional[List[RunDao]]:
         """
         Get all run names with a given corpus_id from database
 
@@ -150,7 +150,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
-    def get_run_names(self) -> Union[List[RunDao], None]:
+    def get_run_names(self) -> Optional[List[RunDao]]:
         """
         Get all run names from database
 
@@ -167,7 +167,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
-    def get_corpora(self) -> Union[List[CorpusDao], None]:
+    def get_corpora(self) -> Optional[List[CorpusDao]]:
         """
         Get all corpora from database
 
@@ -181,7 +181,7 @@ class OrbisDb(SqlDb):
         logging.debug('There are no corpus entries in orbis database.')
         return None
 
-    def get_corpus_id(self, corpus_name: str) -> Union[int, None]:
+    def get_corpus_id(self, corpus_name: str) -> Optional[int]:
         """
         Get the id of a corpus given by its name.
 
@@ -201,7 +201,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def get_documents(self) -> Union[List[DocumentDao], None]:
+    def get_documents(self) -> Optional[List[DocumentDao]]:
         """
         Get all documents from database
 
@@ -219,7 +219,7 @@ class OrbisDb(SqlDb):
             return None
 
     def get_documents_of_corpus(self, corpus_id: int,
-                                page_size: int = None, skip: int = 0) -> Union[List[DocumentDao], None]:
+                                page_size: int = None, skip: int = 0) -> Optional[List[DocumentDao]]:
         """
         Get all documents for a given corpus from database
 
@@ -242,7 +242,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
         return None
 
-    def get_documents_of_run(self, run_id: int) -> Union[List[DocumentDao], None]:
+    def get_documents_of_run(self, run_id: int) -> Optional[List[DocumentDao]]:
         """
         Get all documents for a given run from database
 
@@ -262,7 +262,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for run with run id {run_id} have not been found in orbis database.')
         return None
 
-    def get_next_document_of_run(self, run_id: int, document_id: int) -> Union[DocumentDao, None]:
+    def get_next_document_of_run(self, run_id: int, document_id: int) -> Optional[DocumentDao]:
         """
         Get the next document for the given run.
 
@@ -295,7 +295,7 @@ class OrbisDb(SqlDb):
         logging.debug(f'Documents for run with run id {run_id} have not been found in orbis database.')
         return None
 
-    def get_previous_document_of_run(self, run_id: int, document_id: int) -> Union[DocumentDao, None]:
+    def get_previous_document_of_run(self, run_id: int, document_id: int) -> Optional[DocumentDao]:
         """
         Get the previous document for the given run.
         If called with the id of the first document, the method returns the last one.
@@ -330,7 +330,7 @@ class OrbisDb(SqlDb):
         return None
 
     def get_annotations_of_document_by_run_id(self, run_id: int,
-                                              document_id: int) -> Union[List[DocumentHasAnnotationDao], None]:
+                                              document_id: int) -> Optional[List[DocumentHasAnnotationDao]]:
         """
         Get all annotations for a specific document of a specific run from database
 
@@ -355,7 +355,7 @@ class OrbisDb(SqlDb):
 
     def get_annotation_of_document_by_run_id(self, run_id: int,
                                              document_id: int,
-                                             annotation_id: int) -> Union[DocumentHasAnnotationDao, None]:
+                                             annotation_id: int) -> Optional[DocumentHasAnnotationDao]:
         """
         Get specific annotation by id for a specific document of a specific run from database
 
@@ -378,7 +378,7 @@ class OrbisDb(SqlDb):
                       f'combination in orbis database.')
         return None
 
-    def get_annotations(self) -> Union[List[AnnotationDao], None]:
+    def get_annotations(self) -> Optional[List[AnnotationDao]]:
         """
         Get all annotations from database
 
@@ -395,7 +395,7 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def get_annotation(self, annotation_id: int) -> Union[AnnotationDao, None]:
+    def get_annotation(self, annotation_id: int) -> Optional[AnnotationDao]:
         """
         Get annotation from database.
 
@@ -417,7 +417,7 @@ class OrbisDb(SqlDb):
             lambda: self.session.scalars(select(ColorPaletteDao)).all(),
             'Cannot obtain list of available ColorPalettes.', None)
 
-    def get_annotation_type(self, annotation_type_id: int) -> Union[AnnotationTypeDao, None]:
+    def get_annotation_type(self, annotation_type_id: int) -> Optional[AnnotationTypeDao]:
         """
         Get annotation type from database.
 
@@ -460,7 +460,7 @@ class OrbisDb(SqlDb):
         self.session.merge(csat)
         self.commit()
 
-    def get_metadata(self) -> Union[List[MetadataDao], None]:
+    def get_metadata(self) -> Optional[List[MetadataDao]]:
         """
         Get all metadata from database
 
@@ -476,7 +476,7 @@ class OrbisDb(SqlDb):
             logging.warning('All metadata request failed.')
             logging.debug(f'The following exception occurred: {e.__str__()}')
 
-    def get_metadata_by_id(self, metadata_id: int) -> Union[MetadataDao, None]:
+    def get_metadata_by_id(self, metadata_id: int) -> Optional[MetadataDao]:
         """
         Get metadata from database
 
@@ -489,7 +489,7 @@ class OrbisDb(SqlDb):
             lambda: self.session.scalars(select(MetadataDao).where(MetadataDao.metadata_id == metadata_id)).first(),
             f'No metadata with id: {metadata_id} found in orbis database.', None)
 
-    def get_annotators(self) -> Union[List[AnnotatorDao], None]:
+    def get_annotators(self) -> Optional[List[AnnotatorDao]]:
         """
         Get all annotators from database
 
@@ -554,9 +554,8 @@ class OrbisDb(SqlDb):
         Returns: True if metadata is an orphan, false otherwise
         """
         return not (self.session.scalars(
-            select(annotation_has_metadata_table).filter_by(metadata_id=metadata_id)).first()
-                    or self.session.scalars(
-                    select(document_has_metadata_table).filter_by(metadata_id=metadata_id)).first())
+            select(annotation_has_metadata_table).filter_by(metadata_id=metadata_id)).first() or
+            self.session.scalars(select(document_has_metadata_table).filter_by(metadata_id=metadata_id)).first())
 
     def annotation_is_orphan(self, annotation_id: int) -> bool:
         """
@@ -623,8 +622,8 @@ class OrbisDb(SqlDb):
         if metadata := self.get_metadata_by_id(metadata_id):
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             return (self.try_catch(lambda: not self.session.delete(metadata),
-                                   f'Metadata with id {metadata_id} could not be removed from orbis db.')
-                    and self.commit())
+                                   f'Metadata with id {metadata_id} could not be removed from orbis db.') and
+                    self.commit())
         return False
 
     def remove_orphan_metadata(self, metadata: Set[MetadataDao]) -> bool:
@@ -657,8 +656,8 @@ class OrbisDb(SqlDb):
             metadata = set(annotation.meta_data)
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(annotation),
-                               f'Annotation with id {annotation_id} could not be removed from orbis db.')
-                    and self.commit()):
+                               f'Annotation with id {annotation_id} could not be removed from orbis db.') and
+                    self.commit()):
                 return self.remove_orphan_metadata(metadata)
         return False
 
@@ -690,9 +689,9 @@ class OrbisDb(SqlDb):
                 DocumentHasAnnotationDao.run_id == document_has_annotation.run_id,
                 DocumentHasAnnotationDao.document_id == document_has_annotation.document_id,
                 DocumentHasAnnotationDao.annotation_id == document_has_annotation.annotation_id).delete(),
-                           f'Removing the annotation_document {document_has_annotation} failed.') and self.commit()):
-            if (self.annotation_is_orphan(document_has_annotation.annotation_id)
-                    and self.remove_annotation(document_has_annotation.annotation_id)):
+                f'Removing the annotation_document {document_has_annotation} failed.') and self.commit()):
+            if (self.annotation_is_orphan(document_has_annotation.annotation_id) and
+                    self.remove_annotation(document_has_annotation.annotation_id)):
                 return self.commit()
             return True
         return False
@@ -712,8 +711,8 @@ class OrbisDb(SqlDb):
             metadata = set(document.meta_data)
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(document),
-                               f'Document with id {document_id} could not be removed from orbis db.')
-                    and self.commit()):
+                               f'Document with id {document_id} could not be removed from orbis db.') and
+                    self.commit()):
                 return self.remove_orphan_metadata(metadata)
         return False
 
@@ -753,12 +752,12 @@ class OrbisDb(SqlDb):
                 RunHasDocumentDao.run_id == RunDao.run_id,
                 RunDao.corpus_id == corpus_id,
                 RunHasDocumentDao.document_id == document_id).delete(synchronize_session='fetch'),
-                           f'Removing the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
+                f'Removing the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
             # remove annotation is executed twice (second time in remove run if orphan) but it MUST be executed at this
             # point as well, because an annotation can be orphan even when the run isn't
-            return (self.remove_orphan_annotations(annotations)
-                    and self.remove_orphan_runs(runs)
-                    and self.remove_orphan_documents(documents))
+            return (self.remove_orphan_annotations(annotations) and
+                    self.remove_orphan_runs(runs) and
+                    self.remove_orphan_documents(documents))
         return False
 
     def remove_run(self, run_id: int) -> bool:
@@ -778,10 +777,10 @@ class OrbisDb(SqlDb):
                            for document_annotation in run_document.document_has_annotations}
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(run),
-                               f'Run with id {run_id} could not be removed from orbis db.')
-                    and self.commit()):
-                return (self.remove_orphan_documents(documents)
-                        and self.remove_orphan_annotations(annotations))
+                               f'Run with id {run_id} could not be removed from orbis db.') and
+                    self.commit()):
+                return (self.remove_orphan_documents(documents) and
+                        self.remove_orphan_annotations(annotations))
         return False
 
     def remove_orphan_runs(self, runs: Set[RunDao]) -> bool:
@@ -812,8 +811,8 @@ class OrbisDb(SqlDb):
                 # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
                 return (self.try_catch(lambda: not self.session.delete(annotation_type),
                                        f'Annotation type with id {annotation_type_id} '
-                                       'could not be removed from orbis db.')
-                        and self.commit())
+                                       'could not be removed from orbis db.') and
+                        self.commit())
             logging.warning(f"Annotation type with id {annotation_type_id} could not be deleted, "
                             "it's still associated by corpora.")
         return False
@@ -852,11 +851,11 @@ class OrbisDb(SqlDb):
             for csat in corpus.supported_annotation_types:
                 self.session.delete(csat)
             self.commit()
-            if (all((self.remove_run(run.run_id) for run in runs if run))
+            if (all((self.remove_run(run.run_id) for run in runs if run)) and
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
-                    and self.try_catch(lambda: not self.session.delete(corpus),
-                                       f'Corpus with id {corpus_id} could not be removed from orbis db.')
-                    and self.commit()):
+                    self.try_catch(lambda: not self.session.delete(corpus),
+                                   f'Corpus with id {corpus_id} could not be removed from orbis db.') and
+                    self.commit()):
                 return self.remove_orphan_annotation_types(supported_annotation_types)
         return False
 

@@ -47,9 +47,8 @@ class Annotation(OrbisPydanticBaseModel):
             self.start_indices, self.end_indices)))
 
     def __gt__(self, other):
-        return self.start_indices[0] >= other.start_indices[0] or \
-               (self.start_indices[0] == other.start_indices[0] and
-                self.end_indices[-1] >= other.end_indices[-1])
+        return self.start_indices[0] >= other.start_indices[0] or (self.start_indices[0] == other.start_indices[0] and
+                                                                   self.end_indices[-1] >= other.end_indices[-1])
 
     def __lt__(self, other):
         return not self.__gt__(other)
