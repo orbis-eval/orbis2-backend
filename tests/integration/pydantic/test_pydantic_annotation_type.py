@@ -27,4 +27,4 @@ def test_annotation_type_pydantic_model():
         ],
     )
 
-    assert corpus.dict()
+    assert corpus.json()

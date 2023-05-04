@@ -77,7 +77,7 @@ class NifFormat(CorpusFormat):
                                annotator=ANNOTATOR
                                )
                     for annotation_url, _, _ in g.triples((None, NIF_NAMESPACE.referenceContext, resource))
-                    if not NifFormat.get_annotation_type(g, annotation_url).name in invalid_annotation_types
+                    if NifFormat.get_annotation_type(g, annotation_url).name not in invalid_annotation_types
                 ]
         return document_annotations
 

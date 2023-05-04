@@ -23,12 +23,13 @@ def annnotate_document(document, document_annotations):
 
 st.write("## Orbis Evaluation")
 
-obj = load(open('../test.dump', 'rb'))
-ref_documents = list(obj['reference'].keys())
+with open('../test.dump', 'rb') as f:
+    obj = load(f)
+    ref_documents = list(obj['reference'].keys())
 
 filter_text = ''
 documents = [r for r in ref_documents if not filter_text or filter_text in r.content]
-selected = st.number_input('Pick a document', 0, len(documents)-1)
+selected = st.number_input('Pick a document', 0, len(documents) - 1)
 
 reference, annotator = st.columns(2)
 with reference:

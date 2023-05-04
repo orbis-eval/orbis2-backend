@@ -47,9 +47,8 @@ class Annotation(OrbisPydanticBaseModel):
             self.start_indices, self.end_indices)))
 
     def __gt__(self, other):
-        return self.start_indices[0] >= other.start_indices[0] or \
-               (self.start_indices[0] == other.start_indices[0] and
-                self.end_indices[-1] >= other.end_indices[-1])
+        return self.start_indices[0] >= other.start_indices[0] or (self.start_indices[0] == other.start_indices[0] and
+                                                                   self.end_indices[-1] >= other.end_indices[-1])
 
     def __lt__(self, other):
         return not self.__gt__(other)
@@ -62,7 +61,7 @@ class Annotation(OrbisPydanticBaseModel):
 
     @classmethod
     def from_annotation_dao(cls, annotation_dao: AnnotationDao, run_id: int = None, document_id: int = None,
-                            timestamp: datetime = datetime.now()) -> 'Annotation':
+                            timestamp: datetime = None) -> 'Annotation':
         annotation = cls(key=annotation_dao.key, surface_forms=annotation_dao.surface_forms,
                          start_indices=annotation_dao.start_indices, end_indices=annotation_dao.end_indices,
                          annotation_type=AnnotationType.from_annotation_type_dao(annotation_dao.annotation_type),

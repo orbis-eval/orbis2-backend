@@ -1,6 +1,6 @@
 import json
 from itertools import groupby
-from typing import List, Dict
+from typing import List, Dict, Union
 
 from orbis2.corpus_import.format import CorpusFormat
 from orbis2.model.annotation import Annotation
@@ -15,7 +15,7 @@ SEGMENT_TYPE_PREFIX = 'segment/'
 ANNOTATOR = Annotator(name='CorpusImporter', roles=[Role(name='CorpusImporter')])
 
 
-def get_type_or_proposed_type(annotation: Annotation) -> str:
+def get_type_or_proposed_type(annotation: Union[Annotation, Dict]) -> str:
     """
     Return:
         The type for the given key.
@@ -38,12 +38,7 @@ class CareerCoachFormat(CorpusFormat):
             doc = json.loads(document_list[0])
         except json.decoder.JSONDecodeError:
             return False
-
-        for key in 'text', partition:
-            if key not in doc:
-                return False
-
-        return True
+        return all(not key not in doc for key in ('text', partition))
 
     @staticmethod
     def get_document_annotations(document_list: List[str], invalid_annotation_types: List[str],
@@ -63,12 +58,8 @@ class CareerCoachFormat(CorpusFormat):
             annotations = []
             document_annotations[Document(content=doc['text'], key=doc['url'])] = annotations
             for segment_name, annotation in segment_generator(doc[partition]):
-                if 'type' in annotation:
-                    annotation_type = annotation['type']
-                elif 'entity_type' in annotation:
-                    annotation_type = annotation['entity_type']
-                else:
-                    annotation_type = SEGMENT_TYPE_PREFIX + '/' + segment_name
+                annotation_type = annotation.get("type",
+                                                 annotation.get('entity_type', f'{SEGMENT_TYPE_PREFIX}/{segment_name}'))
 
                 if annotation_type not in invalid_annotation_types:
                     annotations.append(

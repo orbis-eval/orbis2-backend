@@ -12,3 +12,8 @@ def test_annotator_initialization():
     assert annotator.name == 'Andreas'
     assert annotator.roles == [Role('admin')]
     assert annotator.password == xxh32_hexdigest('')
+
+
+def test_annotator_json_serialization():
+    annotator = Annotator('Andreas', [Role('admin')])
+    assert annotator.json()

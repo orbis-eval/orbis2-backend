@@ -25,7 +25,7 @@ def parse_corpus_definition(fname):
         g = Graph()
         g.parse(f, format='turtle')
 
-        for s, p, o in g.triples((None, RDF.type, DCAT.Dataset)):
+        for s, _p, _o in g.triples((None, RDF.type, DCAT.Dataset)):
             title = get(g, s, DCTERMS.title)
             date = get(g, s, DCTERMS.issued)
             language = get(g, s, DCTERMS.language)

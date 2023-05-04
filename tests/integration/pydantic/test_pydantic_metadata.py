@@ -9,3 +9,7 @@ def test_metadata_initialization():
     assert metadata.key == 'key1'
     assert metadata.value == 'value1'
     assert metadata._id != 0
+
+def test_metadata_json_serialization():
+    metadata = Metadata('key1', 'value1')
+    assert metadata.json()

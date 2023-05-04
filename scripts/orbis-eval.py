@@ -56,8 +56,8 @@ if __name__ == '__main__':
     parser.add_argument('--reference', help='The run containing the annotations considered to be true, i.e., '
                                             'the gold standard.')
     parser.add_argument('--metrics', nargs='+', default=[],
-                        help='The metrics to compute. You may specify multiple of the following metrics:\n'
-                        + metrics_help_str())
+                        help='The metrics to compute. You may specify multiple of the following metrics:\n' +
+                             metrics_help_str())
     parser.add_argument('--type-whitelist', nargs='*', default=[],
                         help='Optional list of annotation types to evaluation.')
     parser.add_argument('--type-blacklist', nargs='*', default=[], help='Optional list of annotation types to ignore.')
