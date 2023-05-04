@@ -19,7 +19,7 @@ class Document(OrbisPydanticBaseModel):
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False):
         super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done)
-        self.metadata = metadata if metadata else []
+        self.metadata = self.metadata if metadata else []
 
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)

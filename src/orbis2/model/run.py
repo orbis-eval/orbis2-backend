@@ -20,8 +20,8 @@ class Run(OrbisPydanticBaseModel):
                  document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None):
         super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
                          parents=parents)
-        self.document_annotations = document_annotations if document_annotations else {}
-        self.parents = parents if parents else []
+        self.document_annotations = self.document_annotations if document_annotations else {}
+        self.parents = self.parents if parents else []
 
     def __hash__(self):
         return xxh32_intdigest(self.name)

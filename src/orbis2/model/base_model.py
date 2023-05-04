@@ -1,4 +1,6 @@
 from abc import abstractmethod
+from typing import Dict
+
 from pydantic import BaseModel
 from copy import deepcopy
 
@@ -42,8 +44,19 @@ class OrbisPydanticBaseModel(BaseModel):
         output['_id'] = self._id
         return output
 
-    def json(self):
-        return self.dict(by_alias=True, exclude_unset=True, exclude_none=True)
+    @classmethod
+    def remove_id_fields(cls, d: Dict) -> Dict:
+        """
+        Remove the `_id` fields from the json output.
+
+        Note: required for unit testing.
+        """
+        if isinstance(d, dict):
+            return {k: cls.remove_id_fields(v) for k, v in d.items() if k != '_id'}
+        elif isinstance(d, list):
+            return [cls.remove_id_fields(item) for item in d]
+        else:
+            return d
 
     def __str__(self):
         attr_values = [f'{key}={value}'
