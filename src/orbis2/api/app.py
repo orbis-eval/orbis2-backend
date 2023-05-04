@@ -127,6 +127,10 @@ def remove_corpus(corpus: Corpus, response: Response):
 def next_document(run_id: int, document_id: int):
     return get_orbis_service().get_next_document(run_id, document_id)
 
+@app.get('/previousDocument', status_code=200)
+def next_document(run_id: int, document_id: int):
+    return get_orbis_service().get_previous_document(run_id, document_id)
+
 
 def get_app():
     return app
