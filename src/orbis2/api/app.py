@@ -127,13 +127,29 @@ def remove_corpus(corpus: Corpus, response: Response):
 def next_document(run_id: int, document_id: int):
     return get_orbis_service().get_next_document(run_id, document_id)
 
+
 @app.get('/previousDocument', status_code=200)
 def next_document(run_id: int, document_id: int):
     return get_orbis_service().get_previous_document(run_id, document_id)
 
+
 @app.get('/countDocuments', status_code=200)
 def next_document(run_id: int):
     return get_orbis_service().count_documents_in_run(run_id)
+
+
+@app.get('/colorPalettes', status_code=200)
+def color_palettes():
+    return get_orbis_service().get_color_palettes()
+
+
+@app.get('/corpusAnnotationTypes', status_code=200)
+def get_corpus_annotation_types(corpus_id: int):
+    return get_orbis_service().get_corpus_annotation_types(corpus_id)
+
+
+
+
 
 
 def get_app():
