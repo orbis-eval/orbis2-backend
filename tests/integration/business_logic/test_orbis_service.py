@@ -210,6 +210,10 @@ def test_get_documents_of_run_dbExistsAndContainsRun_returnDocuments(insert_test
     assert documents[0].content == 'Text, das ist ein Beispiel'
 
 
+def test_count_documents_in_run(insert_test_data_orbis):
+    assert OrbisService().count_documents_in_run(OrbisService().get_runs()[0]._id) == 1
+
+
 # noinspection PyPep8Naming
 def test_get_documents_of_run_dbExistsAndContainsMultipleRuns_returnDocumentsOfCorrectRun(
         insert_test_data_orbis):

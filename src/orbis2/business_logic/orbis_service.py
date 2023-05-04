@@ -64,6 +64,9 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
+    def count_documents_in_run(self, run_id: int) -> int:
+        return self.orbis_db.count_documents_in_run(run_id)
+
     def get_next_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:

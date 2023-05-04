@@ -1,7 +1,7 @@
 import logging
 from typing import List, Callable, Set, Dict, Optional
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -241,6 +241,19 @@ class OrbisDb(SqlDb):
             return documents
         logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
         return None
+
+    def count_documents_in_run(self, run_id: int) -> int:
+        """
+        Count the documents for a given run_id in the database
+        Args:
+            run_id: id of the run for which to count the documents
+        Returns: the count as a number
+        """
+        count = self.session.query(func.count(DocumentDao.document_id))\
+            .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id)\
+            .filter(RunHasDocumentDao.run_id == run_id).\
+            scalar()
+        return count
 
     def get_documents_of_run(self, run_id: int) -> Optional[List[DocumentDao]]:
         """
