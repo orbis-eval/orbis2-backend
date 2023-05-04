@@ -131,6 +131,10 @@ def next_document(run_id: int, document_id: int):
 def next_document(run_id: int, document_id: int):
     return get_orbis_service().get_previous_document(run_id, document_id)
 
+@app.get('/countDocuments', status_code=200)
+def next_document(run_id: int):
+    return get_orbis_service().count_documents_in_run(run_id)
+
 
 def get_app():
     return app
