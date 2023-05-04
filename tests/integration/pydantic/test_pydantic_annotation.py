@@ -1,8 +1,10 @@
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
+from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
 from orbis2.model.role import Role
+from json import dumps
 
 
 def test_annotation_initialization():
@@ -16,13 +18,21 @@ def test_annotation_initialization():
     assert annotation.metadata == [Metadata('key1', 'value1'), Metadata('key2', 'value2')]
 
 
-def test_annotation_json_serialization():
+def test_annotation_json_serialization_and_deserialization():
+    """
+    Ensure that the given annotation object is correctly serialized and deserialized.
+    """
     annotation = Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
                             metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
-    assert annotation.json()
+    annotation_json = dumps(OrbisPydanticBaseModel.remove_id_fields(annotation.dict()))
+
+    deserialized_annotation = Annotation.parse_raw(annotation_json)
+    assert deserialized_annotation == annotation
+    assert deserialized_annotation.metadata == annotation.metadata
+    assert deserialized_annotation.annotator == annotation.annotator
 
 
-def test_parsing_annotation_with_metadata():
+def test_parsing_annotation_with_fixed_metadata():
     annotation_json_data = """
     {
         "key": "url",
@@ -59,4 +69,4 @@ def test_parsing_annotation_with_metadata():
     }
     """
     parsed_annotation = Annotation.parse_raw(annotation_json_data)
-    print(parsed_annotation.json()) # fails with 'NoneType' object is not callable
+    print(parsed_annotation.json())

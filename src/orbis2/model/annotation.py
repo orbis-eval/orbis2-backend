@@ -35,7 +35,7 @@ class Annotation(OrbisPydanticBaseModel):
         self.start_indices = (start_indices, ) if isinstance(start_indices, int) else tuple(start_indices)
         self.end_indices = (end_indices, ) if isinstance(end_indices, int) else tuple(end_indices)
         self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else tuple(surface_forms)
-        self.metadata = metadata if metadata else []
+        self.metadata = self.metadata if metadata else []
 
     def __eq__(self, other):
         if isinstance(other, Annotation):
