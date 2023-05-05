@@ -13,5 +13,5 @@ class AnnotatorDao(OrbisBase):
 
     annotator_id: Mapped[int] = mapped_column(BigInteger, Sequence('annotator_id_seq'), primary_key=True)
     name: Mapped[str]
-    password: Mapped[Optional[str | None]]
+    password: Mapped[str]
     roles: Mapped[RoleDao] = relationship(secondary=annotator_has_role_table)
