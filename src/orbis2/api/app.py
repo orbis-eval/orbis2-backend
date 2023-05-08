@@ -129,7 +129,7 @@ def next_document(run_id: int, document_id: int):
 
 
 @app.get('/previousDocument', status_code=200)
-def next_document(run_id: int, document_id: int):
+def previous_document(run_id: int, document_id: int):
     return get_orbis_service().get_previous_document(run_id, document_id)
 
 
@@ -146,10 +146,6 @@ def color_palettes():
 @app.get('/corpusAnnotationTypes', status_code=200)
 def get_corpus_annotation_types(corpus_id: int):
     return get_orbis_service().get_corpus_annotation_types(corpus_id)
-
-
-
-
 
 
 def get_app():
