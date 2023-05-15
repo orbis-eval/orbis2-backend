@@ -24,14 +24,26 @@ The environment variables are all stored in the file [src/orbis2/config/app_conf
 | DB_URL                      |                       | localhost          |
 | DB_PORT                     |                       | 5432               |
 | DB_USER                     |                       | postgres           |
-| DB_PASSWORD                 |                       |                    |
+| DB_PASSWORD                 |                       | password           |
 | ORBIS_DB_NAME               |                       | orbis              |
 
+### Start database
+
+1. Copy the `.env.example` to `.env` with `$ cp .env.example .env`
+2. Start the containers with `docker compose up -d`
 
 ## (Re)initialize the Orbis database
 
+NOTE: All environmental variables must be set before you can run this command.
+
 ```bash
 ./scripts/dbtool.py --create-database --force --add-dummy-data
+```
+
+If you have not set the env variables however, you can run the following command and replace all `<VALUES>`
+
+```bash
+export DB_PORT=<PORT> && export DB_PASSWORD=<PASSWORD> && export DB_URL=<URL> && export ORBIS_DB_NAME=<ORBIS_DB_NAME> && ./scripts/dbtool.py --create-database --force --add-dummy-data
 ```
 
 ## Corpus import
