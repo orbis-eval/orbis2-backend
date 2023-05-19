@@ -41,5 +41,4 @@ import-local-corpus:
 	docker compose exec backend ./scripts/importer.py local KORE50.ttl KORE50-version1.0
 
 import-remote-corpus:
-	docker compose exec backend ./scripts/importer.py local KORE50.ttl KORE50-version1.0
-
+	docker compose exec backend ./scripts/importer.py remote N3-Reuters-128 N3-Reuters-128-version1
