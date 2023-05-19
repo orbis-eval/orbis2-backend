@@ -1,7 +1,11 @@
-FROM python:3.11-alpine
+FROM python:3.11-slim-buster
 
 #Configuration
 ENV SERVER_PORT=63012
+
+# system packages for building C extensions
+RUN apt-get update && \
+		apt-get install gcc -y
 
 RUN mkdir /src
 RUN mkdir /config
