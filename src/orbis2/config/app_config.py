@@ -42,7 +42,7 @@ class AppConfig:
         Returns: Password which is used to access the database.
         """
         if not (db_password := os.getenv('DB_PASSWORD')):
-            return ''
+            db_password = 'password'
         return db_password
 
     @staticmethod
