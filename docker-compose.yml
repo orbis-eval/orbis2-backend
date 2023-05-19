@@ -21,6 +21,8 @@ services:
       - ./config:/app/config
       - ./scripts:/app/scripts
       - ./tests:/app/tests
+    networks:
+      - orbis
 
   db:
     container_name: orbis-postgres
@@ -31,9 +33,11 @@ services:
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${ORBIS_DB_NAME}
+      - POSTGRES_DB=${ORBIS_DB_NAME},${ORBIS_DB_TEST_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - orbis
 
   adminer:
     container_name: orbis-adminer
@@ -41,6 +45,10 @@ services:
     restart: always
     ports:
       - 8080:8080
+    networks:
+      - orbis
 
 volumes:
   db-data:
+networks:
+  orbis:
