@@ -1,9 +1,6 @@
 # virtual environemnt
 venv
 
-# env
-.env
-
 # python basics
 __pycache__/
 .idea/
