@@ -1,4 +1,4 @@
-FROM python:3.11-slim-buster
+FROM python:3.11-alpine
 
 #Configuration
 ENV SERVER_PORT=63012
