@@ -4,6 +4,7 @@ from typing import List
 
 import uvicorn as uvicorn
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from orbis2.model.annotation import Annotation
 from orbis2.model.corpus import Corpus
@@ -29,6 +30,19 @@ DOCUMENTS_LAZY_INIT_LOCK = threading.Lock()
 app = FastAPI(
     title='Orbis2 Backend',
     version=__version__
+)
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 global_orbis_service = None
@@ -112,7 +126,6 @@ def remove_annotation_from_document(annotation: Annotation, response: Response):
     if get_orbis_service().remove_annotation_from_document(annotation):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
-    return
 
 
 @app.delete('/removeCorpus', status_code=200)
@@ -120,7 +133,6 @@ def remove_corpus(corpus: Corpus, response: Response):
     if get_orbis_service().remove_corpus(corpus._id):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
-    return
 
 
 @app.get('/nextDocument', status_code=200)
