@@ -15,6 +15,7 @@ help:
 	@echo "  import-dummy:           imports dummy data"
 	@echo "  import-local-corpus:    imports local corpus"
 	@echo "  import-remote-corpus:   imports remote corpus"
+	@echo "  list-remote-corpora:    lists remote corpora"
 
 start:
 	docker compose up -d
@@ -42,3 +43,6 @@ import-local-corpus:
 
 import-remote-corpus:
 	docker compose exec backend ./scripts/importer.py remote N3-Reuters-128 N3-Reuters-128-version1
+
+list-remote-corpora:
+	docker compose exec backend ./scripts/importer.py list-remote
