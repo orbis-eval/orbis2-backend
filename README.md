@@ -4,7 +4,8 @@
 
 ### Prerequisites
 
-- Python 3.9 - PostgreSQL 15.0
+- Python 3.11 
+- PostgreSQL 15.0
 
 
 ## Run the API
@@ -19,18 +20,35 @@ Setup the following databases:
 
 The environment variables are all stored in the file [src/orbis2/config/app_config.py](src/orbis2/config/app_config.py) during run time.
 
-| Name                        | Description           | Default            |
-| :----                       |:----------------------|:-------------------|
-| DB_URL                      |                       | localhost          |
-| DB_PORT                     |                       | 5432               |
-| DB_USER                     |                       | postgres           |
-| DB_PASSWORD                 |                       | password           |
-| ORBIS_DB_NAME               |                       | orbis              |
+| Name                        | Default-Value |
+| :----                       |:--------------|
+| DB_URL                      | localhost     |
+| DB_PORT                     | 5432          |
+| DB_USER                     | postgres      |
+| DB_PASSWORD                 | password      |
+| ORBIS_DB_NAME               | orbis         |
 
-### Start database
+### Start application
 
-1. Copy the `.env.example` to `.env` with `$ cp .env.example .env`
-2. Start the containers with `docker compose up -d`
+Run `make start` to start everything with the default values.
+
+### Commands
+
+All stated commands can be run with `make`. To get a list of all available commands, run `make help`:
+
+| **command**           | **description**                      |
+|-----------------------|--------------------------------------|
+| start                 | starts all services                  |
+| stop                  | stops all services including volumes |
+| build                 | builds all services                  |
+| logs                  | show logs for services               |
+| clean                 | clean up workspace                   |
+| test-database         | creates test database                |
+| import-dummy          | imports dummy data                   |
+| import-local-corpus   | imports local corpus                 |
+| import-remote-corpus  | imports remote corpus                |
+| list-remote-corpora   | lists remote corpora                 |
+
 
 ## (Re)initialize the Orbis database
 
