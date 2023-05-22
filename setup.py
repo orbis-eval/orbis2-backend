@@ -29,7 +29,12 @@ setup(
     package_dir={'': 'src'},
 
     # Package List
-    packages=find_packages('src'),
+    packages=find_packages(where='src'),
+
+    # Include gerbil files
+    package_data={
+        'orbis2.corpus_import.remote_corpus': ['data/gerbil/*'],
+    },
 
     # Requirements
     install_requires=[
