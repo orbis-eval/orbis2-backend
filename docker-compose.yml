@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  backend:
+    container_name: orbis-backend
+    image: orbis-backend
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      - "63012:63012"
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_URL=${DB_URL}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - ORBIS_DB_NAME=${ORBIS_DB_NAME}
+      - SERVER_PORT=63012
+    volumes:
+      - ./src:/src
+      - ./config:/config
+      - ./scripts:/scripts
+      - ./tests:/tests
+
+    networks:
+      - orbis
+
+  db:
+    container_name: orbis-postgres
+    image: postgres:15
+    restart: always
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${ORBIS_DB_NAME}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - orbis
+
+  adminer:
+    container_name: orbis-adminer
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - orbis
+
+volumes:
+  db-data:
+networks:
+  orbis:
