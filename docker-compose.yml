@@ -17,10 +17,11 @@ services:
       - ORBIS_DB_NAME=${ORBIS_DB_NAME}
       - SERVER_PORT=63012
     volumes:
-      - ./src:/app/src
-      - ./config:/app/config
-      - ./scripts:/app/scripts
-      - ./tests:/app/tests
+      - ./src:/src
+      - ./config:/config
+      - ./scripts:/scripts
+      - ./tests:/tests
+
     networks:
       - orbis
 
