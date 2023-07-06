@@ -6,11 +6,13 @@ default: help
 
 help:
 	@echo "USAGE:"
-	@echo "  start:                  starts all services"
-	@echo "  stop:                   stops all services including volumes"
-	@echo "  build:                  builds all services"
+	@echo "  start:                  starts backend and database"
+	@echo "  postgres:               starts database"
+	@echo "  stop:                   stops backend and database"
+	@echo "  build:                  builds backend and database"
+	@echo "  build-postgres:         builds database"
 	@echo "  logs:                   show logs for services"
-	@echo "  clean:                  clean up workspace"
+	@echo "  clean:                  stops and removes all services including volumes"
 	@echo "  test-database:          creates test database"
 	@echo "  import-dummy:           imports dummy data"
 	@echo "  import-local-corpus:    imports local corpus"
@@ -19,6 +21,9 @@ help:
 
 start:
 	docker compose up -d
+
+postgres:
+	docker compose up db -d
 
 stop:
 	docker compose stop
