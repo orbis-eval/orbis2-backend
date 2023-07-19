@@ -116,6 +116,13 @@ def add_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
             return run
 
 
+@app.delete('/removeRun', status_code=200)
+def delete_run(run: Run, response: Response) -> {}:
+    if get_orbis_service().remove_run(run._id):
+            return
+    response.status_code = status.HTTP_400_BAD_REQUEST
+
+
 @app.post('/addAnnotation')
 def add_annotation(annotation: Annotation) -> Annotation:
     return get_orbis_service().add_annotation_to_document(annotation)
