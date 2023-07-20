@@ -71,6 +71,12 @@ def get_documents(run_id: int = None, corpus_id: int = None, page_size: int = No
         return get_orbis_service().get_documents_of_corpus(corpus_id, page_size, skip)
     return get_orbis_service().get_documents()
 
+@app.get('/getNofDocuments')
+def get_n_of_documents(run_id: int = None, corpus_id: int = None, page_size: int = None, skip: int = 0) -> int:
+    if run_id:
+        return len(get_orbis_service().get_documents_of_run(run_id))
+    if corpus_id:
+        return len(get_orbis_service().get_documents_of_corpus(corpus_id, page_size, skip))
 
 @app.get('/getDocument')
 def get_document(document_id: int) -> Document:
