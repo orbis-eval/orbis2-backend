@@ -5,6 +5,7 @@ from typing import List
 import uvicorn as uvicorn
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.responses import JSONResponse
 
 from orbis2.model.annotation import Annotation
 from orbis2.model.corpus import Corpus
@@ -117,11 +118,14 @@ def add_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
 
 
 @app.delete('/removeRun', status_code=200)
-def delete_run(run: Run, response: Response) -> {}:
+def remove_run(run: Run, response: Response) -> {}:
     if get_orbis_service().remove_run(run._id):
-            return
-    response.status_code = status.HTTP_400_BAD_REQUEST
-
+        message = f"Run with ID {run._id} has been deleted successfully."
+        return JSONResponse(content={"message": message})
+    else:
+        message = f"Failed to delete Run with ID {run._id}."
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        return JSONResponse(content={"message": message})
 
 @app.post('/addAnnotation')
 def add_annotation(annotation: Annotation) -> Annotation:
