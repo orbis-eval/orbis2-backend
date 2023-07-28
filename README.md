@@ -8,8 +8,12 @@
 - PostgreSQL 15.0
 
 
-## Run the API
+## API Endpoints 
 
+Swagger-UI API docs : 
+```
+http://127.0.0.1:63012/docs#/
+```
 
 ### Database setup and environment variables
 

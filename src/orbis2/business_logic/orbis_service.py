@@ -59,8 +59,11 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
-    def get_documents_of_run(self, run_id: int) -> List[Document]:
-        if documents := self.orbis_db.get_documents_of_run(run_id):
+    def get_documents_of_run(self,
+                             run_id: int,
+                             page_size: int = None,
+                             skip: int = 0) -> List[Document]:
+        if documents := self.orbis_db.get_documents_of_run(run_id, page_size, skip):
             return Document.from_document_daos(documents)
         return []
 

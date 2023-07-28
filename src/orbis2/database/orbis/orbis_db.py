@@ -218,8 +218,10 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def get_documents_of_corpus(self, corpus_id: int,
-                                page_size: int = None, skip: int = 0) -> Optional[List[DocumentDao]]:
+    def get_documents_of_corpus(self,
+                                corpus_id: int,
+                                page_size: int = None,
+                                skip: int = 0) -> Optional[List[DocumentDao]]:
         """
         Get all documents for a given corpus from database
 
@@ -255,7 +257,11 @@ class OrbisDb(SqlDb):
             scalar()
         return count
 
-    def get_documents_of_run(self, run_id: int) -> Optional[List[DocumentDao]]:
+    def get_documents_of_run(self,
+                             run_id: int,
+                             page_size: int = None,
+                             skip: int = 0
+                             ) -> Optional[List[DocumentDao]]:
         """
         Get all documents for a given run from database
 
@@ -268,7 +274,7 @@ class OrbisDb(SqlDb):
                 lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
                     DocumentDao.document_id == RunHasDocumentDao.document_id,
                     RunHasDocumentDao.run_id == run_id
-                )).all(),
+                ).limit(page_size).offset(skip)).all(),
                 f'Documents for run request with run id: {run_id} failed', False
         ):
             return documents
