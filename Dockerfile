@@ -15,4 +15,4 @@ WORKDIR .
 RUN pip3 install -r requirements.txt
 RUN python3 setup.py install
 
-ENTRYPOINT ["uvicorn", "src.orbis2.api.app:app", "--host", "0.0.0.0", "--port", "63012"]
+ENTRYPOINT ["uvicorn", "src.orbis2.api.app:app", "--host", "0.0.0.0", "--port", "63012", "--reload"]
