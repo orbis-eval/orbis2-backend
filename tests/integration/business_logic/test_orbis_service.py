@@ -510,7 +510,7 @@ def test_update_run_newAnnotationHasBeenAddedToExistingDocument_correctlyUpdated
 
 
 # noinspection PyPep8Naming
-def test_update_run_annotationHasBeenRemovedFromExistingDocument_correctlyUpdatedOnDb(clear_test_data_orbis):
+def test_update_run_annotationHasBeenDeletedFromExistingDocument_correctlyUpdatedOnDb(clear_test_data_orbis):
     run = Run('Run1', 'Run1', Corpus('Corpus1', [AnnotationType('annotation-type1'),
                                                  AnnotationType('annotation-tpye2')]),
               {Document('Text, das ist ein Beispiel'):
@@ -596,14 +596,14 @@ def test_get_annotations_includingRunAndDocumentId_returnAnnotationsOfSpecificRu
 
 
 #noinspection PyPep8Naming
-def test_remove_annotation_from_document_removeAnnotationFromExistingDocument_documentContainsNoMoreAnnotations(
+def test_delete_annotation_from_document_deleteAnnotationFromExistingDocument_documentContainsNoMoreAnnotations(
         insert_test_data_orbis):
     run = OrbisService().get_runs()[0]
     document = list(run.document_annotations.keys())[0]
     annotation = run.document_annotations[document][0]
 
     assert annotation
-    assert OrbisService().remove_annotation_from_document(annotation)
+    assert OrbisService().delete_annotation_from_document(annotation)
     assert len(OrbisService().get_annotations()) == 0
 
 

@@ -12,7 +12,7 @@ help:
 	@echo "  build:                  builds backend and database"
 	@echo "  build-postgres:         builds database"
 	@echo "  logs:                   show logs for services"
-	@echo "  clean:                  stops and removes all services including volumes"
+	@echo "  clean:                  stops and deletes all services including volumes"
 	@echo "  test-database:          creates test database"
 	@echo "  import-dummy:           imports dummy data"
 	@echo "  import-local-corpus:    imports local corpus"

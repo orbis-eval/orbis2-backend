@@ -192,22 +192,22 @@ class OrbisService:
             return False
         return all(self.add_annotation_type(annotation_type) for annotation_type in annotation_types)
 
-    def remove_annotation_from_document(self, annotation: Annotation) -> bool:
+    def delete_annotation_from_document(self, annotation: Annotation) -> bool:
         if annotation:
-            return self.orbis_db.remove_annotation_from_document(annotation.to_document_annotation_dao())
+            return self.orbis_db.delete_annotation_from_document(annotation.to_document_annotation_dao())
         return False
 
-    def remove_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
+    def delete_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
         if document_id and corpus_id:
-            return self.orbis_db.remove_document_from_corpus(document_id, corpus_id)
+            return self.orbis_db.delete_document_from_corpus(document_id, corpus_id)
         return False
 
-    def remove_corpus(self, corpus_id: int) -> bool:
+    def delete_corpus(self, corpus_id: int) -> bool:
         if corpus_id:
-            return self.orbis_db.remove_corpus(corpus_id)
+            return self.orbis_db.delete_corpus(corpus_id)
         return False
 
-    def remove_run(self, run_id: int) -> bool:
+    def delete_run(self, run_id: int) -> bool:
         if run_id:
-            return self.orbis_db.remove_run(run_id)
+            return self.orbis_db.delete_run(run_id)
         return False

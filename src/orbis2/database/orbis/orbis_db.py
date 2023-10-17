@@ -629,25 +629,25 @@ class OrbisDb(SqlDb):
         return not self.session.scalars(select(CorpusSupportsAnnotationTypeDao).where(
             CorpusSupportsAnnotationTypeDao.annotation_type_id == annotation_type_id)).first()
 
-    def remove_metadata(self, metadata_id: int) -> bool:
+    def delete_metadata(self, metadata_id: int) -> bool:
         """
-        Removes metadata from orbis database by its id
+        Deletes metadata from orbis database by its id
 
         Args:
             metadata_id:
 
-        Returns: True if entry could be removed from orbis database, false otherwise
+        Returns: True if entry could be deleted from orbis database, false otherwise
         """
         if metadata := self.get_metadata_by_id(metadata_id):
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             return (self.try_catch(lambda: not self.session.delete(metadata),
-                                   f'Metadata with id {metadata_id} could not be removed from orbis db.') and
+                                   f'Metadata with id {metadata_id} could not be deleted from orbis db.') and
                     self.commit())
         return False
 
-    def remove_orphan_metadata(self, metadata: Set[MetadataDao]) -> bool:
+    def delete_orphan_metadata(self, metadata: Set[MetadataDao]) -> bool:
         """
-        Checks for each item in a given list of metadata if it's an orphan, if yes, the item will be removed
+        Checks for each item in a given list of metadata if it's an orphan, if yes, the item will be deleted
 
         Args:
             metadata:
@@ -655,14 +655,14 @@ class OrbisDb(SqlDb):
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
         # if no metadata is orphan, this statement is true (since: if all([]) -> True)
-        if all((self.remove_metadata(meta_data.metadata_id)
+        if all((self.delete_metadata(meta_data.metadata_id)
                 for meta_data in metadata if self.metadata_is_orphan(meta_data.metadata_id))):
             return self.commit()
         return False
 
-    def remove_annotation(self, annotation_id: int) -> bool:
+    def delete_annotation(self, annotation_id: int) -> bool:
         """
-        Remove Annotation from database, relationship to its metadata is also removed, if a metadata is then an orphan
+        Delete Annotation from database, relationship to its metadata is also deleted, if a metadata is then an orphan
         it will be deleted.
 
         Args:
@@ -675,28 +675,28 @@ class OrbisDb(SqlDb):
             metadata = set(annotation.meta_data)
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(annotation),
-                               f'Annotation with id {annotation_id} could not be removed from orbis db.') and
+                               f'Annotation with id {annotation_id} could not be deleted from orbis db.') and
                     self.commit()):
-                return self.remove_orphan_metadata(metadata)
+                return self.delete_orphan_metadata(metadata)
         return False
 
-    def remove_orphan_annotations(self, annotations: Set[AnnotationDao]) -> bool:
+    def delete_orphan_annotations(self, annotations: Set[AnnotationDao]) -> bool:
         """
-        Checks for each item in a given list of annotations if it's an orphan, if yes, the item will be removed
+        Checks for each item in a given list of annotations if it's an orphan, if yes, the item will be deleted
 
         Args:
             annotations:
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all((self.remove_annotation(annotation.annotation_id) for annotation in annotations
+        if all((self.delete_annotation(annotation.annotation_id) for annotation in annotations
                 if self.annotation_is_orphan(annotation.annotation_id))):
             return self.commit()
         return False
 
-    def remove_annotation_from_document(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
+    def delete_annotation_from_document(self, document_has_annotation: DocumentHasAnnotationDao) -> bool:
         """
-        Delete annotation from an existing document in orbis database, further remove the annotation if it's an orphan.
+        Delete annotation from an existing document in orbis database, further delete the annotation if it's an orphan.
 
         Args:
             document_has_annotation:
@@ -708,16 +708,16 @@ class OrbisDb(SqlDb):
                 DocumentHasAnnotationDao.run_id == document_has_annotation.run_id,
                 DocumentHasAnnotationDao.document_id == document_has_annotation.document_id,
                 DocumentHasAnnotationDao.annotation_id == document_has_annotation.annotation_id).delete(),
-                f'Removing the annotation_document {document_has_annotation} failed.') and self.commit()):
+                f'Deleting the annotation_document {document_has_annotation} failed.') and self.commit()):
             if (self.annotation_is_orphan(document_has_annotation.annotation_id) and
-                    self.remove_annotation(document_has_annotation.annotation_id)):
+                    self.delete_annotation(document_has_annotation.annotation_id)):
                 return self.commit()
             return True
         return False
 
-    def remove_document(self, document_id: int) -> bool:
+    def delete_document(self, document_id: int) -> bool:
         """
-        Remove document from database, relationship to its metadata is also removed, if a metadata is then an orphan
+        Delete document from database, relationship to its metadata is also deleted, if a metadata is then an orphan
         it will be deleted.
 
         Args:
@@ -730,29 +730,29 @@ class OrbisDb(SqlDb):
             metadata = set(document.meta_data)
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(document),
-                               f'Document with id {document_id} could not be removed from orbis db.') and
+                               f'Document with id {document_id} could not be deleted from orbis db.') and
                     self.commit()):
-                return self.remove_orphan_metadata(metadata)
+                return self.delete_orphan_metadata(metadata)
         return False
 
-    def remove_orphan_documents(self, documents: Set[DocumentDao]) -> bool:
+    def delete_orphan_documents(self, documents: Set[DocumentDao]) -> bool:
         """
-        Checks for each item in a given list of documents if it's an orphan, if yes, the item will be removed
+        Checks for each item in a given list of documents if it's an orphan, if yes, the item will be deleted
 
         Args:
             documents:
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all((self.remove_document(document.document_id) for document in documents
+        if all((self.delete_document(document.document_id) for document in documents
                 if self.document_is_orphan(document.document_id))):
             return self.commit()
         return False
 
-    def remove_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
+    def delete_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
         """
-        Delete document from an existing corpus in orbis database (meaning that the document is removed from all runs
-        of this corpus), further remove the document if it's an orphan.
+        Delete document from an existing corpus in orbis database (meaning that the document is deleted from all runs
+        of this corpus), further delete the document if it's an orphan.
 
         Args:
             document_id:
@@ -771,17 +771,17 @@ class OrbisDb(SqlDb):
                 RunHasDocumentDao.run_id == RunDao.run_id,
                 RunDao.corpus_id == corpus_id,
                 RunHasDocumentDao.document_id == document_id).delete(synchronize_session='fetch'),
-                f'Removing the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
-            # remove annotation is executed twice (second time in remove run if orphan) but it MUST be executed at this
+                f'Deleting the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
+            # delete annotation is executed twice (second time in delete run if orphan) but it MUST be executed at this
             # point as well, because an annotation can be orphan even when the run isn't
-            return (self.remove_orphan_annotations(annotations) and
-                    self.remove_orphan_runs(runs) and
-                    self.remove_orphan_documents(documents))
+            return (self.delete_orphan_annotations(annotations) and
+                    self.delete_orphan_runs(runs) and
+                    self.delete_orphan_documents(documents))
         return False
 
-    def remove_run(self, run_id: int) -> bool:
+    def delete_run(self, run_id: int) -> bool:
         """
-        Remove run from database, relationship to its documents and to its annotations is also removed,
+        Delete run from database, relationship to its documents and to its annotations is also deleted,
         if a document or an annotation is then an orphan it will be deleted.
 
         Args:
@@ -796,29 +796,29 @@ class OrbisDb(SqlDb):
                            for document_annotation in run_document.document_has_annotations}
             # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
             if (self.try_catch(lambda: not self.session.delete(run),
-                               f'Run with id {run_id} could not be removed from orbis db.') and
+                               f'Run with id {run_id} could not be deleted from orbis db.') and
                     self.commit()):
-                return (self.remove_orphan_documents(documents) and
-                        self.remove_orphan_annotations(annotations))
+                return (self.delete_orphan_documents(documents) and
+                        self.delete_orphan_annotations(annotations))
         return False
 
-    def remove_orphan_runs(self, runs: Set[RunDao]) -> bool:
+    def delete_orphan_runs(self, runs: Set[RunDao]) -> bool:
         """
-        Checks for each item in a given list of runs if it's an orphan, if yes, the item will be removed
+        Checks for each item in a given list of runs if it's an orphan, if yes, the item will be deleted
 
         Args:
             runs:
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all((self.remove_run(run.run_id) for run in runs
+        if all((self.delete_run(run.run_id) for run in runs
                 if self.run_is_orphan(run.run_id))):
             return self.commit()
         return False
 
-    def remove_annotation_type(self, annotation_type_id: int) -> bool:
+    def delete_annotation_type(self, annotation_type_id: int) -> bool:
         """
-        Remove annotation type from database.
+        Delete annotation type from database.
 
         Args:
             annotation_type_id:
@@ -830,29 +830,29 @@ class OrbisDb(SqlDb):
                 # 'not' is necessary since session.delete returns None, try_catch expects a boolean, not None -> True
                 return (self.try_catch(lambda: not self.session.delete(annotation_type),
                                        f'Annotation type with id {annotation_type_id} '
-                                       'could not be removed from orbis db.') and
+                                       'could not be deleted from orbis db.') and
                         self.commit())
             logging.warning(f"Annotation type with id {annotation_type_id} could not be deleted, "
                             "it's still associated by corpora.")
         return False
 
-    def remove_orphan_annotation_types(self, annotation_types: Set[AnnotationTypeDao]) -> bool:
+    def delete_orphan_annotation_types(self, annotation_types: Set[AnnotationTypeDao]) -> bool:
         """
-        Checks for each item in a given list of annotation types if it's an orphan, if yes, the item will be removed
+        Checks for each item in a given list of annotation types if it's an orphan, if yes, the item will be deleted
 
         Args:
             annotation_types:
 
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
-        if all((self.remove_annotation_type(annotation_type.type_id) for annotation_type in annotation_types
+        if all((self.delete_annotation_type(annotation_type.type_id) for annotation_type in annotation_types
                 if self.annotation_type_is_orphan(annotation_type.type_id))):
             return self.commit()
         return False
 
-    def remove_corpus(self, corpus_id: int) -> bool:
+    def delete_corpus(self, corpus_id: int) -> bool:
         """
-        Remove corpus from database, relationship to its runs and annotation types is also removed,
+        Delete corpus from database, relationship to its runs and annotation types is also deleted,
         if a run or an annotation type is then an orphan it will be deleted.
 
         Args:
@@ -862,20 +862,20 @@ class OrbisDb(SqlDb):
         """
         if corpus := self.get_corpus(corpus_id):
             supported_annotation_types = {a.annotation_type for a in corpus.supported_annotation_types}
-            # first, remove all runs with custom remove_run method,
-            # to ensure that all orphan entities are removed as well
+            # first, delete all runs with custom delete_run method,
+            # to ensure that all orphan entities are deleted as well
             if not (runs := self.get_runs_by_corpus_id(corpus_id)):
                 runs = []
             # delete the list of supported annotation types for that corpus
             for csat in corpus.supported_annotation_types:
                 self.session.delete(csat)
             self.commit()
-            if (all((self.remove_run(run.run_id) for run in runs if run)) and
+            if (all((self.delete_run(run.run_id) for run in runs if run)) and
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     self.try_catch(lambda: not self.session.delete(corpus),
-                                   f'Corpus with id {corpus_id} could not be removed from orbis db.') and
+                                   f'Corpus with id {corpus_id} could not be deleted from orbis db.') and
                     self.commit()):
-                return self.remove_orphan_annotation_types(supported_annotation_types)
+                return self.delete_orphan_annotation_types(supported_annotation_types)
         return False
 
     @staticmethod

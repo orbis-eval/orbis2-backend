@@ -39,7 +39,7 @@ def test_metadata_list_json_serialization_and_deserialization():
         Metadata('type', 'table')
     ])
 
-    json = dumps(OrbisPydanticBaseModel.remove_id_fields(meta_list.dict()))
+    json = dumps(OrbisPydanticBaseModel.delete_id_fields(meta_list.dict()))
     print(json)
 
     meta_list2 = MetadataList.parse_raw(json)

@@ -115,9 +115,9 @@ def add_run(corpus: Corpus, run_name: str, run_description: str) -> dict[str, li
             return {'id': run._id, 'documents': get_orbis_service().get_documents_of_run(run._id)}
 
 
-@app.delete('/removeRun', status_code=200)
-def remove_run(run: Run, response: Response) -> {}:
-    if get_orbis_service().remove_run(run._id):
+@app.delete('/deleteRun', status_code=200)
+def delete_run(run: Run, response: Response) -> {}:
+    if get_orbis_service().delete_run(run._id):
         message = f"Run with ID {run._id} has been deleted successfully."
         return JSONResponse(content={"message": message})
     else:
@@ -130,16 +130,16 @@ def add_annotation(annotation: Annotation) -> Annotation:
     return get_orbis_service().add_annotation_to_document(annotation)
 
 
-@app.delete('/removeAnnotationFromDocument', status_code=200)
-def remove_annotation_from_document(annotation: Annotation, response: Response):
-    if get_orbis_service().remove_annotation_from_document(annotation):
+@app.delete('/deleteAnnotationFromDocument', status_code=200)
+def delete_annotation_from_document(annotation: Annotation, response: Response):
+    if get_orbis_service().delete_annotation_from_document(annotation):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
 
 
-@app.delete('/removeCorpus', status_code=200)
-def remove_corpus(corpus: Corpus, response: Response):
-    if get_orbis_service().remove_corpus(corpus._id):
+@app.delete('/deleteCorpus', status_code=200)
+def delete_corpus(corpus: Corpus, response: Response):
+    if get_orbis_service().delete_corpus(corpus._id):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
 
