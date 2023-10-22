@@ -64,7 +64,7 @@ if __name__ == '__main__':
     parser.add_argument('--type-priority', nargs='*', default=[],
                         help='Optional list that indicates the annotation '
                              'types\'s priorities (the most important type is listed first; types not listed receive '
-                             'equal priority). If specified, Orbis removes overlapping annotations from the evaluation '
+                             'equal priority). If specified, Orbis deletes overlapping annotations from the evaluation '
                              'based on the annotation type\'s priority. Annotations of same priority are filtered '
                              'based on the annotation\'s length (i.e., longer annotations are preferred over shorter '
                              'ones). ')

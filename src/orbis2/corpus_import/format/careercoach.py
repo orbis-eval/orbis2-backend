@@ -76,9 +76,9 @@ class CareerCoachFormat(CorpusFormat):
         return document_annotations
 
     @staticmethod
-    def remove_overlapping_proposals(annotation_list: List[Annotation]) -> List[Annotation]:
+    def delete_overlapping_proposals(annotation_list: List[Annotation]) -> List[Annotation]:
         """
-        Remove proposals that overlap an annotation of the same type.
+        Delete proposals that overlap an annotation of the same type.
         (e.g. proposal-education and education)
         """
         annotations = []

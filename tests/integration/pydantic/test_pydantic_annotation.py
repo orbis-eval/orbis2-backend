@@ -24,7 +24,7 @@ def test_annotation_json_serialization_and_deserialization():
     """
     annotation = Annotation('', 'Text', 0, 4, AnnotationType('annotation-type1'), Annotator('Andreas', [Role('admin')]),
                             metadata=[Metadata('key1', 'value1'), Metadata('key2', 'value2')])
-    annotation_json = dumps(OrbisPydanticBaseModel.remove_id_fields(annotation.dict()))
+    annotation_json = dumps(OrbisPydanticBaseModel.delete_id_fields(annotation.dict()))
 
     deserialized_annotation = Annotation.parse_raw(annotation_json)
     assert deserialized_annotation == annotation

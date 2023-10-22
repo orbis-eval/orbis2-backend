@@ -13,7 +13,7 @@ class DocumentHasAnnotationDao(OrbisBase):
     # note: the default values only serve to prevent SQL Alchemy warnings.
     run_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, default=0)
     document_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, default=0)
-    # cascading in table_args removes entries from this table, when entries (run_id, document_id) from parent table
+    # cascading in table_args deletes entries from this table, when entries (run_id, document_id) from parent table
     # (run_has_document) get deleted
     __table_args__ = (ForeignKeyConstraint((run_id, document_id),
                                            [RunHasDocumentDao.run_id, RunHasDocumentDao.document_id],

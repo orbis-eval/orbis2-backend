@@ -45,16 +45,16 @@ class OrbisPydanticBaseModel(BaseModel):
         return output
 
     @classmethod
-    def remove_id_fields(cls, d: Dict) -> Dict:
+    def delete_id_fields(cls, d: Dict) -> Dict:
         """
-        Remove the `_id` fields from the json output.
+        Delete the `_id` fields from the json output.
 
         Note: required for unit testing.
         """
         if isinstance(d, dict):
-            return {k: cls.remove_id_fields(v) for k, v in d.items() if k != '_id'}
+            return {k: cls.delete_id_fields(v) for k, v in d.items() if k != '_id'}
         elif isinstance(d, list):
-            return [cls.remove_id_fields(item) for item in d]
+            return [cls.delete_id_fields(item) for item in d]
         else:
             return d
 

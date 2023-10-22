@@ -9,7 +9,7 @@ def get_session(connection_string: str, new: bool = False) -> Session:
     Returns a sqlalchemy session for the connection string
     Args:
         connection_string: connection string for sqlalchemy for connecting to the database
-        new: if true, remove the existing session and create a new one
+        new: if true, delete the existing session and create a new one
 
     Returns: sqlalchemy session
     """
