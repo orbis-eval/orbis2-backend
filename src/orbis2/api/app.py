@@ -94,8 +94,8 @@ def get_corpus(corpus_id: int) -> Corpus:
     return get_orbis_service().get_corpus(corpus_id)
 
 
-@app.post('/addCorpus')
-def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
+@app.post('/createCorpus')
+def create_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
     if not documents:
         documents = []
     run = Run(f'default_{corpus.name}', f'default run for corpus {corpus.name}, no annotations',
@@ -104,8 +104,8 @@ def add_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
     return corpus
 
 
-@app.post('/addRun')
-def add_run(corpus: Corpus, run_name: str, run_description: str) -> dict[str, list[Document]]:
+@app.post('/createRun')
+def create_run(corpus: Corpus, run_name: str, run_description: str) -> dict[str, list[Document]]:
     if corpus and run_name and run_description:
         run = Run(run_name, run_description, corpus,
                   {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus._id)})
@@ -125,8 +125,8 @@ def delete_run(run: Run, response: Response) -> {}:
         response.status_code = status.HTTP_400_BAD_REQUEST
         return JSONResponse(content={"message": message})
 
-@app.post('/addAnnotation')
-def add_annotation(annotation: Annotation) -> Annotation:
+@app.post('/createAnnotation')
+def create_annotation(annotation: Annotation) -> Annotation:
     return get_orbis_service().add_annotation_to_document(annotation)
 
 
