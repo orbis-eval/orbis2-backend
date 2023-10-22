@@ -70,6 +70,7 @@ def get_documents(run_id: int = None, corpus_id: int = None, page_size: int = No
         return get_orbis_service().get_documents_of_corpus(corpus_id, page_size, skip)
     return get_orbis_service().get_documents()
 
+
 @app.get('/getDocument')
 def get_document(document_id: int) -> Document:
     # TODO, anf 13.12.2022: implement response in error case
@@ -124,6 +125,7 @@ def delete_run(run: Run, response: Response) -> {}:
         message = f"Failed to delete Run with ID {run._id}."
         response.status_code = status.HTTP_400_BAD_REQUEST
         return JSONResponse(content={"message": message})
+
 
 @app.post('/createAnnotation')
 def create_annotation(annotation: Annotation) -> Annotation:
