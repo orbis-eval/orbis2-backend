@@ -106,14 +106,14 @@ def create_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
 
 
 @app.post('/createRun')
-def create_run(corpus: Corpus, run_name: str, run_description: str) -> dict[str, list[Document]]:
+def create_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
     if corpus and run_name and run_description:
         run = Run(run_name, run_description, corpus,
                   {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus._id)})
         if get_orbis_service().add_run(run):
             # return the id and the documents from the run
             run.document_annotations = None
-            return {'id': run._id, 'documents': get_orbis_service().get_documents_of_run(run._id)}
+            return run
 
 
 @app.delete('/deleteRun', status_code=200)
