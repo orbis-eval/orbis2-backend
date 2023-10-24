@@ -120,19 +120,23 @@ def create_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
             return run
 
 
-def check_delete_run_conditions(corpus_id: int) -> None:
-    if corpus_id:
-        run_names = get_orbis_service().get_run_names(corpus_id)
-        if len(run_names) <= 1:
-            raise ValueError(f"Corpus {corpus_id} must have at least two runs.")
-    else:
+def validate_corpus_id(corpus_id: int) -> None:
+    if not corpus_id:
         raise ValueError(f"Corpus {corpus_id} has no corpus id.")
+
+
+def validate_run_count(corpus_id: int) -> None:
+    run_names = get_orbis_service().get_run_names(corpus_id)
+    if len(run_names) <= 1:
+        raise ValueError(f"Corpus {corpus_id} must have at least two runs.")
 
 
 @app.delete('/deleteRun', status_code=200)
 def delete_run(run: Run) -> {}:
     try:
-        check_delete_run_conditions(run.corpus._id)
+        validate_corpus_id(run.corpus._id)
+        validate_run_count(run.corpus._id)
+
         if get_orbis_service().delete_run(run._id):
             message = f"Run with ID {run._id} has been deleted successfully."
             return JSONResponse(content={"message": message})
