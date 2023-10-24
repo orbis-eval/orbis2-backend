@@ -57,6 +57,10 @@ def get_orbis_service() -> OrbisService:
         return global_orbis_service
 
 
+def get_error_response(message: str, status_code: int) -> JSONResponse:
+    return JSONResponse(content={"message": message}, status_code=status_code)
+
+
 @app.get('/getAnnotations')
 def get_annotations(run_id: int = None, document_id: int = None) -> List[Annotation]:
     return get_orbis_service().get_annotations(run_id, document_id)
@@ -116,15 +120,27 @@ def create_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
             return run
 
 
-@app.delete('/deleteRun', status_code=200)
-def delete_run(run: Run, response: Response) -> {}:
-    if get_orbis_service().delete_run(run._id):
-        message = f"Run with ID {run._id} has been deleted successfully."
-        return JSONResponse(content={"message": message})
+def check_delete_run_conditions(corpus_id: int) -> None:
+    if corpus_id:
+        run_names = get_orbis_service().get_run_names(corpus_id)
+        if len(run_names) <= 1:
+            raise ValueError(f"Corpus {corpus_id} must have at least two runs.")
     else:
-        message = f"Failed to delete Run with ID {run._id}."
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return JSONResponse(content={"message": message})
+        raise ValueError(f"Corpus {corpus_id} has no corpus id.")
+
+
+@app.delete('/deleteRun', status_code=200)
+def delete_run(run: Run) -> {}:
+    try:
+        check_delete_run_conditions(run.corpus._id)
+        if get_orbis_service().delete_run(run._id):
+            message = f"Run with ID {run._id} has been deleted successfully."
+            return JSONResponse(content={"message": message})
+        else:
+            return get_error_response(f"Failed to delete Run with ID {run._id}.",
+                                      status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except ValueError as e:
+        return get_error_response(str(e), status.HTTP_400_BAD_REQUEST)
 
 
 @app.post('/createAnnotation')
