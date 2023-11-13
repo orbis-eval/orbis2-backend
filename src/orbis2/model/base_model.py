@@ -1,11 +1,13 @@
 from abc import abstractmethod
+from copy import deepcopy
 from typing import Dict
 
-from pydantic import BaseModel
-from copy import deepcopy
+from pydantic import BaseModel, ConfigDict
 
 
 class OrbisPydanticBaseModel(BaseModel):
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @abstractmethod
     def __hash__(self) -> int:

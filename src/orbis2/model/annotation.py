@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Optional
 
 from pydantic import Field
 from xxhash import xxh32_intdigest
@@ -17,7 +17,7 @@ class Annotation(OrbisPydanticBaseModel):
     surface_forms: Union[Tuple[str, ...] | str] = Field(default=None, alias="surfaceForms")
     start_indices: Union[Tuple[int, ...] | int] = Field(default=None, alias="startIndices")
     end_indices: Union[Tuple[int, ...] | int] = Field(default=None, alias="endIndices")
-    annotation_type: AnnotationType = Field(default=None, alias="annotationType")
+    annotation_type: Optional[AnnotationType] = Field(default=None, alias="annotationType")
     annotator: Annotator
     metadata: List[Metadata] = None
     timestamp: datetime = None
