@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import Union, Tuple, List
 
+from pydantic import Field
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_dao import AnnotationDao
@@ -13,13 +14,11 @@ from orbis2.model.metadata import Metadata
 
 class Annotation(OrbisPydanticBaseModel):
     key: str
-    surface_forms: Union[Tuple[str, ...] | str]
-    start_indices: Union[Tuple[int, ...] | int]
-    end_indices: Union[Tuple[int, ...] | int]
-    annotation_type: AnnotationType
+    surface_forms: Union[Tuple[str, ...] | str] = Field(default=None, alias="surfaceForms")
+    start_indices: Union[Tuple[int, ...] | int] = Field(default=None, alias="startIndices")
+    end_indices: Union[Tuple[int, ...] | int] = Field(default=None, alias="endIndices")
+    annotation_type: AnnotationType = Field(default=None, alias="annotationType")
     annotator: Annotator
-    run_id: int = None
-    document_id: int = None
     metadata: List[Metadata] = None
     timestamp: datetime = None
 
@@ -32,9 +31,9 @@ class Annotation(OrbisPydanticBaseModel):
         super().__init__(key=key, surface_forms=surface_forms, start_indices=start_indices, end_indices=end_indices,
                          annotation_type=annotation_type, annotator=annotator, run_id=run_id, document_id=document_id,
                          metadata=metadata, timestamp=timestamp)
-        self.start_indices = (start_indices, ) if isinstance(start_indices, int) else tuple(start_indices)
-        self.end_indices = (end_indices, ) if isinstance(end_indices, int) else tuple(end_indices)
-        self.surface_forms = (surface_forms, ) if isinstance(surface_forms, str) else tuple(surface_forms)
+        self.start_indices = (start_indices,) if isinstance(start_indices, int) else tuple(start_indices)
+        self.end_indices = (end_indices,) if isinstance(end_indices, int) else tuple(end_indices)
+        self.surface_forms = (surface_forms,) if isinstance(surface_forms, str) else tuple(surface_forms)
         self.metadata = self.metadata if metadata else []
 
     def __eq__(self, other):
@@ -116,7 +115,7 @@ def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],
          A mock Annotation to be used in unittests.
     """
     if not surface_forms:
-        surface_forms = 'mock' if isinstance(start_indices, int) else ('mock', ) * len(start_indices)
+        surface_forms = 'mock' if isinstance(start_indices, int) else ('mock',) * len(start_indices)
     return Annotation(key=key,
                       surface_forms=surface_forms,
                       start_indices=start_indices,

@@ -1,3 +1,4 @@
+from pydantic import Field
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.annotation_type_dao import AnnotationTypeDao
@@ -6,7 +7,7 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class AnnotationType(OrbisPydanticBaseModel):
     name: str
-    color_id: int = None
+    color_id: int = Field(default=None, alias="colorId")
 
     def __init__(self, name: str, color_id: str = None):
         super().__init__(name=name, color_id=color_id)

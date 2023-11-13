@@ -1,5 +1,6 @@
 from typing import Dict, List, Optional
 
+from pydantic import Field
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.run_dao import RunDao
@@ -13,7 +14,7 @@ class Run(OrbisPydanticBaseModel):
     name: str
     description: str = None
     corpus: Corpus = None
-    document_annotations: Dict[Document, List[Annotation]] = None
+    document_annotations: Optional[Dict[Document, List[Annotation]]] = Field(default={}, alias="documentAnnotations")
     parents: Optional[List['Run']] = None
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,

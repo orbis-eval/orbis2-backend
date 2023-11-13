@@ -1,5 +1,6 @@
 from typing import List
 
+from pydantic import Field
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.document_dao import DocumentDao
@@ -12,7 +13,7 @@ from orbis2.model.metadata import Metadata
 class Document(OrbisPydanticBaseModel):
     content: str
     key: str
-    run_id: int = None
+    run_id: int = Field(default=None, alias="runId")
     metadata: List[Metadata] = None
     done: bool = False
 
