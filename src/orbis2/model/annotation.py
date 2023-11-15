@@ -20,6 +20,8 @@ class Annotation(OrbisPydanticBaseModel):
     annotation_type: Optional[AnnotationType] = Field(default=None, alias="annotationType")
     annotator: Annotator
     metadata: List[Metadata] = None
+    run_id: int = Field(default=None, alias="runId")
+    document_id: int = Field(default=None, alias="documentId")
     timestamp: datetime = None
 
     def __init__(self, key: str, surface_forms: Union[Tuple[str, ...], str],
