@@ -29,7 +29,7 @@ class Metadata(OrbisPydanticBaseModel):
         return [cls.from_metadata_dao(metadata_dao) for metadata_dao in metadata_daos]
 
     def to_dao(self) -> MetadataDao:
-        return MetadataDao(metadata_id=self._id, key=self.key, value=self.value)
+        return MetadataDao(metadata_id=self.identifier, key=self.key, value=self.value)
 
     @staticmethod
     def to_metadata_daos(metadata: ['Metadata']) -> [MetadataDao]:

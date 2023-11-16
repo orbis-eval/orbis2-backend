@@ -58,12 +58,12 @@ class Run(OrbisPydanticBaseModel):
         return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:
-        return RunDao(run_id=self._id, name=self.name, description=self.description,
+        return RunDao(run_id=self.identifier, name=self.name, description=self.description,
                       run_has_documents=[
                           document.to_run_document_dao(
                               [annotation.to_document_annotation_dao() for annotation in annotations]
                           ) for document, annotations in self.document_annotations.items()
-                      ], corpus_id=self.corpus._id, corpus=self.corpus.to_dao(),
+                      ], corpus_id=self.corpus.identifier, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents))
 
     @staticmethod
@@ -76,8 +76,8 @@ class Run(OrbisPydanticBaseModel):
             parents = parents.extend(self.parents)
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
-            document.refined_copy(run_id=new_run._id): [
-                annotation.refined_copy(run_id=new_run._id, document_id=document._id) for annotation in annotations
+            document.refined_copy(run_id=new_run.identifier): [
+                annotation.refined_copy(run_id=new_run.identifier, document_id=document.identifier) for annotation in annotations
             ] for document, annotations in self.document_annotations.items()
         }
         new_run.document_annotations = document_annotations

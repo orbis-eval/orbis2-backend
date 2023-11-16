@@ -1,7 +1,6 @@
 """
 Test color support (i.e., work with color palettes and changing annotation coloring.
 """
-from itertools import chain
 
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.database.orbis.entities.color_palette_dao import ColorPaletteDao
@@ -27,5 +26,5 @@ def test_set_corpus_annotation_type_color(insert_test_data_orbis):
     annotation_type = list(run.corpus.supported_annotation_types)[0]
 
     for color in range(5):
-        OrbisService().set_corpus_annotation_type_color(corpus._id, annotation_type._id, color)
-        assert OrbisService().get_corpus_annotation_types(run.corpus._id)[annotation_type] == color
+        OrbisService().set_corpus_annotation_type_color(corpus.identifier, annotation_type.identifier, color)
+        assert OrbisService().get_corpus_annotation_types(run.corpus.identifier)[annotation_type] == color

@@ -1,6 +1,7 @@
+from json import dumps
+
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
-from json import dumps, loads
 
 
 def test_metadata_initialization():
@@ -10,7 +11,7 @@ def test_metadata_initialization():
     metadata = Metadata('key1', 'value1')
     assert metadata.key == 'key1'
     assert metadata.value == 'value1'
-    assert metadata._id != 0
+    assert metadata.identifier != 0
 
 def test_metadata_json_serialization():
     metadata = Metadata('key1', 'value1')

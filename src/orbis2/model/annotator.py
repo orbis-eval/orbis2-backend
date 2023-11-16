@@ -36,5 +36,5 @@ class Annotator(OrbisPydanticBaseModel):
         return [cls.from_annotator_dao(annotator_dao) for annotator_dao in annotator_daos]
 
     def to_dao(self) -> AnnotatorDao:
-        return AnnotatorDao(annotator_id=self._id, name=self.name, password=self.password,
+        return AnnotatorDao(annotator_id=self.identifier, name=self.name, password=self.password,
                             roles=Role.to_role_daos(self.roles))
