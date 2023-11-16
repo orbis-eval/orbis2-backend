@@ -1,11 +1,14 @@
 from abc import abstractmethod
+from copy import deepcopy
 from typing import Dict
 
 from pydantic import BaseModel
-from copy import deepcopy
 
 
 class OrbisPydanticBaseModel(BaseModel):
+
+    class Config:
+        allow_population_by_field_name = True
 
     @abstractmethod
     def __hash__(self) -> int:

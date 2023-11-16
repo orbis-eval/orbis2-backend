@@ -1,5 +1,6 @@
 from typing import List
 
+from pydantic import Field
 from xxhash import xxh32_intdigest
 
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
@@ -10,7 +11,7 @@ from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class Corpus(OrbisPydanticBaseModel):
     name: str
-    supported_annotation_types: List[AnnotationType]
+    supported_annotation_types: List[AnnotationType] = Field(default=[], alias="supportedAnnotationTypes")
 
     def __init__(self, name: str, supported_annotation_types: List[AnnotationType]):
         super().__init__(name=name, supported_annotation_types=supported_annotation_types)
@@ -38,7 +39,7 @@ class Corpus(OrbisPydanticBaseModel):
         c = CorpusDao(corpus_id=self._id, name=self.name,
                       supported_annotation_types=[
                           (CorpusSupportsAnnotationTypeDao(corpus_id=self._id, annotation_type=an.to_dao())
-                              if not an.color_id else CorpusSupportsAnnotationTypeDao(
+                           if not an.color_id else CorpusSupportsAnnotationTypeDao(
                               corpus_id=self._id, annotation_type=an.to_dao(), color_id=an.color_id))
                           for an in self.supported_annotation_types])
         return c
