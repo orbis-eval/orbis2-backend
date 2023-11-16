@@ -19,7 +19,7 @@ class OrbisPydanticBaseModel(BaseModel):
         pass
 
     @property
-    def _id(self) -> int:
+    def identifier(self) -> int:
         """
         Returns: the ID of the current object, which is defined by its hash.
             The underscore is necessary, otherwise the deserialization of the property throws an error.
@@ -44,7 +44,7 @@ class OrbisPydanticBaseModel(BaseModel):
 
     def dict(self, *args, **kwargs):                        # noqa A003
         output = super().dict(*args, **kwargs)
-        output['_id'] = self._id
+        output['identifier'] = self.identifier
         return output
 
     @classmethod
@@ -63,7 +63,7 @@ class OrbisPydanticBaseModel(BaseModel):
 
     def __str__(self):
         attr_values = [f'{key}={value}'
-                       for key, value in sorted(self.dict().items()) if key != '_id'] + [f'_id={self._id}']
+                       for key, value in sorted(self.dict().items()) if key != '_id'] + [f'_id={self.identifier}']
         return f'<{self.__class__.__name__}({", ".join(attr_values)})>'
 
     def __repr__(self):

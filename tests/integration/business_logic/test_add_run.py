@@ -74,7 +74,7 @@ def test_add_runs_addMultipleRunsContainingAnnotationsWithSameTypeInOneCall_anno
                          Annotator('Andreas', [Role('admin')]))]}
             )])
     corpus = OrbisService().get_corpora()[0]
-    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpus._id))
+    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpus.identifier))
 
     assert len(annotation_types) == 1
     assert annotation_types[0].name == 'annotation-type1'
@@ -125,7 +125,7 @@ def test_add_run_addSameRunTwice_allDataAreInsertedOnlyOnce(
     corpora = OrbisService().get_corpora()
     assert len(corpora) == 1
 
-    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0]._id)
+    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0].identifier)
     assert len(annotation_types) == 1
 
     metadata = OrbisService().get_metadata()
@@ -152,7 +152,7 @@ def test_add_run_addSameRunFromDb_allDataAreInsertedOnlyOnce(insert_test_data_or
     corpora = OrbisService().get_corpora()
     assert len(corpora) == 1
 
-    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0]._id)
+    annotation_types = OrbisService().get_corpus_annotation_types(corpora[0].identifier)
     assert len(annotation_types) == 1
 
     metadata = OrbisService().get_metadata()
@@ -176,7 +176,7 @@ def test_add_run_runContainsAnnotationWithAlreadyExistingType_annotationTypeIsNo
                                                        Annotator('Andreas', [Role('admin')]))]}
                                       ))
     corpora = OrbisService().get_corpora()
-    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpora[0]._id))
+    annotation_types = list(OrbisService().get_corpus_annotation_types(corpus_id=corpora[0].identifier))
 
     assert len(annotation_types) == 1
     assert annotation_types[0].name == 'annotation-type1'
@@ -196,7 +196,7 @@ def test_add_run_runContainsDocumentWithRunIdZero_documentIsAddedToLinkedRunInde
     assert len(runs) == 1
     run_documents = list(runs[0].document_annotations.keys())
     assert len(run_documents) == 1
-    assert run_documents[0].run_id == runs[0]._id
+    assert run_documents[0].run_id == runs[0].identifier
     assert run_documents[0].content == 'Text, das ist ein Beispiel'
 
 

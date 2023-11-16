@@ -1,5 +1,6 @@
 import sys
 import threading
+from pathlib import Path
 from typing import List
 
 import uvicorn as uvicorn
@@ -7,12 +8,10 @@ from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
-from orbis2.model.annotation import Annotation
-from orbis2.model.corpus import Corpus
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.metadata import __version__
-from pathlib import Path
-
+from orbis2.model.annotation import Annotation
+from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
 
@@ -113,7 +112,7 @@ def create_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
 def create_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
     if corpus and run_name and run_description:
         run = Run(run_name, run_description, corpus,
-                  {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus._id)})
+                  {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus.identifier)})
         if get_orbis_service().add_run(run):
             # return the id and the documents from the run
             run.document_annotations = None
@@ -134,14 +133,14 @@ def validate_run_count(corpus_id: int) -> None:
 @app.delete('/deleteRun', status_code=200)
 def delete_run(run: Run) -> {}:
     try:
-        validate_corpus_id(run.corpus._id)
-        validate_run_count(run.corpus._id)
+        validate_corpus_id(run.corpus.identifier)
+        validate_run_count(run.corpus.identifier)
 
-        if get_orbis_service().delete_run(run._id):
-            message = f"Run with ID {run._id} has been deleted successfully."
+        if get_orbis_service().delete_run(run.identifier):
+            message = f"Run with ID {run.identifier} has been deleted successfully."
             return JSONResponse(content={"message": message})
         else:
-            return get_error_response(f"Failed to delete Run with ID {run._id}.",
+            return get_error_response(f"Failed to delete Run with ID {run.identifier}.",
                                       status.HTTP_500_INTERNAL_SERVER_ERROR)
     except ValueError as e:
         return get_error_response(str(e), status.HTTP_400_BAD_REQUEST)
@@ -161,7 +160,7 @@ def delete_annotation_from_document(annotation: Annotation, response: Response):
 
 @app.delete('/deleteCorpus', status_code=200)
 def delete_corpus(corpus: Corpus, response: Response):
-    if get_orbis_service().delete_corpus(corpus._id):
+    if get_orbis_service().delete_corpus(corpus.identifier):
         return
     response.status_code = status.HTTP_400_BAD_REQUEST
 

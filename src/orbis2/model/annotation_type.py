@@ -31,7 +31,7 @@ class AnnotationType(OrbisPydanticBaseModel):
                 for annotation_type_dao in annotation_type_daos]
 
     def to_dao(self) -> AnnotationTypeDao:
-        return AnnotationTypeDao(type_id=self._id, name=self.name)
+        return AnnotationTypeDao(type_id=self.identifier, name=self.name)
 
     @staticmethod
     def to_annotation_type_daos(annotation_types: ['AnnotationType']) -> [AnnotationTypeDao]:

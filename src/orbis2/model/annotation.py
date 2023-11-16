@@ -90,19 +90,19 @@ class Annotation(OrbisPydanticBaseModel):
                 for document_annotation_dao in document_has_annotations]
 
     def to_dao(self) -> AnnotationDao:
-        return AnnotationDao(annotation_id=self._id, key=self.key,
+        return AnnotationDao(annotation_id=self.identifier, key=self.key,
                              surface_forms=list(self.surface_forms),
                              start_indices=list(self.start_indices),
                              end_indices=list(self.end_indices),
-                             annotation_type_id=self.annotation_type._id,
+                             annotation_type_id=self.annotation_type.identifier,
                              annotation_type=self.annotation_type.to_dao(),
-                             annotator_id=self.annotator._id,
+                             annotator_id=self.annotator.identifier,
                              annotator=self.annotator.to_dao(),
                              meta_data=Metadata.to_metadata_daos(self.metadata))
 
     def to_document_annotation_dao(self) -> DocumentHasAnnotationDao:
         return DocumentHasAnnotationDao(run_id=self.run_id, document_id=self.document_id,
-                                        annotation_id=self._id, annotation=self.to_dao())
+                                        annotation_id=self.identifier, annotation=self.to_dao())
 
 
 def get_mock_annotation(start_indices: Union[Tuple[int, ...], int],

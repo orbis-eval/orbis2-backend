@@ -56,4 +56,4 @@ def test_from_run_dao_nameOnly_validRun():
     run_dao = RunDao(name=test)
     run = Run.from_run_dao(run_dao)
     assert run.name == test
-    assert run._id is not None
+    assert run.identifier is not None
