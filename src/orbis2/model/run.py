@@ -77,7 +77,8 @@ class Run(OrbisPydanticBaseModel):
         new_run = Run(new_name, new_description, self.corpus.copy(), parents=parents)
         document_annotations = {
             document.refined_copy(run_id=new_run.identifier): [
-                annotation.refined_copy(run_id=new_run.identifier, document_id=document.identifier) for annotation in annotations
+                annotation.refined_copy(run_id=new_run.identifier, document_id=document.identifier) for annotation in
+                annotations
             ] for document, annotations in self.document_annotations.items()
         }
         new_run.document_annotations = document_annotations
