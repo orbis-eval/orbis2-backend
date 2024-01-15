@@ -9,7 +9,7 @@ services:
     ports:
       - "63012:63012"
     environment:
-      - PYTHONPATH=.
+      - PYTHONPATH=/app/src
       - DB_USER=${DB_USER}
       - DB_URL=${DB_URL}
       - DB_PASSWORD=${DB_PASSWORD}
