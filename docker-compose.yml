@@ -9,6 +9,7 @@ services:
     ports:
       - "63012:63012"
     environment:
+      - PYTHONPATH=.
       - DB_USER=${DB_USER}
       - DB_URL=${DB_URL}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -16,10 +17,7 @@ services:
       - ORBIS_DB_NAME=${ORBIS_DB_NAME}
       - SERVER_PORT=63012
     volumes:
-      - ./src:/src
-      - ./config:/config
-      - ./scripts:/scripts
-      - ./tests:/tests
+      - .:/app
     networks:
       - orbis
 
