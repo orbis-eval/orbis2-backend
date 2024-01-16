@@ -36,7 +36,7 @@ class Annotation(OrbisPydanticBaseModel):
         self.start_indices = (start_indices,) if isinstance(start_indices, int) else tuple(start_indices)
         self.end_indices = (end_indices,) if isinstance(end_indices, int) else tuple(end_indices)
         self.surface_forms = (surface_forms,) if isinstance(surface_forms, str) else tuple(surface_forms)
-        self.metadata = self.metadata if metadata else []
+        self.metadata = metadata if metadata else []
 
     def __eq__(self, other):
         if isinstance(other, Annotation):
@@ -57,7 +57,7 @@ class Annotation(OrbisPydanticBaseModel):
     def __hash__(self):
         return xxh32_intdigest((self.key, self.surface_forms, self.start_indices, self.end_indices,
                                 self.annotation_type.__hash__(), self.annotator.__hash__(),
-                                [metadata.__hash__() for metadata in self.metadata].__str__(),
+                                [m.__hash__() for m in self.metadata].__str__(),
                                 ).__str__())
 
     @classmethod

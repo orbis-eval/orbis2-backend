@@ -20,7 +20,7 @@ def get_export_doc_name(document: Document) -> str:
 def get_entity_annotations(annotations: List[Annotation]) -> Dict[str, List[Dict[str, str]]]:
     def get_page_segment(annotation: Annotation) -> str:
         return None if not annotation.metadata else \
-            max((metadata.value for metadata in annotation.metadata if metadata.key == 'segment'))
+            max((m.value for m in annotation.metadata if m.key == 'segment'))
 
     def get_entity_annotation_dict(annotation: Annotation) -> Dict[str, str]:
         return {

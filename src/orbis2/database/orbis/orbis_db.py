@@ -655,8 +655,8 @@ class OrbisDb(SqlDb):
         Returns: True if everything worked correctly (if no orphan is found, True is returned as well), False otherwise
         """
         # if no metadata is orphan, this statement is true (since: if all([]) -> True)
-        if all((self.delete_metadata(meta_data.metadata_id)
-                for meta_data in metadata if self.metadata_is_orphan(meta_data.metadata_id))):
+        if all((self.delete_metadata(m.metadata_id)
+                for m in metadata if self.metadata_is_orphan(m.metadata_id))):
             return self.commit()
         return False
 

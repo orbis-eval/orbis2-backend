@@ -64,8 +64,8 @@ class NifExportFormat:
                 'https://') else ORBIS.term('type/' + annotation.annotation_type.name)
             self.g.add((annotation_uri, RDF.type, annotation_type))
             self.g.add((annotation_uri, ITSRDF.taClassRef, annotation_type))
-        for metadata in annotation.metadata:
-            self.g.add((annotation_uri, URIRef(metadata.key), Literal(metadata.value)))
+        for m in annotation.metadata:
+            self.g.add((annotation_uri, URIRef(m.key), Literal(m.value)))
 
     def export(self, run: Run, path: Path):
         """

@@ -58,5 +58,5 @@ def get_annotation_segment(annotation: Annotation) -> Optional[str]:
     Return:
         The segment of the given Annotation or None string, if no segment has been specified.
     """
-    partitions = [metadata.value for metadata in annotation.metadata if metadata.key == SEGMENT_METADATA_KEY]
+    partitions = [m.value for m in annotation.metadata if m.key == SEGMENT_METADATA_KEY]
     return max(partitions) if partitions else None
