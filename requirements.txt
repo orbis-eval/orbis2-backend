@@ -1,4 +1,4 @@
-SQLAlchemy~=2.0.5
+SQLAlchemy==2.0.24
 SQLAlchemy-Utils~=0.40.0
 psycopg2-binary~=2.9.5
 fastapi~=0.87.0
