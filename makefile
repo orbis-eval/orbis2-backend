@@ -37,6 +37,9 @@ logs:
 clean:
 	docker compose down --volumes
 
+create-database:
+	docker compose exec backend ./scripts/dbtool.py --create-database --force
+
 test-database:
 	docker compose exec db sh -c 'psql -U ${DB_USER} -c "CREATE DATABASE ${ORBIS_DB_TEST_NAME}"' 
 
