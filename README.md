@@ -58,6 +58,12 @@ All stated commands can be run with `make`. To get a list of all available comma
 
 NOTE: All environmental variables must be set before you can run this command.
 
+Use the make command coupled to the backed docker container.
+```make
+make create-database
+```
+
+Alternatively you can use directly the script
 ```bash
 ./scripts/dbtool.py --create-database --force --add-dummy-data
 ```
