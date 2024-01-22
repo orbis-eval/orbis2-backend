@@ -16,13 +16,15 @@ class Run(OrbisPydanticBaseModel):
     corpus: Corpus = None
     document_annotations: Optional[Dict[Document, List[Annotation]]] = Field(default={}, alias="documentAnnotations")
     parents: Optional[List['Run']] = None
+    is_gold_standard: bool = False
 
     def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None):
+                 document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None, is_gold_standard: bool = False):
         super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
-                         parents=parents)
+                         parents=parents, is_gold_standard=is_gold_standard)
         self.document_annotations = self.document_annotations if document_annotations else {}
         self.parents = self.parents if parents else []
+        self.is_gold_standard = is_gold_standard
 
     def __hash__(self):
         return xxh32_intdigest(self.name)
@@ -50,7 +52,8 @@ class Run(OrbisPydanticBaseModel):
                   description=run_dao.description,
                   corpus=Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
                   document_annotations=document_annotations,
-                  parents=Run.from_run_daos(run_dao.parents))
+                  parents=Run.from_run_daos(run_dao.parents),
+                  is_gold_standard=run_dao.is_gold_standard)
         return run
 
     @classmethod
@@ -64,7 +67,8 @@ class Run(OrbisPydanticBaseModel):
                               [annotation.to_document_annotation_dao() for annotation in annotations]
                           ) for document, annotations in self.document_annotations.items()
                       ], corpus_id=self.corpus.identifier, corpus=self.corpus.to_dao(),
-                      parents=Run.to_run_daos(self.parents))
+                      parents=Run.to_run_daos(self.parents),
+                      is_gold_standard=self.is_gold_standard)
 
     @staticmethod
     def to_run_daos(runs: ['Run']) -> [RunDao]:

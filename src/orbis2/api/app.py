@@ -102,8 +102,8 @@ def get_corpus(corpus_id: int) -> Corpus:
 def create_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
     if not documents:
         documents = []
-    run = Run(f'default_{corpus.name}', f'default run for corpus {corpus.name}, no annotations',
-              corpus, {document: [] for document in documents})
+    run = Run(f'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
+              corpus, {document: [] for document in documents}, is_gold_standard=True)
     get_orbis_service().add_run(run)
     return corpus
 

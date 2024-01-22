@@ -24,3 +24,4 @@ class RunDao(OrbisBase):
     parents: Mapped[List['RunDao']] = relationship(secondary=run_derived_from_table,
                                                    primaryjoin=run_derived_from_table.c.parent_id == run_id,
                                                    secondaryjoin=run_derived_from_table.c.child_id == run_id)
+    is_gold_standard: Mapped[bool] = mapped_column(default=False)
