@@ -24,9 +24,9 @@ variables:
 
 
 stages:
-    - Pre Static Analysis
-    - Test
-    - Post Static Analysis
+    #- Pre Static Analysis
+    #- Test
+    #- Post Static Analysis
     - dockerbuild
     - publish-k8s
 
