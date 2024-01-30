@@ -65,8 +65,10 @@ release_major_version:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "New version: $(NEW_VERSION)"
 	echo $(NEW_VERSION) > $(VERSION_FILE)
+	git add version.txt
+	git commit -m "Major Release $(NEW_VERSION)"
 	git tag $(NEW_VERSION)
-	git push --tags
+	echo "INFO: Please git push the new major version manually"
 
 release_minor_version:
 	$(eval MINOR_VERSION := $(word 2, $(subst ., ,$(CURRENT_VERSION))))
@@ -75,8 +77,11 @@ release_minor_version:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "New version: $(NEW_VERSION)"
 	echo $(NEW_VERSION) > $(VERSION_FILE)
+	git add version.txt
+	git commit -m "Minor Release $(NEW_VERSION)"
 	git tag $(NEW_VERSION)
 	git push --tags
+	echo "INFO: Please git push the new minor version manually"
 
 release_patch_version:
 	$(eval PATCH_VERSION := $(word 3, $(subst ., ,$(CURRENT_VERSION))))
@@ -85,5 +90,8 @@ release_patch_version:
 	@echo "Current version: $(CURRENT_VERSION)"
 	@echo "New version: $(NEW_VERSION)"
 	echo $(NEW_VERSION) > $(VERSION_FILE)
+	git add version.txt
+	git commit -m "Patch Release $(NEW_VERSION)"
 	git tag $(NEW_VERSION)
 	git push --tags
+	echo "INFO: Please git push the new patch version manually"
