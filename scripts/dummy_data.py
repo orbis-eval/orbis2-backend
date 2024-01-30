@@ -67,6 +67,25 @@ SECOND_RUN = Run(
     }
 )
 
+ANOTHER_GOLD_STANDARD = Run(
+    'another gold standard', 'a different gold standdard', Corpus('corpus2', [AnnotationType('annotation-type1'),
+                                                         AnnotationType('annotation-type2'),
+                                                         AnnotationType('annotation-type3')]),
+    {
+        Document('Ein komplett anderer Text. Er enthält sogar zwei Sätze.', metadata=[Metadata('key1', 'value1')]):
+            [Annotation('url', 'Text', 21, 25, AnnotationType('annotation-type1'),
+                        Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
+             Annotation('url', 'Sätze', 49, 54, AnnotationType('annotation-type3'),
+                        Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])],
+        Document('Ein zweites neues Dokumnet. Auch das enthält zwei Sätze.', metadata=[Metadata('key3', 'value3')]):
+            [Annotation('url', 'Dokument', 18, 26, AnnotationType('annotation-type1'),
+                        Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]),
+             Annotation('url', 'Sätze', 50, 55, AnnotationType('annotation-type3'),
+                        Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]), ]
+    },
+    is_gold_standard=True
+)
+
 ANOTHER_RUN = Run(
     'another run', 'a different run', Corpus('corpus2', [AnnotationType('annotation-type1'),
                                                          AnnotationType('annotation-type2'),
