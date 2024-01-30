@@ -88,6 +88,13 @@ def get_runs(corpus_id: int = None) -> List[Run]:
     return get_orbis_service().get_run_names()
 
 
+@app.get('/getGoldStandards')
+def get_gold_standards(corpus_id: int = None) -> List[Run]:
+    if corpus_id:
+        return get_orbis_service().get_run_names(corpus_id, is_gold_standard=True)
+    return get_orbis_service().get_run_names(is_gold_standard=True)
+
+
 @app.get('/getCorpora')
 def get_corpora() -> List[Corpus]:
     return get_orbis_service().get_corpora()

@@ -40,13 +40,13 @@ class OrbisService:
             return Run.from_run_daos(runs)
         return []
 
-    def get_run_names(self, corpus_id: int = None) -> List[Run]:
+    def get_run_names(self, corpus_id: int = None, is_gold_standard: bool = False) -> List[Run]:
         if corpus_id:
             runs = [r.set(document_annotations=None)
-                    for r in Run.from_run_daos(self.orbis_db.get_run_names_by_corpus_id(corpus_id))]
+                    for r in Run.from_run_daos(self.orbis_db.get_run_names_by_corpus_id(corpus_id, is_gold_standard=is_gold_standard))]
         else:
             runs = [r.set(document_annotations=None)
-                    for r in Run.from_run_daos(self.orbis_db.get_run_names())]
+                    for r in Run.from_run_daos(self.orbis_db.get_run_names(is_gold_standard=is_gold_standard))]
         return runs if runs else []
 
     def get_documents(self) -> List[Document]:

@@ -1,7 +1,7 @@
 import logging
 from typing import List, Callable, Set, Dict, Optional
 
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -130,17 +130,19 @@ class OrbisDb(SqlDb):
         logging.debug(f'Document with document id {document_id} has not been found in orbis database.')
         return None
 
-    def get_run_names_by_corpus_id(self, corpus_id: int) -> Optional[List[RunDao]]:
+    def get_run_names_by_corpus_id(self, corpus_id: int, is_gold_standard: bool = False) -> Optional[List[RunDao]]:
         """
-        Get all run names with a given corpus_id from database
+        Get all run names with a given corpus_id from database.
+        If gold standard is true, then filter runs by it as well
 
         Args:
             corpus_id:
+            is_gold_standard:
 
         Returns: A list of run names or None if no according run exists in the database
         """
         try:
-            results = self.session.scalars(select(RunDao).where(RunDao.corpus_id == corpus_id)).all()
+            results = self.session.scalars(select(RunDao).filter(and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard))).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -150,14 +152,17 @@ class OrbisDb(SqlDb):
             logging.debug(f'the following exception occurred: {e.__str__()}')
             return None
 
-    def get_run_names(self) -> Optional[List[RunDao]]:
+    def get_run_names(self, is_gold_standard: bool = False) -> Optional[List[RunDao]]:
         """
         Get all run names from database
+
+        Args:
+            is_gold_standard:
 
         Returns: A list of all run names or None if no run exists
         """
         try:
-            results = self.session.scalars(select(RunDao)).all()
+            results = self.session.scalars(select(RunDao).where(RunDao.is_gold_standard == is_gold_standard)).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no run entries in orbis database.')
