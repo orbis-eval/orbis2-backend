@@ -22,7 +22,6 @@ variables:
   DOCKERFILEPATH: Dockerfile
   DEBUG: "true"
 
-
 stages:
     #- Pre Static Analysis
     #- Test
