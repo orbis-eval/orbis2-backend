@@ -33,5 +33,5 @@ if __name__ == '__main__':
             exit(-1)
 
         if args.add_dummy_data:
-            from dummy_data import FIRST_RUN, SECOND_RUN, ANOTHER_RUN
-            OrbisService().add_runs([FIRST_RUN, SECOND_RUN, ANOTHER_RUN])
+            from dummy_data import GOLD_STANDARD, FIRST_RUN, SECOND_RUN, ANOTHER_RUN
+            OrbisService().add_runs([GOLD_STANDARD, FIRST_RUN, SECOND_RUN, ANOTHER_RUN])

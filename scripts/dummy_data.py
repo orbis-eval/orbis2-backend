@@ -17,6 +17,22 @@ from orbis2.model.metadata import Metadata
 from orbis2.model.role import Role
 from orbis2.model.run import Run
 
+GOLD_STANDARD = Run(
+    'gold-standard', 'Gold Standard', Corpus('corpus1', [AnnotationType('annotation-type1'),
+                                                      AnnotationType('annotation-type2')]),
+    {
+        Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
+            [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                        Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])],
+        Document('Text, das ist ein anderes Beispiel, mit etwas mehr Text.', metadata=[Metadata('key3', 'value3')]):
+            [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
+                        Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
+             Annotation('url', 'Text', 51, 55, AnnotationType('annotation-type1'),
+                        Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]
+    },
+    is_gold_standard=True
+)
+
 FIRST_RUN = Run(
     'first-run', 'run number one', Corpus('corpus1', [AnnotationType('annotation-type1'),
                                                       AnnotationType('annotation-type2')]),
