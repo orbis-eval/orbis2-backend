@@ -18,7 +18,7 @@ variables:
 
   REGISTRY_IMAGE: davos.fhgr.ch/nlp/orbis2/$CI_PROJECT_NAME
   KUBE_NAMESPACE: orbis2
-  VERSION: "123"
+  VERSION: "$CI_COMMIT_TAG"
   DOCKERFILEPATH: Dockerfile
   DEBUG: "true"
 
