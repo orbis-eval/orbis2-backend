@@ -10,4 +10,6 @@ COPY . /app
 
 RUN pip3 install -r requirements.txt
 
+ENV PYTHONPATH="${PYTHONPATH}:/app/src"
+
 ENTRYPOINT ["uvicorn", "src.orbis2.api.app:app", "--host", "0.0.0.0", "--port", "63012", "--reload"]
