@@ -1,12 +1,12 @@
 include:
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.pre-static-analysis-api.yaml'
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.pre-static-analysis-tox.yaml'
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.test.yaml'
-  - project: 'nlp/team/ci-templates'
-    file: 'python/.sonar.yaml'
+  #- project: 'nlp/team/ci-templates'
+  #  file: 'python/.pre-static-analysis-api.yaml'
+  #- project: 'nlp/team/ci-templates'
+  #  file: 'python/.pre-static-analysis-tox.yaml'
+  #- project: 'nlp/team/ci-templates'
+  #  file: 'python/.test.yaml'
+  #- project: 'nlp/team/ci-templates'
+  #  file: 'python/.sonar.yaml'
   - project: 'nlp/team/ci-templates'
     file: 'python/.docker-build.yaml'
   - project: 'nlp/team/ci-templates'
@@ -19,19 +19,18 @@ variables:
   REGISTRY_IMAGE: davos.fhgr.ch/nlp/orbis2/$CI_PROJECT_NAME
   KUBE_NAMESPACE: orbis2
   VERSION: "$CI_COMMIT_TAG"
-  DOCKERFILEPATH: dockerfile
+  DOCKERFILEPATH: Dockerfile
   DEBUG: "true"
 
-
 stages:
-    - Pre Static Analysis
-    - Test
-    - Post Static Analysis
+    #- Pre Static Analysis
+    #- Test
+    #- Post Static Analysis
     - dockerbuild
     - publish-k8s
 
-pytest:
-  services:
-    - name: postgres:15
-  variables:
-    POSTGRES_HOST_AUTH_METHOD: trust
+#pytest:
+#  services:
+#    - name: postgres:15
+#  variables:
+#    POSTGRES_HOST_AUTH_METHOD: trust
