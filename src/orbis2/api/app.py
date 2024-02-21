@@ -11,9 +11,14 @@ from starlette.responses import JSONResponse
 from orbis2.business_logic.orbis_service import OrbisService
 from orbis2.metadata import __version__
 from orbis2.model.annotation import Annotation
+from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
+
+from orbis2.corpus_import.format.labelstudio import LabelStudioImporter
+from orbis2.corpus_import.format.doccano import DoccanoImporter
+
 
 PROJECT_DIR = Path(__file__).parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
@@ -106,11 +111,36 @@ def get_corpus(corpus_id: int) -> Corpus:
 
 
 @app.post('/createCorpus')
-def create_corpus(corpus: Corpus, documents: List[Document] = None) -> Corpus:
-    if not documents:
-        documents = []
-    run = Run(f'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
-              corpus, {document: [] for document in documents}, is_gold_standard=True)
+def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
+    if not files:
+        files = []
+
+    documents_with_annotations_list = []
+    annotation_types = []
+    for file in files:
+        if file["file_format"] == "label-studio":
+            documents_with_annotations_list.extend(LabelStudioImporter.get_annotated_documents(file))
+            annotation_types = list(set(annotation_types + LabelStudioImporter.get_annotation_types(file)))
+        elif file["file_format"] == "doccano":
+            documents_with_annotations_list.extend(DoccanoImporter.get_annotated_documents(file))
+            annotation_types = list(set(annotation_types + DoccanoImporter.get_annotation_types(file)))
+        else:
+            raise ValueError(f"Unknown file format {file['file_format']}.")
+
+    corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
+
+    documents_with_annotations_dict = {}
+
+    for pair in documents_with_annotations_list:
+        document, annotations = pair
+        documents_with_annotations_dict[document] = annotations
+
+    run = Run(
+        f'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
+        corpus,
+        documents_with_annotations_dict,
+        is_gold_standard=True
+    )
     get_orbis_service().add_run(run)
     return corpus
 

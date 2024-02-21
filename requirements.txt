@@ -1,4 +1,4 @@
-SQLAlchemy~=2.0.24
+SQLAlchemy==2.0.24
 SQLAlchemy-Utils~=0.40.0
 psycopg2-binary~=2.9.5
 fastapi~=0.109.1
@@ -17,3 +17,8 @@ XlsxWriter~=3.0.7
 statsmodels~=0.13.5
 setuptools~=67.6.1
 numpy~=1.24.2
+
+# testing
+tox==3.27.1
+tox-pip-version==0.0.7
+tox-venv==0.4.0

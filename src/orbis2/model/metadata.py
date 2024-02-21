@@ -26,6 +26,10 @@ class Metadata(OrbisPydanticBaseModel):
 
     @classmethod
     def from_metadata_daos(cls, metadata_daos: [MetadataDao]) -> ['Metadata']:
+        if not metadata_daos:
+            metadata_daos = []
+        if not isinstance(metadata_daos, list):
+            metadata_daos = [metadata_daos]
         return [cls.from_metadata_dao(mdao) for mdao in metadata_daos]
 
     def to_dao(self) -> MetadataDao:

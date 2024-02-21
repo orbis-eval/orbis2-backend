@@ -9,6 +9,7 @@ class OrbisPydanticBaseModel(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+        read_with_orm_mode = True
 
     @abstractmethod
     def __hash__(self) -> int:

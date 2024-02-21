@@ -35,7 +35,10 @@ build:
 	docker compose build
 
 logs:
-	docker compose logs
+	docker compose logs -f
+
+test:
+	docker compose exec backend tox -e pytest
 
 clean:
 	docker compose down --volumes

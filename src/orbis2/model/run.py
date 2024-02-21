@@ -58,6 +58,8 @@ class Run(OrbisPydanticBaseModel):
 
     @classmethod
     def from_run_daos(cls, run_daos: [RunDao]) -> ['Run']:
+        if not run_daos:
+            return []
         return [cls.from_run_dao(run_dao) for run_dao in run_daos]
 
     def to_dao(self) -> RunDao:

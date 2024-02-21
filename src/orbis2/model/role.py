@@ -25,6 +25,10 @@ class Role(OrbisPydanticBaseModel):
 
     @classmethod
     def from_role_daos(cls, role_daos: [RoleDao]) -> ['Role']:
+        if not role_daos:
+            role_daos = []
+        if not isinstance(role_daos, list):
+            role_daos = [role_daos]
         return [cls.from_role_dao(role_dao) for role_dao in role_daos]
 
     def to_dao(self) -> RoleDao:
