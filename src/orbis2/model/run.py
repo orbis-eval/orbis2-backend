@@ -8,6 +8,12 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
+from orbis2.evaluation.metric.inter_rater_agreement import InterRaterAgreement, InterRaterAgreementResult
+from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
+
+from operator import mul
+from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true
+from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match
 
 
 class Run(OrbisPydanticBaseModel):
@@ -16,12 +22,28 @@ class Run(OrbisPydanticBaseModel):
     corpus: Corpus = None
     document_annotations: Optional[Dict[Document, List[Annotation]]] = Field(default={}, alias="documentAnnotations")
     parents: Optional[List['Run']] = None
-    is_gold_standard: bool = False
+    is_gold_standard: bool = Field(default=False, alias="isGoldStandard")
+    inter_rater_agreement: Optional[InterRaterAgreementResult] = Field(default=None, alias="interRaterAgreement")
 
-    def __init__(self, name: str, description: str, corpus: Corpus = None,
-                 document_annotations: Dict[Document, List[Annotation]] = None, parents: Optional[List['Run']] = None, is_gold_standard: bool = False):
-        super().__init__(name=name, description=description, corpus=corpus, document_annotations=document_annotations,
-                         parents=parents, is_gold_standard=is_gold_standard)
+    def __init__(
+            self, 
+            name: str, 
+            description: str, 
+            corpus: Corpus = None,
+            document_annotations: Dict[Document, List[Annotation]] = None, 
+            parents: Optional[List['Run']] = None, 
+            is_gold_standard: bool = False,
+            inter_rater_agreement: Optional[InterRaterAgreementResult] = None
+        ):
+        super().__init__(
+            name=name, 
+            description=description, 
+            corpus=corpus, 
+            document_annotations=document_annotations,
+            parents=parents, 
+            is_gold_standard=is_gold_standard,
+            inter_rater_agreement=inter_rater_agreement
+        )
         self.document_annotations = self.document_annotations if document_annotations else {}
         self.parents = self.parents if parents else []
         self.is_gold_standard = is_gold_standard
@@ -33,6 +55,15 @@ class Run(OrbisPydanticBaseModel):
         if isinstance(other, Run):
             return self.__hash__() == other.__hash__()
         return False
+    
+    @classmethod
+    def get_inter_rater_agreement_result(cls, gold_standard: 'Run', run: 'Run') -> InterRaterAgreementResult:
+        scorer = SymmetricScorer(surface_scorer=exact_match, entity_scorer=same_entity, scoring_operator=mul)
+        ira = InterRaterAgreement(scorer)
+        eval_runs_list = [gold_standard.document_annotations, run.document_annotations]
+        if eval_runs_list[0] is not None and eval_runs_list[1] is not None:
+            return ira.compute(eval_runs_list)
+        return None
 
     @classmethod
     def from_run_dao(cls, run_dao: RunDao) -> 'Run':
@@ -48,12 +79,14 @@ class Run(OrbisPydanticBaseModel):
             document = Document.from_document_dao(run_document_dao.document, run_dao.run_id, run_document_dao.done)
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
+        corpus = Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None
         run = cls(name=run_dao.name,
                   description=run_dao.description,
-                  corpus=Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None,
+                  corpus=corpus,
                   document_annotations=document_annotations,
                   parents=Run.from_run_daos(run_dao.parents),
                   is_gold_standard=run_dao.is_gold_standard)
+
         return run
 
     @classmethod

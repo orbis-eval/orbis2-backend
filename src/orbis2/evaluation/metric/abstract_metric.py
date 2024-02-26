@@ -2,7 +2,7 @@ from typing import Dict, List, NamedTuple
 
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
-
+from orbis2.model.base_model import OrbisPydanticBaseModel
 
 class AbstractMetric:
 

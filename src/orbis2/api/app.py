@@ -89,16 +89,26 @@ def get_document(document_id: int) -> Document:
 @app.get('/getRuns')
 def get_runs(corpus_id: int = None) -> List[Run]:
     if corpus_id:
-        return get_orbis_service().get_run_names(corpus_id)
-    return get_orbis_service().get_run_names()
+        runs = get_orbis_service().get_run_names(corpus_id)
+    else:
+        runs = get_orbis_service().get_run_names()
 
+    # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
+    for run in runs:
+        run.document_annotations = None
+    return runs
 
 @app.get('/getGoldStandards')
 def get_gold_standards(corpus_id: int = None) -> List[Run]:
     if corpus_id:
-        return get_orbis_service().get_run_names(corpus_id, is_gold_standard=True)
-    return get_orbis_service().get_run_names(is_gold_standard=True)
+        gold_standards = get_orbis_service().get_run_names(corpus_id, is_gold_standard=True)
+    else:
+        gold_standards = get_orbis_service().get_run_names(is_gold_standard=True)
 
+    # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
+    for gold_standard in gold_standards:
+        gold_standard.document_annotations = None
+    return gold_standards
 
 @app.get('/getCorpora')
 def get_corpora() -> List[Corpus]:
@@ -146,14 +156,40 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
 
 
 @app.post('/createRun')
-def create_run(corpus: Corpus, run_name: str, run_description: str) -> Run:
-    if corpus and run_name and run_description:
-        run = Run(run_name, run_description, corpus,
-                  {document: [] for document in get_orbis_service().get_documents_of_corpus(corpus.identifier)})
+def create_run(corpus: Corpus, run_name: str, run_description: str, files: List[dict]) -> Run:
+    if corpus and run_name and run_description and files:
+        documents_with_annotations_list = []
+        annotation_types = []
+        for file in files:
+            if file["file_format"] == "label-studio":
+                documents_with_annotations_list.extend(LabelStudioImporter.get_annotated_documents(file))
+                annotation_types = list(set(annotation_types + LabelStudioImporter.get_annotation_types(file)))
+            elif file["file_format"] == "doccano":
+                documents_with_annotations_list.extend(DoccanoImporter.get_annotated_documents(file))
+                annotation_types = list(set(annotation_types + DoccanoImporter.get_annotation_types(file)))
+            else:
+                raise ValueError(f"Unknown file format {file['file_format']}.")
+
+        documents_with_annotations_dict = {}
+        documents_of_corpus = get_orbis_service().get_documents_of_corpus(corpus.identifier)
+
+        for corpus_document in documents_of_corpus:
+            for pair in documents_with_annotations_list:
+                document, annotations = pair
+                if corpus_document.__hash__() == document.__hash__():
+                    documents_with_annotations_dict[document] = annotations
+
+        run = Run(run_name, run_description, corpus, documents_with_annotations_dict)
+
+        gold_standards = get_orbis_service().get_run_names(corpus.identifier, is_gold_standard=True)
+        last_gold_standard = gold_standards[-1] if gold_standards else None
+        if last_gold_standard:
+            run.inter_rater_agreement = Run.get_inter_rater_agreement_result(last_gold_standard, run)
+
         if get_orbis_service().add_run(run):
-            # return the id and the documents from the run
             run.document_annotations = None
             return run
+    return get_error_response("Failed to create run.", status.HTTP_400_BAD_REQUEST)
 
 
 def validate_corpus_id(corpus_id: int) -> None:

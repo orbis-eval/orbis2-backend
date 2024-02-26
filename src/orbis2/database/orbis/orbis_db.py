@@ -865,23 +865,24 @@ class OrbisDb(SqlDb):
 
         Returns: True if everything worked correctly, false otherwise
         """
+        have_orphans = False
         if corpus := self.get_corpus(corpus_id):
             supported_annotation_types = {a.annotation_type for a in corpus.supported_annotation_types}
             # first, delete all runs with custom delete_run method,
             # to ensure that all orphan entities are deleted as well
             if not (runs := self.get_runs_by_corpus_id(corpus_id)):
                 runs = []
-            # delete the list of supported annotation types for that corpus
-            for csat in corpus.supported_annotation_types:
-                self.session.delete(csat)
-            self.commit()
             if (all((self.delete_run(run.run_id) for run in runs if run)) and
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
                     self.try_catch(lambda: not self.session.delete(corpus),
                                    f'Corpus with id {corpus_id} could not be deleted from orbis db.') and
                     self.commit()):
-                return self.delete_orphan_annotation_types(supported_annotation_types)
-        return False
+                have_orphans = self.delete_orphan_annotation_types(supported_annotation_types)
+            # delete the list of supported annotation types for that corpus
+            for csat in corpus.supported_annotation_types:
+                self.session.delete(csat)
+            self.commit()
+        return have_orphans
 
     @staticmethod
     def try_catch(method_to_call: Callable[[], any], error_message, default_return_value: any = False) -> any:
