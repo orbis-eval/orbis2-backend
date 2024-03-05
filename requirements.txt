@@ -11,6 +11,7 @@ rdflib~=6.2.0
 streamlit~=1.17.0
 streamlit_text_annotation~=0.1.5
 seaborn~=0.12.2
+jsonschema~=4.21.1
 
 # export formats
 XlsxWriter~=3.0.7

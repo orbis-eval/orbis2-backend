@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 import uvicorn as uvicorn
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -16,8 +16,7 @@ from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
 
-from orbis2.corpus_import.format.labelstudio import LabelStudioImporter
-from orbis2.corpus_import.format.doccano import DoccanoImporter
+from orbis2.corpus_import.format.tools.helper_importer import HelperImporter
 
 
 PROJECT_DIR = Path(__file__).parents[1]
@@ -125,21 +124,9 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
     if not files:
         files = []
 
-    documents_with_annotations_list = []
-    annotation_types = []
-    for file in files:
-        if file["file_format"] == "label-studio":
-            documents_with_annotations_list.extend(LabelStudioImporter.get_annotated_documents(file))
-            annotation_types = list(set(annotation_types + LabelStudioImporter.get_annotation_types(file)))
-        elif file["file_format"] == "doccano":
-            documents_with_annotations_list.extend(DoccanoImporter.get_annotated_documents(file))
-            annotation_types = list(set(annotation_types + DoccanoImporter.get_annotation_types(file)))
-        else:
-            raise ValueError(f"Unknown file format {file['file_format']}.")
-
-    corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
-
+    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)   
     documents_with_annotations_dict = {}
+    corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
 
     for pair in documents_with_annotations_list:
         document, annotations = pair
@@ -158,18 +145,7 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
 @app.post('/createRun')
 def create_run(corpus: Corpus, run_name: str, run_description: str, files: List[dict]) -> Run:
     if corpus and run_name and run_description and files:
-        documents_with_annotations_list = []
-        annotation_types = []
-        for file in files:
-            if file["file_format"] == "label-studio":
-                documents_with_annotations_list.extend(LabelStudioImporter.get_annotated_documents(file))
-                annotation_types = list(set(annotation_types + LabelStudioImporter.get_annotation_types(file)))
-            elif file["file_format"] == "doccano":
-                documents_with_annotations_list.extend(DoccanoImporter.get_annotated_documents(file))
-                annotation_types = list(set(annotation_types + DoccanoImporter.get_annotation_types(file)))
-            else:
-                raise ValueError(f"Unknown file format {file['file_format']}.")
-
+        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)   
         documents_with_annotations_dict = {}
         documents_of_corpus = get_orbis_service().get_documents_of_corpus(corpus.identifier)
 
