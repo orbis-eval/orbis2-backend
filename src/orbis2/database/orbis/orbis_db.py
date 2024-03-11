@@ -142,7 +142,7 @@ class OrbisDb(SqlDb):
         Returns: A list of run names or None if no according run exists in the database
         """
         try:
-            results = self.session.scalars(select(RunDao).filter(and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard))).all()
+            results = self.session.scalars(select(RunDao).filter(and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard)).order_by(RunDao.created_at.desc())).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -162,7 +162,7 @@ class OrbisDb(SqlDb):
         Returns: A list of all run names or None if no run exists
         """
         try:
-            results = self.session.scalars(select(RunDao).where(RunDao.is_gold_standard == is_gold_standard)).all()
+            results = self.session.scalars(select(RunDao).where(RunDao.is_gold_standard == is_gold_standard).order_by(RunDao.created_at.desc())).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no run entries in orbis database.')

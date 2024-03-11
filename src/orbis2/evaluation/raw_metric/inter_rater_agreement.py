@@ -17,6 +17,10 @@ def kappa_metric(table):
     ----------
     Wikipedia https://en.wikipedia.org/wiki/Fleiss%27_kappa
     """
+
+    if not table.any():
+        return 0.0
+
     # avoid integer division
     table = 1.0 * np.asarray(table)
     n_rater = table.sum(1)

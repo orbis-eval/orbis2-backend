@@ -53,7 +53,7 @@ def test_run_getAnnotationsByExistingDocument_returnCorrectAnnotations():
 # noinspection PyPep8Naming
 def test_from_run_dao_nameOnly_validRun():
     test = 'test'
-    run_dao = RunDao(name=test)
+    run_dao = RunDao(name=test, is_gold_standard=False)
     run = Run.from_run_dao(run_dao)
     assert run.name == test
     assert run.identifier is not None
