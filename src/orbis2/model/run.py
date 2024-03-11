@@ -107,8 +107,7 @@ class Run(OrbisPydanticBaseModel):
                           ) for document, annotations in self.document_annotations.items()
                       ], corpus_id=self.corpus.identifier, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents),
-                      is_gold_standard=self.is_gold_standard,
-                      created_at=self.created_at)
+                      is_gold_standard=self.is_gold_standard)
 
     @staticmethod
     def to_run_daos(runs: ['Run']) -> [RunDao]:
