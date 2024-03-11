@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import List
 
 import uvicorn as uvicorn
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -17,7 +17,6 @@ from orbis2.model.document import Document
 from orbis2.model.run import Run
 
 from orbis2.corpus_import.format.tools.helper_importer import HelperImporter
-
 
 PROJECT_DIR = Path(__file__).parents[1]
 sys.path.insert(0, str(PROJECT_DIR))
@@ -97,6 +96,7 @@ def get_runs(corpus_id: int = None) -> List[Run]:
         run.document_annotations = None
     return runs
 
+
 @app.get('/getGoldStandards')
 def get_gold_standards(corpus_id: int = None) -> List[Run]:
     if corpus_id:
@@ -108,6 +108,7 @@ def get_gold_standards(corpus_id: int = None) -> List[Run]:
     for gold_standard in gold_standards:
         gold_standard.document_annotations = None
     return gold_standards
+
 
 @app.get('/getCorpora')
 def get_corpora() -> List[Corpus]:
@@ -124,7 +125,7 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
     if not files:
         files = []
 
-    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)   
+    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)
     documents_with_annotations_dict = {}
     corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
 
@@ -133,7 +134,7 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
         documents_with_annotations_dict[document] = annotations
 
     run = Run(
-        f'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
+        'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
         corpus,
         documents_with_annotations_dict,
         is_gold_standard=True
@@ -145,7 +146,7 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
 @app.post('/createRun')
 def create_run(corpus: Corpus, run_name: str, run_description: str, files: List[dict]) -> Run:
     if corpus and run_name and run_description and files:
-        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)   
+        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)
         documents_with_annotations_dict = {}
         documents_of_corpus = get_orbis_service().get_documents_of_corpus(corpus.identifier)
 

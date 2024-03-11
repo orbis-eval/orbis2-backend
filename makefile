@@ -15,6 +15,8 @@ help:
 	@echo "  build:                  builds backend and database"
 	@echo "  build-postgres:         builds database"
 	@echo "  logs:                   show logs for services"
+	@echo "  test:                   runs tests"
+	@echo "  flake8:                 runs flake8"
 	@echo "  clean:                  stops and deletes all services including volumes"
 	@echo "  test-database:          creates test database"
 	@echo "  import-dummy:           imports dummy data"
@@ -39,6 +41,9 @@ logs:
 
 test:
 	docker compose exec backend tox -e pytest
+
+flake8:
+	docker compose exec backend bash -c 'if grep -q "^\[testenv:flake8\]" ./tox.ini; then tox -e flake8; else echo "No flake8 found, skipping!"; fi'
 
 clean:
 	docker compose down --volumes

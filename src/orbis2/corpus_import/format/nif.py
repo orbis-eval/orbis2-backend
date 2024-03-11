@@ -72,7 +72,7 @@ class NifFormat(CorpusFormat):
                                end_indices=NifFormat.get_annotation_int(g, annotation_url, NIF_NAMESPACE.endIndex),
                                metadata=[Metadata(key=ITS_RDF_NAMESPACE.taSource, value=m)
                                          for m in NifFormat.get_annotation_prop(g, annotation_url,
-                                                                                       ITS_RDF_NAMESPACE.taSource)],
+                                                                                ITS_RDF_NAMESPACE.taSource)],
                                annotation_type=NifFormat.get_annotation_type(g, annotation_url),
                                annotator=ANNOTATOR
                                )

@@ -13,7 +13,7 @@ from orbis2.evaluation.metric.inter_rater_agreement import InterRaterAgreement, 
 from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
 
 from operator import mul
-from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity, same_type, always_true
+from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity
 from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match
 
 
@@ -28,22 +28,22 @@ class Run(OrbisPydanticBaseModel):
     created_at: Optional[datetime.datetime] = None
 
     def __init__(
-            self, 
+            self,
             name: str,
-            description: str, 
+            description: str,
             corpus: Corpus = None,
-            document_annotations: Dict[Document, List[Annotation]] = None, 
-            parents: Optional[List['Run']] = None, 
+            document_annotations: Dict[Document, List[Annotation]] = None,
+            parents: Optional[List['Run']] = None,
             is_gold_standard: bool = False,
             inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
             created_at: Optional[str] = None
-        ):
+    ):
         super().__init__(
-            name=name, 
-            description=description, 
-            corpus=corpus, 
+            name=name,
+            description=description,
+            corpus=corpus,
             document_annotations=document_annotations,
-            parents=parents, 
+            parents=parents,
             is_gold_standard=is_gold_standard,
             inter_rater_agreement=inter_rater_agreement,
             created_at=created_at
@@ -58,7 +58,7 @@ class Run(OrbisPydanticBaseModel):
         if isinstance(other, Run):
             return self.__hash__() == other.__hash__()
         return False
-    
+
     @classmethod
     def get_inter_rater_agreement_result(cls, gold_standard: 'Run', run: 'Run') -> InterRaterAgreementResult:
         scorer = SymmetricScorer(surface_scorer=exact_match, entity_scorer=same_entity, scoring_operator=mul)

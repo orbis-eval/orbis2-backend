@@ -42,10 +42,11 @@ class OrbisService:
 
     def get_run_names(self, corpus_id: int = None, is_gold_standard: bool = False) -> List[Run]:
         if corpus_id:
-            runs = Run.from_run_daos(self.orbis_db.get_run_names_by_corpus_id(corpus_id, is_gold_standard=is_gold_standard))
+            runs = Run.from_run_daos(
+                self.orbis_db.get_run_names_by_corpus_id(corpus_id, is_gold_standard=is_gold_standard))
         else:
             runs = Run.from_run_daos(self.orbis_db.get_run_names(is_gold_standard=is_gold_standard))
-            
+
         if not is_gold_standard:
             gold_standards = self.get_run_names(corpus_id, is_gold_standard=True)
             last_gold_standard = gold_standards[-1] if gold_standards else None

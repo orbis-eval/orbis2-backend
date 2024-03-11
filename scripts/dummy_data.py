@@ -19,7 +19,7 @@ from orbis2.model.run import Run
 
 GOLD_STANDARD = Run(
     'gold-standard', 'Gold Standard', Corpus('corpus1', [AnnotationType('annotation-type1'),
-                                                      AnnotationType('annotation-type2')]),
+                                                         AnnotationType('annotation-type2')]),
     {
         Document('Text, das ist ein Beispiel', metadata=[Metadata('key1', 'value1')]):
             [Annotation('url', 'Text', 0, 4, AnnotationType('annotation-type1'),
@@ -69,8 +69,8 @@ SECOND_RUN = Run(
 
 ANOTHER_GOLD_STANDARD = Run(
     'another gold standard', 'a different gold standdard', Corpus('corpus2', [AnnotationType('annotation-type1'),
-                                                         AnnotationType('annotation-type2'),
-                                                         AnnotationType('annotation-type3')]),
+                                                                              AnnotationType('annotation-type2'),
+                                                                              AnnotationType('annotation-type3')]),
     {
         Document('Ein komplett anderer Text. Er enthält sogar zwei Sätze.', metadata=[Metadata('key1', 'value1')]):
             [Annotation('url', 'Text', 21, 25, AnnotationType('annotation-type1'),

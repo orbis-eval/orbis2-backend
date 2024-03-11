@@ -7,97 +7,93 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
 from orbis2.model.role import Role
-from orbis2.model.metadata import Metadata
 from .base_importer import BaseImporter
 
 LABEL_STUDIO_SCHEMA = {
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "integer"
-      },
-      "annotations": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "integer"
-            },
-            "result": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "value": {
-                    "type": "object",
-                    "properties": {
-                      "start": {
-                        "type": "integer"
-                      },
-                      "end": {
-                        "type": "integer"
-                      },
-                      "text": {
-                        "type": "string"
-                      },
-                      "labels": {
-                        "type": "array",
-                        "items": {
-                          "type": "string"
-                        }
-                      }
-                    },
-                    "required": ["start", "end", "text", "labels"]
-                  },
-                  "from_name": {
-                    "type": "string"
-                  },
-                  "to_name": {
-                    "type": "string"
-                  },
-                  "type": {
-                    "type": "string"
-                  },
-                  "origin": {
-                    "type": "string"
-                  }
-                },
-                "required": ["value", "from_name", "to_name", "type", "origin"]
-              }
-            }
-          },
-          "required": ["id", "result"]
-        }
-      },
-      "data": {
+    "type": "array",
+    "items": {
         "type": "object",
         "properties": {
-          "text": {
-            "type": "string"
-          }
+            "id": {
+                "type": "integer"
+            },
+            "annotations": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "integer"
+                        },
+                        "result": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "value": {
+                                        "type": "object",
+                                        "properties": {
+                                            "start": {
+                                                "type": "integer"
+                                            },
+                                            "end": {
+                                                "type": "integer"
+                                            },
+                                            "text": {
+                                                "type": "string"
+                                            },
+                                            "labels": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        "required": ["start", "end", "text", "labels"]
+                                    },
+                                    "from_name": {
+                                        "type": "string"
+                                    },
+                                    "to_name": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string"
+                                    },
+                                    "origin": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["value", "from_name", "to_name", "type", "origin"]
+                            }
+                        }
+                    },
+                    "required": ["id", "result"]
+                }
+            },
+            "data": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string"
+                    }
+                },
+                "required": ["text"]
+            },
+            "updated_by": {
+                "type": "integer"
+            }
         },
-        "required": ["text"]
-      },
-      "updated_by": {
-        "type": "integer"
-      }
-    },
-    "required": ["id", "annotations", "data", "updated_by"]
-  }
+        "required": ["id", "annotations", "data", "updated_by"]
+    }
 }
+
 
 class LabelStudioImporter(BaseImporter):
     @staticmethod
     def validate(file: dict) -> bool:
-        try:
-            content = json.loads(file["content"])
-            validate(content, LABEL_STUDIO_SCHEMA)
-        except Exception as e:
-            raise ValueError(f"Invalid Label Studio file format")
-        return True
+        content = json.loads(file["content"])
+        return validate(content, LABEL_STUDIO_SCHEMA)
 
     @staticmethod
     def get_annotated_documents(file: dict) -> List[Document]:

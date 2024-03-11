@@ -2,12 +2,13 @@ from typing import List
 from .labelstudio_importer import LabelStudioImporter
 from .doccano_importer import DoccanoImporter
 
+
 class HelperImporter:
     @staticmethod
     def get_annotated_documents_and_types(files: List[dict] = None) -> tuple:
         documents_with_annotations_list = []
         annotation_types = []
-        
+
         for file in files:
             if file["filename"].endswith(".json"):
                 documents_with_annotations_list.extend(LabelStudioImporter.get_annotated_documents(file))
@@ -17,6 +18,5 @@ class HelperImporter:
                 annotation_types = list(set(annotation_types + DoccanoImporter.get_annotation_types(file)))
             else:
                 raise ValueError(f"Unknown file format {file['file_format']}.")
-
 
         return documents_with_annotations_list, annotation_types

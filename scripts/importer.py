@@ -71,6 +71,7 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
                                document_annotations=document_annotations, is_gold_standard=True))
 
+
 def import_local_corpus(subargs):
     """
     Import the corpus from the local file system.
@@ -106,7 +107,7 @@ def import_remote_corpus(subargs):
         raise ValueError(f'Invalid URL: {corpus.url}.')
 
     print(f"Fetching remote corpus from '{corpus.url}'")
-    with urlopen(corpus.url) as f:      # noqa: S310 -- http schema enforced above
+    with urlopen(corpus.url) as f:  # noqa: S310 -- http schema enforced above
         documents = [f.read().decode(f.headers.get_content_charset())]
         print("Importing corpus.")
         import_documents(documents, subargs.run_name, subargs.run_description,

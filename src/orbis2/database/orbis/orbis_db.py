@@ -142,7 +142,9 @@ class OrbisDb(SqlDb):
         Returns: A list of run names or None if no according run exists in the database
         """
         try:
-            results = self.session.scalars(select(RunDao).filter(and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard)).order_by(RunDao.created_at.desc())).all()
+            results = self.session.scalars(select(RunDao).filter(
+                and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard)).order_by(
+                RunDao.created_at.desc())).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -162,7 +164,8 @@ class OrbisDb(SqlDb):
         Returns: A list of all run names or None if no run exists
         """
         try:
-            results = self.session.scalars(select(RunDao).where(RunDao.is_gold_standard == is_gold_standard).order_by(RunDao.created_at.desc())).all()
+            results = self.session.scalars(select(RunDao).where(RunDao.is_gold_standard == is_gold_standard).order_by(
+                RunDao.created_at.desc())).all()
             if len(results) > 0:
                 return results
             logging.debug('There are no run entries in orbis database.')
@@ -256,9 +259,9 @@ class OrbisDb(SqlDb):
             run_id: id of the run for which to count the documents
         Returns: the count as a number
         """
-        count = self.session.query(func.count(DocumentDao.document_id))\
-            .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id)\
-            .filter(RunHasDocumentDao.run_id == run_id).\
+        count = self.session.query(func.count(DocumentDao.document_id)) \
+            .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id) \
+            .filter(RunHasDocumentDao.run_id == run_id). \
             scalar()
         return count
 
@@ -578,8 +581,8 @@ class OrbisDb(SqlDb):
         Returns: True if metadata is an orphan, false otherwise
         """
         return not (self.session.scalars(
-            select(annotation_has_metadata_table).filter_by(metadata_id=metadata_id)).first() or
-            self.session.scalars(select(document_has_metadata_table).filter_by(metadata_id=metadata_id)).first())
+            select(annotation_has_metadata_table).filter_by(metadata_id=metadata_id)).first() or self.session.scalars(
+            select(document_has_metadata_table).filter_by(metadata_id=metadata_id)).first())
 
     def annotation_is_orphan(self, annotation_id: int) -> bool:
         """
@@ -713,7 +716,7 @@ class OrbisDb(SqlDb):
                 DocumentHasAnnotationDao.run_id == document_has_annotation.run_id,
                 DocumentHasAnnotationDao.document_id == document_has_annotation.document_id,
                 DocumentHasAnnotationDao.annotation_id == document_has_annotation.annotation_id).delete(),
-                f'Deleting the annotation_document {document_has_annotation} failed.') and self.commit()):
+                           f'Deleting the annotation_document {document_has_annotation} failed.') and self.commit()):
             if (self.annotation_is_orphan(document_has_annotation.annotation_id) and
                     self.delete_annotation(document_has_annotation.annotation_id)):
                 return self.commit()
@@ -776,7 +779,7 @@ class OrbisDb(SqlDb):
                 RunHasDocumentDao.run_id == RunDao.run_id,
                 RunDao.corpus_id == corpus_id,
                 RunHasDocumentDao.document_id == document_id).delete(synchronize_session='fetch'),
-                f'Deleting the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
+                           f'Deleting the document ({document_id}) of corpus ({corpus_id}) failed.') and self.commit()):
             # delete annotation is executed twice (second time in delete run if orphan) but it MUST be executed at this
             # point as well, because an annotation can be orphan even when the run isn't
             return (self.delete_orphan_annotations(annotations) and

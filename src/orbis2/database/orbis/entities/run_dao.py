@@ -9,6 +9,7 @@ from sqlalchemy.sql import func
 from orbis2.database.orbis.entities.corpus_dao import CorpusDao
 from orbis2.database.orbis.entities.run_derived_from_relation import run_derived_from_table
 from orbis2.database.orbis.orbis_base import OrbisBase
+
 if TYPE_CHECKING:
     from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 
@@ -30,4 +31,3 @@ class RunDao(OrbisBase):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-
