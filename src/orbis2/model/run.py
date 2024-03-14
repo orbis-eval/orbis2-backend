@@ -26,6 +26,7 @@ class Run(OrbisPydanticBaseModel):
     is_gold_standard: bool = Field(default=False, alias="isGoldStandard")
     inter_rater_agreement: Optional[InterRaterAgreementResult] = Field(default=None, alias="interRaterAgreement")
     created_at: Optional[datetime.datetime] = None
+    just_created: Optional[bool] = Field(default=False, alias="justCreated")
 
     def __init__(
             self,
@@ -36,7 +37,8 @@ class Run(OrbisPydanticBaseModel):
             parents: Optional[List['Run']] = None,
             is_gold_standard: bool = False,
             inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
-            created_at: Optional[str] = None
+            created_at: Optional[str] = None,
+            just_created: Optional[bool] = False
     ):
         super().__init__(
             name=name,
@@ -46,7 +48,8 @@ class Run(OrbisPydanticBaseModel):
             parents=parents,
             is_gold_standard=is_gold_standard,
             inter_rater_agreement=inter_rater_agreement,
-            created_at=created_at
+            created_at=created_at,
+            just_created=just_created
         )
         self.document_annotations = self.document_annotations if document_annotations else {}
         self.parents = self.parents if parents else []
