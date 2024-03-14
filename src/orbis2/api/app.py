@@ -5,6 +5,7 @@ from typing import List
 
 import uvicorn as uvicorn
 from fastapi import FastAPI, Response, status
+from fastapi.responses import ORJSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 
@@ -32,7 +33,8 @@ DOCUMENTS_LAZY_INIT_LOCK = threading.Lock()
 
 app = FastAPI(
     title='Orbis2 Backend',
-    version=__version__
+    version=__version__,
+    default_response_class=ORJSONResponse
 )
 
 origins = [
@@ -94,6 +96,7 @@ def get_runs(corpus_id: int = None) -> List[Run]:
     # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
     for run in runs:
         run.document_annotations = None
+
     return runs
 
 
@@ -120,7 +123,7 @@ def get_corpus(corpus_id: int) -> Corpus:
     return get_orbis_service().get_corpus(corpus_id)
 
 
-@app.post('/createCorpus')
+@app.post('/createCorpus', status_code=201)
 def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
     if not files:
         files = []
@@ -143,7 +146,7 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
     return corpus
 
 
-@app.post('/createRun')
+@app.post('/createRun', status_code=201)
 def create_run(corpus: Corpus, run_name: str, run_description: str, files: List[dict]) -> Run:
     if corpus and run_name and run_description and files:
         documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)
