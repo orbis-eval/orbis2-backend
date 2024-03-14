@@ -124,11 +124,8 @@ def get_corpus(corpus_id: int) -> Corpus:
 
 
 @app.post('/createCorpus', status_code=201)
-def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
-    if not files:
-        files = []
-
-    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)
+def create_corpus(corpus: Corpus, file: dict = None) -> Corpus:
+    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
     documents_with_annotations_dict = {}
     corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
 
@@ -147,9 +144,9 @@ def create_corpus(corpus: Corpus, files: List[dict] = None) -> Corpus:
 
 
 @app.post('/createRun', status_code=201)
-def create_run(corpus: Corpus, run_name: str, run_description: str, files: List[dict]) -> Run:
-    if corpus and run_name and run_description and files:
-        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(files)
+def create_run(corpus: Corpus, run_name: str, run_description: str, file: dict) -> Run:
+    if corpus and run_name and run_description and file:
+        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
         documents_with_annotations_dict = {}
         documents_of_corpus = get_orbis_service().get_documents_of_corpus(corpus.identifier)
 
