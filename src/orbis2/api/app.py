@@ -2,6 +2,7 @@ import sys
 import threading
 from pathlib import Path
 from typing import List
+import json
 
 import uvicorn as uvicorn
 from fastapi import FastAPI, Response, status
@@ -125,7 +126,11 @@ def get_corpus(corpus_id: int) -> Corpus:
 
 @app.post('/createCorpus', status_code=201)
 def create_corpus(corpus: Corpus, file: dict = None) -> Corpus:
-    documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
+    try:
+        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
+    except json.JSONDecodeError as e:
+        return get_error_response(f"Failed to parse file content: {str(e)}", status.HTTP_400_BAD_REQUEST)
+
     documents_with_annotations_dict = {}
     corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
 

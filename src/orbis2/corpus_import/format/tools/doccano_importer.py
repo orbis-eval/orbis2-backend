@@ -1,3 +1,4 @@
+import re
 import json
 from jsonschema import validate
 from typing import List
@@ -39,6 +40,10 @@ class DoccanoImporter(BaseImporter):
     def validate(file: dict):
         content = []
         for line in file["content"].splitlines():
+            line = line.strip()
+            line = re.sub(r"[\n\t\r]*", "", line)
+            if not line:
+                continue
             document_raw = json.loads(line)
             content.append(document_raw)
         return validate(content, DOCCANO_SCHEMA)
