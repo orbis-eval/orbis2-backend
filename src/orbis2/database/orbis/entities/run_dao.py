@@ -31,3 +31,5 @@ class RunDao(OrbisBase):
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    current_gold_standard_id: Mapped[int] = mapped_column(ForeignKey('run.run_id'), nullable=True)
+    current_gold_standard: Mapped['RunDao'] = relationship("RunDao", remote_side=[run_id])

@@ -62,14 +62,15 @@ def import_documents(document_list: List[str], run_name: str, run_description: s
         document_annotations = append_annotations_with_segments(document_annotations, document_segments)
 
     supported_annotation_types = import_format.get_supported_annotation_types(document_annotations)
+    gold_standard = Run(name="Gold Standard", description=run_description,
+                        corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
+                        document_annotations=document_annotations, is_gold_standard=True)
+
+    OrbisService().add_run(gold_standard)
+
     OrbisService().add_run(Run(name=run_name, description=run_description,
                                corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
-                               document_annotations=document_annotations))
-
-    # Add Gold Standard
-    OrbisService().add_run(Run(name="Gold Standard", description=run_description,
-                               corpus=Corpus(name=run_name, supported_annotation_types=supported_annotation_types),
-                               document_annotations=document_annotations, is_gold_standard=True))
+                               document_annotations=document_annotations, current_gold_standard=gold_standard))
 
 
 def import_local_corpus(subargs):

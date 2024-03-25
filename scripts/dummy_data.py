@@ -45,7 +45,8 @@ FIRST_RUN = Run(
                         Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')]),
              Annotation('url', 'Text', 51, 55, AnnotationType('annotation-type1'),
                         Annotator('Andreas', [Role('admin')]), metadata=[Metadata('key2', 'value2')])]
-    }
+    },
+    current_gold_standard=GOLD_STANDARD
 )
 
 SECOND_RUN = Run(
@@ -64,7 +65,8 @@ SECOND_RUN = Run(
                         Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]),
              Annotation('url', 'Text', 51, 55, AnnotationType('annotation-type1'),
                         Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')])]
-    }
+    },
+    current_gold_standard=GOLD_STANDARD
 )
 
 ANOTHER_GOLD_STANDARD = Run(
@@ -101,5 +103,6 @@ ANOTHER_RUN = Run(
                         Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]),
              Annotation('url', 'Sätze', 50, 55, AnnotationType('annotation-type3'),
                         Annotator('Norman', [Role('annotator')]), metadata=[Metadata('key2', 'value2')]), ]
-    }
+    },
+    current_gold_standard=ANOTHER_GOLD_STANDARD
 )

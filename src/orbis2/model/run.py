@@ -25,8 +25,11 @@ class Run(OrbisPydanticBaseModel):
     parents: Optional[List['Run']] = None
     is_gold_standard: bool = Field(default=False, alias="isGoldStandard")
     inter_rater_agreement: Optional[InterRaterAgreementResult] = Field(default=None, alias="interRaterAgreement")
-    created_at: Optional[datetime.datetime] = None
+    created_at: Optional[datetime.datetime] = Field(default=datetime.datetime.now(), alias="createdAt")
     just_created: Optional[bool] = Field(default=False, alias="justCreated")
+    current_gold_standard: Optional['Run'] = Field(default=None, alias="currentGoldStandard")
+
+    DEFAULT_CREATED_AT = datetime.datetime.now()
 
     def __init__(
             self,
@@ -37,8 +40,9 @@ class Run(OrbisPydanticBaseModel):
             parents: Optional[List['Run']] = None,
             is_gold_standard: bool = False,
             inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
-            created_at: Optional[str] = None,
-            just_created: Optional[bool] = False
+            created_at: Optional[str] = DEFAULT_CREATED_AT,
+            just_created: Optional[bool] = False,
+            current_gold_standard: Optional['Run'] = None
     ):
         super().__init__(
             name=name,
@@ -49,7 +53,8 @@ class Run(OrbisPydanticBaseModel):
             is_gold_standard=is_gold_standard,
             inter_rater_agreement=inter_rater_agreement,
             created_at=created_at,
-            just_created=just_created
+            just_created=just_created,
+            current_gold_standard=current_gold_standard
         )
         self.document_annotations = self.document_annotations if document_annotations else {}
         self.parents = self.parents if parents else []
@@ -67,7 +72,7 @@ class Run(OrbisPydanticBaseModel):
         scorer = SymmetricScorer(surface_scorer=exact_match, entity_scorer=same_entity, scoring_operator=mul)
         ira = InterRaterAgreement(scorer)
         eval_runs_list = [gold_standard.document_annotations, run.document_annotations]
-        if eval_runs_list[0] is not None and eval_runs_list[1] is not None:
+        if eval_runs_list[0] and eval_runs_list[1]:
             return ira.compute(eval_runs_list)
         return None
 
@@ -86,13 +91,16 @@ class Run(OrbisPydanticBaseModel):
             document_annotations[document] = Annotation.from_document_has_annotations(
                 run_document_dao.document_has_annotations)
         corpus = Corpus.from_corpus_dao(run_dao.corpus) if run_dao.corpus else None
+        current_gold_standard = cls.from_run_dao(
+            run_dao.current_gold_standard) if run_dao.current_gold_standard else None
         run = cls(name=run_dao.name,
                   description=run_dao.description,
                   corpus=corpus,
                   document_annotations=document_annotations,
                   parents=Run.from_run_daos(run_dao.parents),
                   is_gold_standard=run_dao.is_gold_standard,
-                  created_at=run_dao.created_at)
+                  created_at=run_dao.created_at,
+                  current_gold_standard=current_gold_standard)
 
         return run
 
@@ -110,7 +118,9 @@ class Run(OrbisPydanticBaseModel):
                           ) for document, annotations in self.document_annotations.items()
                       ], corpus_id=self.corpus.identifier, corpus=self.corpus.to_dao(),
                       parents=Run.to_run_daos(self.parents),
-                      is_gold_standard=self.is_gold_standard)
+                      is_gold_standard=self.is_gold_standard,
+                      current_gold_standard_id=self.current_gold_standard.identifier
+                      if self.current_gold_standard else None)
 
     @staticmethod
     def to_run_daos(runs: ['Run']) -> [RunDao]:

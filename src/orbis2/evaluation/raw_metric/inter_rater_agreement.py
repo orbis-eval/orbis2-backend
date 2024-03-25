@@ -21,6 +21,8 @@ def kappa_metric(table):
     # avoid integer division
     table = 1.0 * np.asarray(table)
     n_rater = table.sum(1)
+    if len(n_rater) == 0:
+        return np.nan
     n_rat = n_rater.max()
 
     table2 = table * table

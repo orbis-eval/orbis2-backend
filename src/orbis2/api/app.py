@@ -2,6 +2,7 @@ import sys
 import threading
 from pathlib import Path
 from typing import List
+from datetime import datetime
 import json
 
 import uvicorn as uvicorn
@@ -97,6 +98,8 @@ def get_runs(corpus_id: int = None) -> List[Run]:
     # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
     for run in runs:
         run.document_annotations = None
+        if run.current_gold_standard:
+            run.current_gold_standard.document_annotations = None
 
     return runs
 
@@ -111,6 +114,8 @@ def get_gold_standards(corpus_id: int = None) -> List[Run]:
     # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
     for gold_standard in gold_standards:
         gold_standard.document_annotations = None
+        if gold_standard.current_gold_standard:
+            gold_standard.current_gold_standard.document_annotations = None
     return gold_standards
 
 
@@ -138,8 +143,9 @@ def create_corpus(corpus: Corpus, file: dict = None) -> Corpus:
         document, annotations = pair
         documents_with_annotations_dict[document] = annotations
 
+    current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
     run = Run(
-        'gold_standard_v1', f'default run for corpus {corpus.name}, no annotations',
+        'gold_standard_' + current_timestamp, f'default run for corpus {corpus.name}, no annotations',
         corpus,
         documents_with_annotations_dict,
         is_gold_standard=True
@@ -149,8 +155,8 @@ def create_corpus(corpus: Corpus, file: dict = None) -> Corpus:
 
 
 @app.post('/createRun', status_code=201)
-def create_run(corpus: Corpus, run_name: str, run_description: str, file: dict) -> Run:
-    if corpus and run_name and run_description and file:
+def create_run(corpus: Corpus, run_name: str, file: dict) -> Run:
+    if corpus and run_name and file:
         documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
         documents_with_annotations_dict = {}
         documents_of_corpus = get_orbis_service().get_documents_of_corpus(corpus.identifier)
@@ -161,17 +167,46 @@ def create_run(corpus: Corpus, run_name: str, run_description: str, file: dict) 
                 if corpus_document.__hash__() == document.__hash__():
                     documents_with_annotations_dict[document] = annotations
 
-        run = Run(run_name, run_description, corpus, documents_with_annotations_dict)
+        run_name = run_name + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
+        run = Run(run_name, "Run description", corpus, documents_with_annotations_dict)
 
         gold_standards = get_orbis_service().get_run_names(corpus.identifier, is_gold_standard=True)
-        last_gold_standard = gold_standards[-1] if gold_standards else None
+        last_gold_standard = gold_standards[0] if gold_standards else None
         if last_gold_standard:
-            run.inter_rater_agreement = Run.get_inter_rater_agreement_result(last_gold_standard, run)
+            run.current_gold_standard = last_gold_standard
+            try:
+                run.inter_rater_agreement = Run.get_inter_rater_agreement_result(last_gold_standard, run)
+            except Exception as e:
+                return get_error_response(f"Failed to calculate inter-rater agreement: {str(e)}",
+                                          status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        if get_orbis_service().add_run(run):
+            run.document_annotations = None
+            run.current_gold_standard.document_annotations = {}
+            return run
+    return get_error_response("Failed to create run.", status.HTTP_400_BAD_REQUEST)
+
+
+@app.post('/updateGoldStandard', status_code=201)
+def update_gold_standard(corpus: Corpus, file: dict) -> Run:
+    if corpus and file:
+        documents_with_annotations_list, annotation_types = HelperImporter.get_annotated_documents_and_types(file)
+        documents_with_annotations_dict = {}
+
+        corpus.supported_annotation_types = [AnnotationType(annotation_type) for annotation_type in annotation_types]
+
+        for pair in documents_with_annotations_list:
+            document, annotations = pair
+            documents_with_annotations_dict[document] = annotations
+
+        current_timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        run = Run("gold_standard_" + current_timestamp, "", corpus, documents_with_annotations_dict,
+                  is_gold_standard=True)
 
         if get_orbis_service().add_run(run):
             run.document_annotations = None
             return run
-    return get_error_response("Failed to create run.", status.HTTP_400_BAD_REQUEST)
+    return get_error_response("Failed to update gold standard.", status.HTTP_400_BAD_REQUEST)
 
 
 def validate_corpus_id(corpus_id: int) -> None:

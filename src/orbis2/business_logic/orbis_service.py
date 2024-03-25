@@ -48,11 +48,8 @@ class OrbisService:
             runs = Run.from_run_daos(self.orbis_db.get_run_names(is_gold_standard=is_gold_standard))
 
         if not is_gold_standard:
-            gold_standards = self.get_run_names(corpus_id, is_gold_standard=True)
-            last_gold_standard = gold_standards[-1] if gold_standards else None
-            if last_gold_standard:
-                for run in runs:
-                    run.inter_rater_agreement = Run.get_inter_rater_agreement_result(last_gold_standard, run)
+            for run in runs:
+                run.inter_rater_agreement = Run.get_inter_rater_agreement_result(run.current_gold_standard, run)
 
         return runs if runs else []
 
