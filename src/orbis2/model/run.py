@@ -50,7 +50,7 @@ class Run(OrbisPydanticBaseModel):
             parents=parents,
             is_gold_standard=is_gold_standard,
             inter_rater_agreement=inter_rater_agreement,
-            created_at=datetime.datetime.now() if not created_at else created_at,
+            created_at=created_at if created_at else datetime.datetime.now(),
             just_created=just_created,
             current_gold_standard=current_gold_standard
         )
