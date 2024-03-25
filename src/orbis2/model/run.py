@@ -29,8 +29,6 @@ class Run(OrbisPydanticBaseModel):
     just_created: Optional[bool] = Field(default=False, alias="justCreated")
     current_gold_standard: Optional['Run'] = Field(default=None, alias="currentGoldStandard")
 
-    DEFAULT_CREATED_AT = datetime.datetime.now()
-
     def __init__(
             self,
             name: str,
@@ -40,7 +38,7 @@ class Run(OrbisPydanticBaseModel):
             parents: Optional[List['Run']] = None,
             is_gold_standard: bool = False,
             inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
-            created_at: Optional[str] = DEFAULT_CREATED_AT,
+            created_at: Optional[str] = None,
             just_created: Optional[bool] = False,
             current_gold_standard: Optional['Run'] = None
     ):
@@ -52,7 +50,7 @@ class Run(OrbisPydanticBaseModel):
             parents=parents,
             is_gold_standard=is_gold_standard,
             inter_rater_agreement=inter_rater_agreement,
-            created_at=created_at,
+            created_at=datetime.datetime.now() if not created_at else created_at,
             just_created=just_created,
             current_gold_standard=current_gold_standard
         )
