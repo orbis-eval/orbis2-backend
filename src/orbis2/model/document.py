@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import Field
 from xxhash import xxh32_intdigest
@@ -8,6 +8,9 @@ from orbis2.database.orbis.entities.document_has_annotation_dao import DocumentH
 from orbis2.database.orbis.entities.run_has_document_dao import RunHasDocumentDao
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.metadata import Metadata
+from orbis2.model.scorer_result import ScorerResult
+
+from orbis2.evaluation.output_formatter.inter_rater_agreement_result import InterRaterAgreementResult
 
 
 class Document(OrbisPydanticBaseModel):
@@ -16,10 +19,16 @@ class Document(OrbisPydanticBaseModel):
     run_id: int = Field(default=None, alias="runId")
     metadata: List[Metadata] = None
     done: bool = False
+    inter_rater_agreement: Optional[InterRaterAgreementResult] = Field(default=None, alias="interRaterAgreement")
+    scoring: Optional[ScorerResult] = Field(default=None, alias="scoring")
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
-                 done: bool = False):
-        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done)
+                 done: bool = False,
+                 inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
+                 scoring: Optional[ScorerResult] = None):
+        super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done,
+                            inter_rater_agreement=inter_rater_agreement,
+                         scoring=scoring)
         self.metadata = metadata if metadata else []
 
     def __hash__(self):

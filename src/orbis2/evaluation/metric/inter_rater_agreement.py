@@ -1,4 +1,3 @@
-from collections import namedtuple
 from itertools import permutations
 from statistics import mean
 from typing import Dict, List, Tuple
@@ -13,9 +12,7 @@ from orbis2.evaluation.scorer.asymmetric_scorer import AsymmetricScorer
 from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
 from orbis2.model.annotation import Annotation
 from orbis2.model.document import Document
-
-InterRaterAgreementResult = namedtuple('InterRaterAgreement', 'kappa_micro kappa_macro '
-                                                              'average_macro_f1 average_micro_f1')
+from orbis2.evaluation.output_formatter.inter_rater_agreement_result import InterRaterAgreementResult
 
 
 class InterRaterAgreement(AbstractMetric):
