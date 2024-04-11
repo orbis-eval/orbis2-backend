@@ -9,12 +9,7 @@ from orbis2.model.annotation import Annotation
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
-from orbis2.evaluation.metric.inter_rater_agreement import InterRaterAgreement, InterRaterAgreementResult
-from orbis2.evaluation.scorer.symmetric_scorer import SymmetricScorer
-
-from operator import mul
-from orbis2.evaluation.scorer.annotation_entity_scorer import same_entity
-from orbis2.evaluation.scorer.annotation_surface_scorer import exact_match
+from orbis2.evaluation.output_formatter.inter_rater_agreement_result import InterRaterAgreementResult
 
 
 class Run(OrbisPydanticBaseModel):
@@ -64,15 +59,6 @@ class Run(OrbisPydanticBaseModel):
         if isinstance(other, Run):
             return self.__hash__() == other.__hash__()
         return False
-
-    @classmethod
-    def get_inter_rater_agreement_result(cls, gold_standard: 'Run', run: 'Run') -> InterRaterAgreementResult:
-        scorer = SymmetricScorer(surface_scorer=exact_match, entity_scorer=same_entity, scoring_operator=mul)
-        ira = InterRaterAgreement(scorer)
-        eval_runs_list = [gold_standard.document_annotations, run.document_annotations]
-        if eval_runs_list[0] and eval_runs_list[1]:
-            return ira.compute(eval_runs_list)
-        return None
 
     @classmethod
     def from_run_dao(cls, run_dao: RunDao) -> 'Run':
