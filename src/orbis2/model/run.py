@@ -11,6 +11,7 @@ from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.evaluation.output_formatter.inter_rater_agreement_result import InterRaterAgreementResult
 
+
 class Run(OrbisPydanticBaseModel):
     name: str
     description: str = None

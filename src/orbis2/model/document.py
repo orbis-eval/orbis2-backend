@@ -27,7 +27,7 @@ class Document(OrbisPydanticBaseModel):
                  inter_rater_agreement: Optional[InterRaterAgreementResult] = None,
                  scoring: Optional[ScorerResult] = None):
         super().__init__(content=content, key=key, run_id=run_id, metadata=metadata, done=done,
-                            inter_rater_agreement=inter_rater_agreement,
+                         inter_rater_agreement=inter_rater_agreement,
                          scoring=scoring)
         self.metadata = metadata if metadata else []
 

@@ -80,7 +80,8 @@ class OrbisService:
         if run and run.current_gold_standard:
             for document in documents:
                 # remove all other keys from the document_annotations
-                gold_standard_document_annotations = {document: run.current_gold_standard.document_annotations[document]}
+                gold_standard_document_annotations = {
+                    document: run.current_gold_standard.document_annotations[document]}
                 run_document_annotations = {document: run.document_annotations[document]}
                 document.inter_rater_agreement = get_inter_rater_agreement_result(
                     gold_standard_document_annotations,

@@ -1,7 +1,6 @@
 from typing import List, Optional
 
 from pydantic import Field
-from xxhash import xxh32_intdigest
 
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.annotation import Annotation
