@@ -18,9 +18,8 @@ from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
-from orbis2.model.scorer_result import ScorerResult
 
-from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
+from orbis2.evaluation.helper import get_inter_rater_agreement_result
 
 from orbis2.corpus_import.format.tools.helper_importer import HelperImporter
 
@@ -86,21 +85,7 @@ def get_documents(run_id: int = None, corpus_id: int = None, page_size: int = No
 
 @app.get('/getDocument')
 def get_document(run_id: int, document_id: int) -> Document:
-    # TODO, anf 13.12.2022: implement response in error case
-    if document_id:
-        document = get_orbis_service().get_document(run_id, document_id)
-        run = get_orbis_service().get_run(run_id)
-        if run and run.current_gold_standard:
-            scoring = get_scoring_annotation_level(
-                run.current_gold_standard.document_annotations[document],
-                run.document_annotations[document]
-            )
-            document.scoring = ScorerResult(
-                tp=[match.pred for match in scoring.tp],
-                fp=scoring.fp,
-                fn=scoring.fn,
-            )
-        return document
+    return get_orbis_service().get_document(run_id, document_id)
 
 
 @app.get('/getRuns')

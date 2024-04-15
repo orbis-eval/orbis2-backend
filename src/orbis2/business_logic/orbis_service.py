@@ -9,8 +9,9 @@ from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
+from orbis2.model.scorer_result import ScorerResult
 
-from orbis2.evaluation.helper import get_inter_rater_agreement_result
+from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 
 
 class OrbisService:
@@ -93,15 +94,31 @@ class OrbisService:
     def count_documents_in_run(self, run_id: int) -> int:
         return self.orbis_db.count_documents_in_run(run_id)
 
+    def map_document_with_scoring(self, run_id: int, document: Document) -> Optional[Document]:
+        run = self.get_run(run_id)
+        if run and run.current_gold_standard:
+            scoring = get_scoring_annotation_level(
+                run.current_gold_standard.document_annotations[document],
+                run.document_annotations[document]
+            )
+            document.scoring = ScorerResult(
+                tp=[match.pred for match in scoring.tp],
+                fp=scoring.fp,
+                fn=scoring.fn,
+            )
+        return document
+
     def get_next_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
             The next document for the given run. Cycles through (i.e., returns the first document when called with the
             last document's document_id).
         """
+        doc_obj = None
         if document := self.orbis_db.get_next_document_of_run(run_id, document_id):
-            return Document.from_document_dao(document)
-        return None
+            doc_obj = Document.from_document_dao(document)
+            doc_obj.run_id = run_id
+        return doc_obj
 
     def get_previous_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
@@ -109,16 +126,19 @@ class OrbisService:
             The previous document for the given run and document_id. Cycles through (i.e., return the last document
             when called with the first document's document id).
         """
+        doc_obj = None
         if document := self.orbis_db.get_previous_document_of_run(run_id, document_id):
-            return Document.from_document_dao(document)
-        return None
+            doc_obj = Document.from_document_dao(document)
+            doc_obj.run_id = run_id
+        return doc_obj
 
     def get_document(self, run_id: int, document_id: int) -> Optional[Document]:
+        doc_obj = None
         if document := self.orbis_db.get_document(document_id):
             doc_obj = Document.from_document_dao(document)
             doc_obj.run_id = run_id
-            return doc_obj
-        return None
+            doc_obj = self.map_document_with_scoring(run_id, doc_obj)
+        return doc_obj
 
     def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
         if run_id and document_id:

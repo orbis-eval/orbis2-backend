@@ -20,7 +20,7 @@ class Document(OrbisPydanticBaseModel):
     metadata: List[Metadata] = None
     done: bool = False
     inter_rater_agreement: Optional[InterRaterAgreementResult] = Field(default=None, alias="interRaterAgreement")
-    scoring: Optional[ScorerResult] = Field(default=None, alias="scoring")
+    scoring: Optional[ScorerResult] = Field(default=[], alias="scoring")
 
     def __init__(self, content: str, key: str = '', run_id: int = None, metadata: [Metadata] = None,
                  done: bool = False,
@@ -30,6 +30,7 @@ class Document(OrbisPydanticBaseModel):
                          inter_rater_agreement=inter_rater_agreement,
                          scoring=scoring)
         self.metadata = metadata if metadata else []
+        self.scoring = scoring if scoring else []
 
     def __hash__(self):
         return xxh32_intdigest(self.content + self.key)
