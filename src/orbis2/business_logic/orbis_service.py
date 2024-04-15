@@ -160,8 +160,12 @@ class OrbisService:
         Returns:
             A dictionary of all supported AnnotationTypes and their corresponding color_id.
         """
-        return {AnnotationType.from_annotation_type_dao(annotation_type_dao): color_id
-                for annotation_type_dao, color_id in self.orbis_db.get_corpus_annotation_types(corpus_id).items()}
+        annotation_types = []
+        for annotation_type_dao, color_id in self.orbis_db.get_corpus_annotation_types(corpus_id).items():
+            annotation_type = AnnotationType.from_annotation_type_dao(annotation_type_dao)
+            annotation_type.color_id = color_id
+            annotation_types.append(annotation_type)
+        return annotation_types
 
     def set_corpus_annotation_type_color(self, corpus_id: int, annotation_type_id: int, color_id: int) -> None:
         """
