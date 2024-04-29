@@ -80,18 +80,20 @@ class OrbisDb(SqlDb):
         logging.debug(f'Run with run id {run_id} has not been found in orbis database.')
         return None
 
-    def get_runs_by_corpus_id(self, corpus_id: int) -> Optional[List[RunDao]]:
+    def get_runs_by_corpus_id(self, corpus_id: int, is_gold_standard: bool = False) -> Optional[List[RunDao]]:
         """
         Get all runs with a given corpus_id from database
 
         Args:
             corpus_id:
+            is_gold_standard:
 
         Returns: A list of run objects or None if no according run exists in the database
         """
         try:
             results = self.session.scalars(select(RunDao).options(subqueryload('*')).where(
-                RunDao.corpus_id == corpus_id)).all()
+                and_(RunDao.corpus_id == corpus_id, RunDao.is_gold_standard == is_gold_standard)
+            )).all()
             if len(results) > 0:
                 return results
             logging.debug(f'There are no run entries with corpus id {corpus_id} in orbis database.')
@@ -873,7 +875,7 @@ class OrbisDb(SqlDb):
             supported_annotation_types = {a.annotation_type for a in corpus.supported_annotation_types}
             # first, delete all runs with custom delete_run method,
             # to ensure that all orphan entities are deleted as well
-            if not (runs := self.get_runs_by_corpus_id(corpus_id)):
+            if not (runs := self.get_runs_by_corpus_id(corpus_id, is_gold_standard=False)):
                 runs = []
             if (all((self.delete_run(run.run_id) for run in runs if run)) and
                     # 'not' is necessary since session.delete returns None, try_catch expects a boolean
@@ -881,6 +883,18 @@ class OrbisDb(SqlDb):
                                    f'Corpus with id {corpus_id} could not be deleted from orbis db.') and
                     self.commit()):
                 have_orphans = self.delete_orphan_annotation_types(supported_annotation_types)
+
+            # second, delete the gold standard runs
+            if not (gold_standard_runs := self.get_runs_by_corpus_id(corpus_id, is_gold_standard=True)):
+                gold_standard_runs = []
+
+            if (all((self.delete_run(run.run_id) for run in gold_standard_runs if run)) and
+                    # 'not' is necessary since session.delete returns None, try_catch expects a boolean
+                    self.try_catch(lambda: not self.session.delete(corpus),
+                                   f'Corpus with id {corpus_id} could not be deleted from orbis db.') and
+                    self.commit()):
+                have_orphans = have_orphans or self.delete_orphan_annotation_types(supported_annotation_types)
+
             # delete the list of supported annotation types for that corpus
             for csat in corpus.supported_annotation_types:
                 self.session.delete(csat)
