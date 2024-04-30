@@ -18,6 +18,7 @@ from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.run import Run
+from orbis2.model.gold_standard import GoldStandard
 
 from orbis2.evaluation.helper import get_inter_rater_agreement_result
 
@@ -105,11 +106,11 @@ def get_runs(corpus_id: int = None) -> List[Run]:
 
 
 @app.get('/getGoldStandards')
-def get_gold_standards(corpus_id: int = None) -> List[Run]:
+def get_gold_standards(corpus_id: int = None) -> List[GoldStandard]:
     if corpus_id:
-        gold_standards = get_orbis_service().get_run_names(corpus_id, is_gold_standard=True)
+        gold_standards = get_orbis_service().get_gold_standard_names(corpus_id)
     else:
-        gold_standards = get_orbis_service().get_run_names(is_gold_standard=True)
+        gold_standards = get_orbis_service().get_gold_standard_names()
 
     # @todo pydantic bug: cant handle dicts, therefore setting document_annotations to None
     for gold_standard in gold_standards:
