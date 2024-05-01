@@ -9,6 +9,7 @@ from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
 from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
+from orbis2.model.gold_standard import GoldStandard
 from orbis2.model.scorer_result import ScorerResult
 
 from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
@@ -57,6 +58,23 @@ class OrbisService:
 
         return runs if runs else []
 
+    def get_gold_standard_names(self, corpus_id: int = None) -> List[GoldStandard]:
+        run_daos = []
+        if corpus_id:
+            run_daos = self.orbis_db.get_run_names_by_corpus_id(corpus_id, is_gold_standard=True)
+        else:
+            run_daos = self.orbis_db.get_run_names(is_gold_standard=True)
+
+        gold_standards = []
+
+        for run_dao in run_daos:
+            gold_standard = GoldStandard.from_run_dao(run_dao)
+            gold_standard.number_of_runs = self.orbis_db.count_runs_in_gold_standard(run_dao.run_id)
+            gold_standard.number_of_documents = self.count_documents_in_run(run_dao.run_id)
+            gold_standards.append(gold_standard)
+
+        return gold_standards if gold_standards else []
+
     def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
             return Document.from_document_daos(documents)
@@ -93,6 +111,9 @@ class OrbisService:
 
     def count_documents_in_run(self, run_id: int) -> int:
         return self.orbis_db.count_documents_in_run(run_id)
+
+    def count_runs_in_gold_standard(self, gold_standard_id: int) -> int:
+        return self.orbis_db.count_runs_in_gold_standard(gold_standard_id)
 
     def map_document_with_scoring(self, run_id: int, document: Document) -> Optional[Document]:
         run = self.get_run(run_id)
