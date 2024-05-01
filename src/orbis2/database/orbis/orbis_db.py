@@ -267,6 +267,18 @@ class OrbisDb(SqlDb):
             scalar()
         return count
 
+    def count_runs_in_gold_standard(self, gold_standard_id: int) -> int:
+        """
+        Count the runs for a given gold_standard_id in the database
+        Args:
+            gold_standard_id: id of the gold_standard for which to count the runs
+        Returns: the count as a number
+        """
+        count = self.session.query(func.count(RunDao.run_id)) \
+            .filter(RunDao.current_gold_standard_id == gold_standard_id). \
+            scalar()
+        return count
+
     def get_documents_of_run(self,
                              run_id: int,
                              page_size: int = None,
