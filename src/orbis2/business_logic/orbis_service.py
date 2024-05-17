@@ -1,6 +1,7 @@
 from typing import List, Dict, Optional
 
 from orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_match import AnnotationMatch
 from orbis2.model.annotation_type import AnnotationType
@@ -8,12 +9,10 @@ from orbis2.model.annotator import Annotator
 from orbis2.model.color_palette import ColorPalette
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
+from orbis2.model.gold_standard import GoldStandard
 from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
-from orbis2.model.gold_standard import GoldStandard
 from orbis2.model.scorer_result import ScorerResult
-
-from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 
 
 class OrbisService:
@@ -79,6 +78,13 @@ class OrbisService:
     def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
             return Document.from_document_daos(documents)
+        return []
+
+    def search_documents(self, search, page_size, skip) -> List[Document]:
+        if search:
+            documents = self.orbis_db.search_documents(search, page_size, skip)
+            if documents:
+                return Document.from_document_daos(documents)
         return []
 
     def get_documents_of_corpus(self, corpus_id: int, page_size: int = None, skip: int = 0) -> List[Document]:
