@@ -250,9 +250,6 @@ class OrbisDb(SqlDb):
 
             documents = query.all()
 
-            print("############################# DOCUMENTS #############################")
-            print(documents)
-
             if documents:
                 return documents
             logging.debug(f"No documents found with search query '{search_query}'.")
