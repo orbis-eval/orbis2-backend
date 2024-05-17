@@ -228,6 +228,39 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def search_documents(self, search_query: str, page_size: int = None, skip: int = 0) -> Optional[List[DocumentDao]]:
+        """
+        Search documents by content, case-insensitively.
+
+        Args:
+            search_query: The search term to filter documents by content, case-insensitively.
+            page_size: Number of documents per page.
+            skip: Number of documents to skip (for pagination).
+
+        Returns:
+            A list of document objects or None if no documents are found.
+        """
+        try:
+            # Use ilike for case-insensitive search
+            query = self.session.query(DocumentDao) \
+                                .filter(DocumentDao.content.ilike(f"%{search_query}%")) \
+                                .offset(skip)
+            if page_size is not None:
+                query = query.limit(page_size)
+
+            documents = query.all()
+
+            print("############################# DOCUMENTS #############################")
+            print(documents)
+
+            if documents:
+                return documents
+            logging.debug(f"No documents found with search query '{search_query}'.")
+            return None
+        except Exception as e:
+            logging.error(f"Search documents request failed: {e}")
+            return None
+
     def get_documents_of_corpus(self,
                                 corpus_id: int,
                                 page_size: int = None,
