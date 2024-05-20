@@ -2,6 +2,7 @@ from typing import List, Dict, Optional
 
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.model.annotation import Annotation
+from orbis2.model.annotation_match import AnnotationMatch
 from orbis2.model.annotation_type import AnnotationType
 from orbis2.model.annotator import Annotator
 from orbis2.model.color_palette import ColorPalette
@@ -123,7 +124,7 @@ class OrbisService:
                 run.document_annotations[document]
             )
             document.scoring = ScorerResult(
-                tp=[match.pred for match in scoring.tp],
+                tp=[AnnotationMatch(true=match.true, pred=match.pred) for match in scoring.tp],
                 fp=scoring.fp,
                 fn=scoring.fn,
             )
@@ -162,13 +163,21 @@ class OrbisService:
         return doc_obj
 
     def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
+        annotations = []
         if run_id and document_id:
             if document_has_annotations := self.orbis_db.get_annotations_of_document_by_run_id(run_id, document_id):
-                return Annotation.from_document_has_annotations(document_has_annotations)
+                annotations = Annotation.from_document_has_annotations(document_has_annotations)
+
+            run = self.orbis_db.get_run(run_id)
+            if run and run.current_gold_standard:
+                document_has_annotations = self.orbis_db.get_annotations_of_document_by_run_id(
+                    run.current_gold_standard.run_id, document_id)
+                if document_has_annotations:
+                    annotations.extend(Annotation.from_document_has_annotations(document_has_annotations))
         else:
             if annotations := self.orbis_db.get_annotations():
-                return Annotation.from_annotation_daos(annotations, run_id, document_id)
-        return []
+                annotations = Annotation.from_annotation_daos(annotations, run_id, document_id)
+        return annotations
 
     def get_annotation(self, run_id: int, document_id: int, annotation_id: int) -> Optional[Annotation]:
         if run_id and document_id and annotation_id and (
