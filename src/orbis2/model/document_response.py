@@ -1,6 +1,7 @@
 from typing import List
 
 import xxhash
+from pydantic import Field
 
 from orbis2.model.base_model import OrbisPydanticBaseModel
 from orbis2.model.document import Document
@@ -8,7 +9,7 @@ from orbis2.model.document import Document
 
 class DocumentResponse(OrbisPydanticBaseModel):
     documents: List[Document]
-    total_count: int = 0
+    total_count: int = Field(default=None, alias="totalCount")
 
     def __hash__(self):
         # Create a hash combining the hashes of the documents and the total count
