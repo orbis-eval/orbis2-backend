@@ -95,26 +95,32 @@ class OrbisService:
     def get_documents_of_run(self,
                              run_id: int,
                              page_size: int = None,
-                             skip: int = 0) -> List[Document]:
+                             skip: int = 0) -> (List[Document], int):
         document_daos = self.orbis_db.get_documents_of_run(run_id, page_size, skip)
         documents = []
         if document_daos:
             documents = Document.from_document_daos(document_daos)
 
-        # get run by id
+        # Get the total count of documents
+        total_count = self.orbis_db.count_documents_in_run(run_id)
+
+        # Get the run by id
         run = self.get_run(run_id)
         if run and run.current_gold_standard:
             for document in documents:
-                # remove all other keys from the document_annotations
+                # Remove all other keys from the document_annotations
                 gold_standard_document_annotations = {
-                    document: run.current_gold_standard.document_annotations[document]}
-                run_document_annotations = {document: run.document_annotations[document]}
+                    document: run.current_gold_standard.document_annotations[document]
+                }
+                run_document_annotations = {
+                    document: run.document_annotations[document]
+                }
                 document.inter_rater_agreement = get_inter_rater_agreement_result(
                     gold_standard_document_annotations,
                     run_document_annotations
                 )
 
-        return documents
+        return documents, total_count
 
     def count_documents_in_run(self, run_id: int) -> int:
         return self.orbis_db.count_documents_in_run(run_id)
