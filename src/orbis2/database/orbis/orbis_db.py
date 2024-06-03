@@ -228,7 +228,10 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
-    def search_documents(self, search_query: str, page_size: int = None, skip: int = 0) -> Optional[List[DocumentDao]]:
+    def search_documents(self,
+                         search_query: str,
+                         page_size: int = None,
+                         skip: int = 0) -> (List[DocumentDao], int):
         """
         Search documents by content, case-insensitively.
 
