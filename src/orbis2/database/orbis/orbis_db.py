@@ -243,8 +243,8 @@ class OrbisDb(SqlDb):
         try:
             # Use ilike for case-insensitive search
             query = self.session.query(DocumentDao) \
-                                .filter(DocumentDao.content.ilike(f"%{search_query}%")) \
-                                .offset(skip)
+                .filter(DocumentDao.content.ilike(f"%{search_query}%")) \
+                .offset(skip)
             if page_size is not None:
                 query = query.limit(page_size)
 
@@ -286,15 +286,14 @@ class OrbisDb(SqlDb):
 
     def count_documents_in_run(self, run_id: int) -> int:
         """
-        Count the documents for a given run_id in the database
+        Count the documents for a given run_id in the database.
         Args:
-            run_id: id of the run for which to count the documents
-        Returns: the count as a number
+            run_id: id of the run for which to count the documents.
+        Returns: The count as a number.
         """
-        count = self.session.query(func.count(DocumentDao.document_id)) \
-            .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id) \
-            .filter(RunHasDocumentDao.run_id == run_id). \
-            scalar()
+        count = self.session.query(func.count(DocumentDao.document_id)).join(
+            RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id
+        ).filter(RunHasDocumentDao.run_id == run_id).scalar()
         return count
 
     def count_runs_in_gold_standard(self, gold_standard_id: int) -> int:
