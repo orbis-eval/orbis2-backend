@@ -80,12 +80,12 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
-    def search_documents(self, search, page_size, skip) -> List[Document]:
+    def search_documents(self, search, page_size, skip) -> [List[Document], int]:
         if search:
-            documents = self.orbis_db.search_documents(search, page_size, skip)
+            documents, total_count = self.orbis_db.search_documents(search, page_size, skip)
             if documents:
-                return Document.from_document_daos(documents)
-        return []
+                return Document.from_document_daos(documents), total_count
+        return [], 0
 
     def get_documents_of_corpus(self, corpus_id: int, page_size: int = None, skip: int = 0) -> List[Document]:
         if documents := self.orbis_db.get_documents_of_corpus(corpus_id, page_size, skip):
