@@ -241,15 +241,22 @@ class OrbisDb(SqlDb):
             skip: Number of documents to skip (for pagination).
 
         Returns:
-            A list of document objects or None if no documents are found.
+            A list of document objects or None if no documents are found and the total count of documents.
         """
         try:
-            query = self.session.query(DocumentDao).filter(DocumentDao.content.ilike(f"%{search_query}%")).offset(skip)
+            query = (self.session.query(DocumentDao)
+                     .filter(DocumentDao.content.ilike(f"%{search_query}%"))
+                     .offset(skip))
             if page_size is not None:
                 query = query.limit(page_size)
+
             documents = query.all()
             total_count = query.count()
-            return documents, total_count
+            if documents and total_count:
+                return documents, total_count
+            else:
+                logging.debug(f'No documents found for search query: {search_query}')
+                return [], 0
         except Exception as e:
             logging.error(f"Search documents request failed: {e}")
             return [], 0
