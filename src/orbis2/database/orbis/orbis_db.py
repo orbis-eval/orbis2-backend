@@ -1,7 +1,7 @@
 import logging
-from typing import List, Callable, Set, Dict, Optional
+from typing import List, Callable, Set, Dict, Optional, cast
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, cast, String
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -245,12 +245,15 @@ class OrbisDb(SqlDb):
         """
         try:
             query = (self.session.query(DocumentDao)
-                     .filter(DocumentDao.content.ilike(f"%{search_query}%"))
+                     .filter(
+                DocumentDao.content.ilike(f"%{search_query}%") | cast(DocumentDao.document_id, String).like(
+                    f"%{search_query}%"))
                      .offset(skip))
             if page_size is not None:
                 query = query.limit(page_size)
 
             documents = query.all()
+            print("docs = ", documents)
             total_count = query.count()
             if documents and total_count:
                 return documents, total_count
