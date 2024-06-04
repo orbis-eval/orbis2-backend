@@ -249,12 +249,13 @@ class OrbisDb(SqlDb):
                 DocumentDao.content.ilike(f"%{search_query}%") | cast(DocumentDao.document_id, String).like(
                     f"%{search_query}%"))
                      .offset(skip))
+
+            total_count = query.count()
+
             if page_size is not None:
                 query = query.limit(page_size)
 
             documents = query.all()
-            print("docs = ", documents)
-            total_count = query.count()
             if documents and total_count:
                 return documents, total_count
             else:
