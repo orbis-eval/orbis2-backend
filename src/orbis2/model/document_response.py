@@ -20,7 +20,6 @@ class DocumentResponse(OrbisPydanticBaseModel):
         h.update(str(self.total_count).encode('utf-8'))
         return h.intdigest()
 
-
     def __eq__(self, other):
         if isinstance(other, DocumentResponse):
             return self.documents == other.documents and self.total_count == other.total_count
