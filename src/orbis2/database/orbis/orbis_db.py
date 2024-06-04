@@ -1,5 +1,5 @@
 import logging
-from typing import List, Callable, Set, Dict, Optional, cast
+from typing import List, Callable, Set, Dict, Optional
 
 from sqlalchemy import select, func, and_, cast, String
 from sqlalchemy.exc import SQLAlchemyError
