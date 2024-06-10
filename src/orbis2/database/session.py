@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker, Session
 
 sessions_makers = {}
 
+
 def get_session(connection_string: str, new: bool = False) -> Session:
     """
     Returns a sqlalchemy session for the connection string
