@@ -1,4 +1,3 @@
-from cachetools import TTLCache
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
@@ -27,7 +26,3 @@ def get_session(connection_string: str, new: bool = False) -> Session:
         )
         sessions_makers[connection_string] = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     return sessions_makers[connection_string]()
-
-
-# create a cache for the sessions of 10 minutes
-cache = TTLCache(maxsize=100, ttl=600)

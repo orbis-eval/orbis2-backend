@@ -2,8 +2,8 @@ from typing import List, Dict, Optional
 
 from cachetools import cached
 
+from orbis2.database.logging_cache import cache
 from orbis2.database.orbis.orbis_db import OrbisDb
-from orbis2.database.session import cache
 from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_match import AnnotationMatch
@@ -176,6 +176,7 @@ class OrbisService:
             doc_obj.run_id = run_id
         return doc_obj
 
+    @cached(cache)
     def get_document(self, run_id: int, document_id: int) -> Optional[Document]:
         doc_obj = None
         if document := self.orbis_db.get_document(document_id):
