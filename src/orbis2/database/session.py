@@ -1,10 +1,8 @@
 from cachetools import TTLCache
-
-sessions_makers = {}
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
+sessions_makers = {}
 
 def get_session(connection_string: str, new: bool = False) -> Session:
     """
