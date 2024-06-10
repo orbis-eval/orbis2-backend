@@ -80,6 +80,7 @@ class OrbisService:
 
         return gold_standards if gold_standards else []
 
+    @cached(cache)
     def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
             return Document.from_document_daos(documents)
@@ -209,11 +210,13 @@ class OrbisService:
             return Annotation.from_document_has_annotation(document_has_annotations)
         return None
 
+    @cached(cache)
     def get_corpora(self) -> List[Corpus]:
         if corpora := self.orbis_db.get_corpora():
             return Corpus.from_corpus_daos(corpora)
         return []
 
+    @cached(cache)
     def get_corpus(self, corpus_id) -> Optional[Corpus]:
         if corpus_id and (corpus := self.orbis_db.get_corpus(corpus_id)):
             return Corpus.from_corpus_dao(corpus)
