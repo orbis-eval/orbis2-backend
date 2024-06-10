@@ -62,7 +62,6 @@ class OrbisService:
 
         return runs if runs else []
 
-    @cached(cache)
     def get_gold_standard_names(self, corpus_id: int = None) -> List[GoldStandard]:
         run_daos = []
         if corpus_id:
