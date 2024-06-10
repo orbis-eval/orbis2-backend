@@ -1,7 +1,7 @@
 import logging
 from typing import List, Callable, Set, Dict, Optional
 
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, cast, String
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import subqueryload
 
@@ -228,10 +228,50 @@ class OrbisDb(SqlDb):
             logging.debug(f'The following exception occurred: {e.__str__()}')
             return None
 
+    def search_documents(self,
+                         search_query: str,
+                         page_size: int = None,
+                         skip: int = 0) -> (List[DocumentDao], int):
+        """
+        Search documents by content, case-insensitively.
+
+        Args:
+            search_query: The search term to filter documents by content, case-insensitively.
+            page_size: Number of documents per page.
+            skip: Number of documents to skip (for pagination).
+
+        Returns:
+            A list of document objects or None if no documents are found and the total count of documents.
+        """
+        try:
+            search_pattern = f"%{search_query}%"
+
+            # Search for documents by content or document_id
+            query = (self.session.query(DocumentDao)
+                     .filter(
+                DocumentDao.content.ilike(search_pattern) | cast(DocumentDao.document_id, String).like(search_pattern))
+                     .offset(skip))
+
+            total_count = query.count()
+
+            if page_size is not None:
+                query = query.limit(page_size)
+
+            documents = query.all()
+
+            if documents and total_count:
+                return documents, total_count
+            else:
+                logging.debug(f'No documents found for search query: {search_query}')
+                return [], 0
+        except Exception as e:
+            logging.error(f"Search documents request failed: {e}")
+            return [], 0
+
     def get_documents_of_corpus(self,
                                 corpus_id: int,
                                 page_size: int = None,
-                                skip: int = 0) -> Optional[List[DocumentDao]]:
+                                skip: int = 0) -> (Optional[List[DocumentDao]], int):
         """
         Get all documents for a given corpus from database
 
@@ -240,31 +280,40 @@ class OrbisDb(SqlDb):
             page_size: defines how many documents should be loaded, if None all documents are loaded
             skip: defines how many documents should be skipped
 
-        Returns: A list of document objects or None if no document exists for this corpus in the database
+        Returns: A tuple containing a list of document objects and the total count of documents
         """
-        if documents := self.try_catch(
-                lambda: self.session.scalars(select(DocumentDao).options(subqueryload('*')).where(
-                    DocumentDao.document_id == RunHasDocumentDao.document_id,
-                    RunHasDocumentDao.run_id == RunDao.run_id,
-                    RunDao.corpus_id == corpus_id
-                ).limit(page_size).offset(skip)).all(),
-                f'Documents for corpus request with corpus id: {corpus_id} failed', False
-        ):
-            return documents
-        logging.debug(f'Documents for corpus with corpus id {corpus_id} has not been found in orbis database.')
-        return None
+        try:
+            query = self.session.query(DocumentDao).join(
+                RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id
+            ).join(
+                RunDao, RunHasDocumentDao.run_id == RunDao.run_id
+            ).filter(
+                RunDao.corpus_id == corpus_id
+            )
+
+            total_count = query.count()
+
+            documents = query.options(subqueryload('*')).limit(page_size).offset(skip).all()
+
+            if not documents:
+                logging.debug(f'Documents for corpus with corpus id {corpus_id} have not been found in orbis database.')
+
+            return documents, total_count
+        except SQLAlchemyError as e:
+            logging.warning(f'Documents for corpus request with corpus id: {corpus_id} failed.')
+            logging.debug(f'The following exception occurred: {e}')
+            return None, 0
 
     def count_documents_in_run(self, run_id: int) -> int:
         """
-        Count the documents for a given run_id in the database
+        Count the documents for a given run_id in the database.
         Args:
-            run_id: id of the run for which to count the documents
-        Returns: the count as a number
+            run_id: id of the run for which to count the documents.
+        Returns: The count as a number.
         """
-        count = self.session.query(func.count(DocumentDao.document_id)) \
-            .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id) \
-            .filter(RunHasDocumentDao.run_id == run_id). \
-            scalar()
+        count = self.session.query(func.count(DocumentDao.document_id)).join(
+            RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id
+        ).filter(RunHasDocumentDao.run_id == run_id).scalar()
         return count
 
     def count_runs_in_gold_standard(self, gold_standard_id: int) -> int:

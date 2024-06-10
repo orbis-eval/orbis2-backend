@@ -1,6 +1,10 @@
 from typing import List, Dict, Optional
 
+from cachetools import cached
+
+from orbis2.database.logging_cache import cache
 from orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_match import AnnotationMatch
 from orbis2.model.annotation_type import AnnotationType
@@ -8,12 +12,10 @@ from orbis2.model.annotator import Annotator
 from orbis2.model.color_palette import ColorPalette
 from orbis2.model.corpus import Corpus
 from orbis2.model.document import Document
+from orbis2.model.gold_standard import GoldStandard
 from orbis2.model.metadata import Metadata
 from orbis2.model.run import Run
-from orbis2.model.gold_standard import GoldStandard
 from orbis2.model.scorer_result import ScorerResult
-
-from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 
 
 class OrbisService:
@@ -25,6 +27,7 @@ class OrbisService:
         """
         self.orbis_db = OrbisDb()
 
+    @cached(cache)
     def get_runs(self) -> List[Run]:
         if runs := self.orbis_db.get_runs():
             return Run.from_run_daos(runs)
@@ -59,6 +62,7 @@ class OrbisService:
 
         return runs if runs else []
 
+    @cached(cache)
     def get_gold_standard_names(self, corpus_id: int = None) -> List[GoldStandard]:
         run_daos = []
         if corpus_id:
@@ -76,39 +80,56 @@ class OrbisService:
 
         return gold_standards if gold_standards else []
 
+    @cached(cache)
     def get_documents(self) -> List[Document]:
         if documents := self.orbis_db.get_documents():
             return Document.from_document_daos(documents)
         return []
 
+    @cached(cache)
+    def search_documents(self, search, page_size, skip) -> [List[Document], int]:
+        if search:
+            documents, total_count = self.orbis_db.search_documents(search, page_size, skip)
+            if documents:
+                return Document.from_document_daos(documents), total_count
+        return [], 0
+
+    @cached(cache)
     def get_documents_of_corpus(self, corpus_id: int, page_size: int = None, skip: int = 0) -> List[Document]:
         if documents := self.orbis_db.get_documents_of_corpus(corpus_id, page_size, skip):
             return Document.from_document_daos(documents)
         return []
 
+    @cached(cache)
     def get_documents_of_run(self,
                              run_id: int,
                              page_size: int = None,
-                             skip: int = 0) -> List[Document]:
+                             skip: int = 0) -> (List[Document], int):
         document_daos = self.orbis_db.get_documents_of_run(run_id, page_size, skip)
         documents = []
         if document_daos:
             documents = Document.from_document_daos(document_daos)
 
-        # get run by id
+        # Get the total count of documents
+        total_count = self.orbis_db.count_documents_in_run(run_id)
+
+        # Get the run by id
         run = self.get_run(run_id)
         if run and run.current_gold_standard:
             for document in documents:
-                # remove all other keys from the document_annotations
+                # Remove all other keys from the document_annotations
                 gold_standard_document_annotations = {
-                    document: run.current_gold_standard.document_annotations[document]}
-                run_document_annotations = {document: run.document_annotations[document]}
+                    document: run.current_gold_standard.document_annotations[document]
+                }
+                run_document_annotations = {
+                    document: run.document_annotations[document]
+                }
                 document.inter_rater_agreement = get_inter_rater_agreement_result(
                     gold_standard_document_annotations,
                     run_document_annotations
                 )
 
-        return documents
+        return documents, total_count
 
     def count_documents_in_run(self, run_id: int) -> int:
         return self.orbis_db.count_documents_in_run(run_id)
@@ -130,6 +151,7 @@ class OrbisService:
             )
         return document
 
+    @cached(cache)
     def get_next_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
@@ -142,6 +164,7 @@ class OrbisService:
             doc_obj.run_id = run_id
         return doc_obj
 
+    @cached(cache)
     def get_previous_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
@@ -154,6 +177,7 @@ class OrbisService:
             doc_obj.run_id = run_id
         return doc_obj
 
+    @cached(cache)
     def get_document(self, run_id: int, document_id: int) -> Optional[Document]:
         doc_obj = None
         if document := self.orbis_db.get_document(document_id):
@@ -186,11 +210,13 @@ class OrbisService:
             return Annotation.from_document_has_annotation(document_has_annotations)
         return None
 
+    @cached(cache)
     def get_corpora(self) -> List[Corpus]:
         if corpora := self.orbis_db.get_corpora():
             return Corpus.from_corpus_daos(corpora)
         return []
 
+    @cached(cache)
     def get_corpus(self, corpus_id) -> Optional[Corpus]:
         if corpus_id and (corpus := self.orbis_db.get_corpus(corpus_id)):
             return Corpus.from_corpus_dao(corpus)
