@@ -1,6 +1,9 @@
 from typing import List, Dict, Optional
 
+from cachetools import cached
+
 from orbis2.database.orbis.orbis_db import OrbisDb
+from orbis2.database.session import cache
 from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 from orbis2.model.annotation import Annotation
 from orbis2.model.annotation_match import AnnotationMatch
@@ -24,6 +27,7 @@ class OrbisService:
         """
         self.orbis_db = OrbisDb()
 
+    @cached(cache)
     def get_runs(self) -> List[Run]:
         if runs := self.orbis_db.get_runs():
             return Run.from_run_daos(runs)
@@ -58,6 +62,7 @@ class OrbisService:
 
         return runs if runs else []
 
+    @cached(cache)
     def get_gold_standard_names(self, corpus_id: int = None) -> List[GoldStandard]:
         run_daos = []
         if corpus_id:
@@ -80,6 +85,7 @@ class OrbisService:
             return Document.from_document_daos(documents)
         return []
 
+    @cached(cache)
     def search_documents(self, search, page_size, skip) -> [List[Document], int]:
         if search:
             documents, total_count = self.orbis_db.search_documents(search, page_size, skip)
@@ -87,11 +93,13 @@ class OrbisService:
                 return Document.from_document_daos(documents), total_count
         return [], 0
 
+    @cached(cache)
     def get_documents_of_corpus(self, corpus_id: int, page_size: int = None, skip: int = 0) -> List[Document]:
         if documents := self.orbis_db.get_documents_of_corpus(corpus_id, page_size, skip):
             return Document.from_document_daos(documents)
         return []
 
+    @cached(cache)
     def get_documents_of_run(self,
                              run_id: int,
                              page_size: int = None,
