@@ -244,10 +244,12 @@ class OrbisDb(SqlDb):
             A list of document objects or None if no documents are found and the total count of documents.
         """
         try:
+            search_pattern = f"%{search_query}%"
+
+            # Search for documents by content or document_id
             query = (self.session.query(DocumentDao)
                      .filter(
-                DocumentDao.content.ilike(f"%{search_query}%") | cast(DocumentDao.document_id, String).like(
-                    f"%{search_query}%"))
+                DocumentDao.content.ilike(search_pattern) | cast(DocumentDao.document_id, String).like(search_pattern))
                      .offset(skip))
 
             total_count = query.count()
@@ -256,6 +258,7 @@ class OrbisDb(SqlDb):
                 query = query.limit(page_size)
 
             documents = query.all()
+
             if documents and total_count:
                 return documents, total_count
             else:
