@@ -16,6 +16,15 @@ class LoggingCache(TTLCache):
             logging.info(f"Cache miss for key: {key}")
             raise
 
+    @staticmethod
+    def invalidate_cache(func):
+        def wrapper(*args, **kwargs):
+            cache.clear()
+            logging.info(f"Cache cleared")
+            return func(*args, **kwargs)
+
+        return wrapper
+
 
 # create cache with a maximum size of 100 and a time-to-live of 600 seconds
 cache = LoggingCache(maxsize=100, ttl=600)
