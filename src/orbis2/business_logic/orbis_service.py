@@ -2,7 +2,7 @@ from typing import List, Dict, Optional
 
 from cachetools import cached
 
-from orbis2.database.logging_cache import cache
+from orbis2.database.logging_cache import cache, LoggingCache
 from orbis2.database.orbis.orbis_db import OrbisDb
 from orbis2.evaluation.helper import get_inter_rater_agreement_result, get_scoring_annotation_level
 from orbis2.model.annotation import Annotation
@@ -185,6 +185,7 @@ class OrbisService:
             doc_obj = self.map_document_with_scoring(run_id, doc_obj)
         return doc_obj
 
+    @cached(cache)
     def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
         annotations = []
         if run_id and document_id:
@@ -202,6 +203,7 @@ class OrbisService:
                 annotations = Annotation.from_annotation_daos(annotations, run_id, document_id)
         return annotations
 
+    @cached(cache)
     def get_annotation(self, run_id: int, document_id: int, annotation_id: int) -> Optional[Annotation]:
         if run_id and document_id and annotation_id and (
                 document_has_annotations := self.orbis_db.get_annotation_of_document_by_run_id(run_id, document_id,
@@ -270,47 +272,56 @@ class OrbisService:
             return Annotator.from_annotator_daos(annotators)
         return []
 
+    @LoggingCache.invalidate_cache
     def add_run(self, run: Run) -> bool:
         if run:
             return self.orbis_db.add_run(run.to_dao())
         return False
 
+    @LoggingCache.invalidate_cache
     def add_runs(self, runs: [Run]) -> bool:
         if not runs:
             return False
         return all(self.orbis_db.add_run(run.to_dao()) for run in runs)
 
+    @LoggingCache.invalidate_cache
     def add_annotation_to_document(self, annotation: Annotation) -> Optional[Annotation]:
         if annotation and (annotation_id := self.orbis_db.add_annotation_to_document(
                 annotation.to_document_annotation_dao())):
             return self.get_annotation(annotation.run_id, annotation.document_id, annotation_id)
         return None
 
+    @LoggingCache.invalidate_cache
     def add_annotation_type(self, annotation_type: AnnotationType) -> bool:
         if annotation_type:
             return self.orbis_db.add_annotation_type(annotation_type.to_dao())
         return False
 
+    @LoggingCache.invalidate_cache
     def add_annotation_types(self, annotation_types: [AnnotationType]) -> bool:
         if not annotation_types:
             return False
         return all(self.add_annotation_type(annotation_type) for annotation_type in annotation_types)
 
+    @LoggingCache.invalidate_cache
     def delete_annotation_from_document(self, annotation: Annotation) -> bool:
         if annotation:
             return self.orbis_db.delete_annotation_from_document(annotation.to_document_annotation_dao())
         return False
 
+    @LoggingCache.invalidate_cache
     def delete_document_from_corpus(self, document_id: int, corpus_id: int) -> bool:
         if document_id and corpus_id:
             return self.orbis_db.delete_document_from_corpus(document_id, corpus_id)
         return False
 
+    @LoggingCache.invalidate_cache
     def delete_corpus(self, corpus_id: int) -> bool:
         if corpus_id:
             return self.orbis_db.delete_corpus(corpus_id)
         return False
 
+    @LoggingCache.invalidate_cache
     def delete_run(self, run_id: int) -> bool:
         if run_id:
             return self.orbis_db.delete_run(run_id)
