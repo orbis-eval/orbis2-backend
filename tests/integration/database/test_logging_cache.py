@@ -26,15 +26,15 @@ class TestOrbisService(unittest.TestCase):
 
         # Check initial cache state
         orbis_service.get_runs()
-        # self.assertTrue(self.mock_cache.__getitem__.called)
+        self.assertTrue(self.mock_cache.__getitem__.called)
 
         # Call add_run and ensure cache is invalidated
         orbis_service.add_run(run)
-        # self.assertTrue(self.mock_cache.clear.called)
+        self.assertTrue(self.mock_cache.clear.called)
         #
         # Ensure get_runs re-populates the cache
         orbis_service.get_runs()
-        # self.assertTrue(self.mock_cache.__getitem__.called)
+        self.assertTrue(self.mock_cache.__getitem__.called)
 
 
 if __name__ == '__main__':
