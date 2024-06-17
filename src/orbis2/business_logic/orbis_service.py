@@ -185,7 +185,6 @@ class OrbisService:
             doc_obj = self.map_document_with_scoring(run_id, doc_obj)
         return doc_obj
 
-    @cached(cache)
     def get_annotations(self, run_id: int = None, document_id: int = None) -> List[Annotation]:
         annotations = []
         if run_id and document_id:
