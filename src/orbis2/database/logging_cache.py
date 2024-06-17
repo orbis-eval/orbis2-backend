@@ -20,10 +20,16 @@ class LoggingCache(TTLCache):
     def invalidate_cache(func):
         def wrapper(*args, **kwargs):
             cache.clear()
-            logging.info(f"Cache cleared")
+            logging.info(f"Cache cleared from invalidate_cache")
             return func(*args, **kwargs)
 
         return wrapper
+
+
+    @staticmethod
+    def clear_cache():
+        cache.clear()
+        logging.info("Cache cleared from clear_cache")
 
 
 # create cache with a maximum size of 100 and a time-to-live of 600 seconds
