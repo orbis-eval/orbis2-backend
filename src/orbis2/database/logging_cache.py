@@ -25,7 +25,6 @@ class LoggingCache(TTLCache):
 
         return wrapper
 
-
     @staticmethod
     def clear_cache():
         cache.clear()
