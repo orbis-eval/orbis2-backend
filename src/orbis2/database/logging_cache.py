@@ -20,7 +20,7 @@ class LoggingCache(TTLCache):
     def invalidate_cache(func):
         def wrapper(*args, **kwargs):
             cache.clear()
-            logging.info(f"Cache cleared from invalidate_cache")
+            logging.info("Cache cleared from invalidate_cache")
             return func(*args, **kwargs)
 
         return wrapper
