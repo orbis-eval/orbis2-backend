@@ -5,7 +5,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import List
 
-import uvicorn as uvicorn
 from fastapi import FastAPI, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
@@ -293,5 +292,7 @@ def get_app():
     return app
 
 
-if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=63012)
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="127.0.0.1", port=63012, reload=True)
