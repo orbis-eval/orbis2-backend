@@ -150,7 +150,6 @@ class OrbisService:
             )
         return document
 
-    @cached(cache)
     def get_next_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
@@ -163,7 +162,6 @@ class OrbisService:
             doc_obj.run_id = run_id
         return doc_obj
 
-    @cached(cache)
     def get_previous_document(self, run_id: int, document_id: int) -> Optional[Document]:
         """
         Returns:
