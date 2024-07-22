@@ -95,7 +95,8 @@ class OrbisService:
 
     @cached(cache)
     def get_documents_of_corpus(self, corpus_id: int, page_size: int = None, skip: int = 0) -> List[Document]:
-        if documents := self.orbis_db.get_documents_of_corpus(corpus_id, page_size, skip):
+        if results := self.orbis_db.get_documents_of_corpus(corpus_id, page_size, skip):
+            documents, _ = results
             return Document.from_document_daos(documents)
         return []
 
