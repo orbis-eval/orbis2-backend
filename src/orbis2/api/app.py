@@ -79,7 +79,7 @@ def get_annotations(run_id: int = None, document_id: int = None) -> List[Annotat
 def get_documents(run_id: int = None, corpus_id: int = None, page_size: int = None, skip: int = 0,
                   search: str = "") -> DocumentResponse:
     if search:
-        documents, total_count = get_orbis_service().search_documents(search, page_size, skip)
+        documents, total_count = get_orbis_service().search_documents(search, corpus_id, page_size, skip)
     elif run_id:
         documents, total_count = get_orbis_service().get_documents_of_run(run_id, page_size, skip)
     elif corpus_id:

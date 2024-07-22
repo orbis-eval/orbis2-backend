@@ -86,9 +86,9 @@ class OrbisService:
         return []
 
     @cached(cache)
-    def search_documents(self, search, page_size, skip) -> [List[Document], int]:
+    def search_documents(self, search, corpus_id, page_size, skip) -> [List[Document], int]:
         if search:
-            documents, total_count = self.orbis_db.search_documents(search, page_size, skip)
+            documents, total_count = self.orbis_db.search_documents(search, corpus_id, page_size, skip)
             if documents:
                 return Document.from_document_daos(documents), total_count
         return [], 0

@@ -230,6 +230,7 @@ class OrbisDb(SqlDb):
 
     def search_documents(self,
                          search_query: str,
+                         corpus_id: int = None,
                          page_size: int = None,
                          skip: int = 0) -> (List[DocumentDao], int):
         """
@@ -248,8 +249,11 @@ class OrbisDb(SqlDb):
 
             # Search for documents by content or document_id
             query = (self.session.query(DocumentDao)
-                     .filter(
-                DocumentDao.content.ilike(search_pattern) | cast(DocumentDao.document_id, String).like(search_pattern))
+                     .join(RunHasDocumentDao, DocumentDao.document_id == RunHasDocumentDao.document_id)
+                     .join(RunDao, RunHasDocumentDao.run_id == RunDao.run_id)
+                     .filter(and_(DocumentDao.content.ilike(search_pattern) |
+                                  cast(DocumentDao.document_id, String).like(search_pattern),
+                                  RunDao.corpus_id == corpus_id))
                      .offset(skip))
 
             total_count = query.count()
