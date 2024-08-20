@@ -1,6 +1,10 @@
 # orbis2-backend
 
+The backend provides an API for the [frontend](https://github.com/orbis-eval/orbis2-frontend) and is responsible for managing the corpora. The data is stored in a PostgreSQL database.
+
 ## Setup Development Environment
+
+The following describes how the backend can be set up for development.
 
 ### Prerequisites
 
@@ -20,7 +24,7 @@ http://127.0.0.1:63012/docs#/
 Setup the following databases:
 
 1. orbis (used for production)
-2. orbis_test (used in unit tests)
+2. orbis_test (used in integration tests)
 
 The environment variables are all stored in the file [src/orbis2/config/app_config.py](src/orbis2/config/app_config.py) during run time.
 
